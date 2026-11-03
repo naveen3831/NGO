@@ -2017,8 +2017,94 @@
   border-radius: 20px;
   padding: 2.5rem;
   width: 100%;
-  max-width: 440px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  max-width: 460px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.role-login-card {
+  max-width: 480px;
+}
+
+/* Role Selector Tabs */
+.role-selector-tabs {
+  display: flex;
+  background-color: #f1f5f9;
+  border-radius: 12px;
+  padding: 0.35rem;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.role-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  background-color: transparent;
+  color: #64748b;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.role-tab-btn.active.member-tab {
+  background-color: #ffffff;
+  color: var(--primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.role-tab-btn.active.admin-tab {
+  background-color: #ffffff;
+  color: #b45309;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.role-badge-explainer {
+  background-color: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.role-badge-explainer p {
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Input with icon */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-field-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding-left: 2.5rem !important;
+}
+
+.admin-submit-btn {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+.admin-submit-btn:hover:not(:disabled) {
+  background-color: #1e293b !important;
 }
 
 .reg-card-wide { max-width: 580px; }

@@ -17,7 +17,6 @@ import Events from './pages/Events';
 import Announcements from './pages/Announcements';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
-import AdminLogin from './pages/AdminLogin';
 import Register from './pages/Register';
 
 // Admin Pages
@@ -66,8 +65,8 @@ function App() {
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/member/login" element={<Login />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/member/login" element={<Login initialRole="member" />} />
+            <Route path="/admin/login" element={<Login initialRole="admin" />} />
             <Route path="/register" element={<Register />} />
           </Route>
 

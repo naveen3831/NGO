@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Droplet, Menu, X, Shield, Smartphone, LogOut, User, ArrowRight } from 'lucide-react';
+import { Droplet, Menu, X, Shield, Smartphone, LogOut, User, LogIn } from 'lucide-react';
 
 const Navbar = () => {
   const { user, isAdmin, isMember, logout } = useAuth();
@@ -23,13 +23,14 @@ const Navbar = () => {
     { label: 'Events', path: '/events' },
     { label: 'Announcements', path: '/announcements' },
     { label: 'Contact', path: '/contact' },
+    { label: 'Login', path: '/login' },
   ];
 
   const isActive = (path) => location.pathname === path;
 
   return (
     <header className="site-header">
-      {/* Sleek Top Utility Strip */}
+      {/* Top Utility Strip */}
       <div className="top-utility-bar">
         <div className="container utility-content">
           <div className="utility-left">
@@ -50,12 +51,12 @@ const Navbar = () => {
               </Link>
             ) : (
               <div className="portal-quick-links">
-                <Link to="/member/login" className="portal-quick-link">
+                <Link to="/login?role=member" className="portal-quick-link">
                   Member Login
                 </Link>
                 <span className="dot-sep">/</span>
-                <Link to="/admin/login" className="portal-quick-link">
-                  Admin Portal
+                <Link to="/login?role=admin" className="portal-quick-link">
+                  Admin Login
                 </Link>
               </div>
             )}
@@ -63,10 +64,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Main Clean Navigation Bar */}
+      {/* Main Navigation Bar */}
       <nav className="main-navbar">
         <div className="container nav-wrapper">
-          {/* Organization Logo */}
+          {/* Brand Logo */}
           <Link to="/" className="brand-logo" onClick={() => setMobileMenuOpen(false)}>
             <div className="logo-icon-wrap">
               <Droplet size={22} className="logo-icon" />
@@ -90,7 +91,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Right Action Button */}
+          {/* Right Action Buttons */}
           <div className="desktop-actions">
             {user ? (
               <div className="user-dropdown">
@@ -107,6 +108,9 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="auth-buttons">
+                <Link to="/login" className="btn btn-outline btn-sm">
+                  <LogIn size={15} /> Login
+                </Link>
                 <Link to="/register" className="btn btn-primary btn-sm">
                   Join Volunteer
                 </Link>
@@ -157,25 +161,18 @@ const Navbar = () => {
               ) : (
                 <div className="mobile-auth-actions">
                   <Link
-                    to="/register"
-                    className="btn btn-primary btn-block mb-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Join as Volunteer
-                  </Link>
-                  <Link
-                    to="/member/login"
+                    to="/login"
                     className="btn btn-outline btn-block mb-2"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Member Login
+                    <LogIn size={15} className="inline mr-1" /> Role-Based Login (Admin / Member)
                   </Link>
                   <Link
-                    to="/admin/login"
-                    className="btn btn-outline btn-block"
+                    to="/register"
+                    className="btn btn-primary btn-block"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Admin Portal
+                    Join as Volunteer
                   </Link>
                 </div>
               )}
