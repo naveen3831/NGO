@@ -1,40 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../../components/Logo';
 import {
-  LayoutDashboard,
+  Home,
+  FileText,
   Users,
-  Award,
+  CreditCard,
   Calendar,
-  Clock,
-  Bell,
   Megaphone,
-  Globe,
+  Bell,
+  BarChart2,
+  UserCheck,
   Settings,
+  ChevronDown,
+  User,
   LogOut,
-  Droplet,
-  ChevronRight,
 } from 'lucide-react';
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login?role=admin');
   };
 
-  // Sidebar structure strictly matching Section 5.3 of the UI/UX Document
+  // Sidebar navigation structure exactly matching the reference design
   const navItems = [
-    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'Dashboard', path: '/admin', icon: Home, exact: true },
+    { label: 'Website Content', path: '/admin/website', icon: FileText, hasSubmenu: true },
     { label: 'Members', path: '/admin/members', icon: Users },
-    { label: 'Memberships', path: '/admin/memberships', icon: Award },
-    { label: 'Meetings & Events', path: '/admin/events', icon: Calendar },
+    { label: 'Membership', path: '/admin/memberships', icon: CreditCard },
+    { label: 'Meetings & Events', path: '/admin/events', icon: Calendar, hasSubmenu: true },
     { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
     { label: 'Notifications', path: '/admin/notifications', icon: Bell },
-    { label: 'Website Management', path: '/admin/website', icon: Globe },
+    { label: 'Reports', path: '/admin/reports', icon: BarChart2 },
+    { label: 'Admin Users', path: '/admin/users', icon: UserCheck },
     { label: 'Settings', path: '/admin/settings', icon: Settings },
   ];
 
@@ -44,60 +49,103 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="admin-wrapper">
-      {/* Sidebar Navigation - Strictly Administrative */}
-      <aside className="admin-sidebar">
-        <div className="admin-brand">
-          <div className="admin-logo-circle">
-            <Droplet size={18} className="text-primary" />
-          </div>
-          <div>
-            <h2 className="admin-brand-title">GNPP Admin</h2>
-            <p className="admin-brand-sub">Management Portal</p>
+    <div className="eco-admin-wrapper">
+      {/* Dark Forest Green Sidebar Navigation */}
+      <aside className="eco-admin-sidebar">
+        {/* Brand Lockup: Vector Emblem + 3-line Stacked Name */}
+        <div className="eco-sidebar-brand">
+          <Logo variant="light" size={38} showText={false} />
+          <div className="eco-sidebar-brand-text">
+            <span className="brand-title-primary">Godhavari Nadhi</span>
+            <span className="brand-title-sub">Paryavarana</span>
+            <span className="brand-title-sub">Parishubratha</span>
           </div>
         </div>
 
-        <nav className="admin-nav">
-          <div className="admin-nav-section-title">ADMINISTRATIVE MODULES</div>
+        {/* Navigation Items with Equal Spacing */}
+        <nav className="eco-sidebar-nav">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item);
             return (
               <Link
-                key={item.path}
+                key={item.label}
                 to={item.path}
-                className={`admin-nav-link ${active ? 'active' : ''}`}
+                className={`eco-nav-item ${active ? 'active' : ''}`}
               >
-                <Icon size={18} />
-                <span>{item.label}</span>
-                {active && <ChevronRight size={14} className="nav-arrow" />}
+                <Icon size={18} className="eco-nav-icon" />
+                <span className="eco-nav-label">{item.label}</span>
+                {item.hasSubmenu && (
+                  <ChevronDown size={14} className="eco-nav-chevron" />
+                )}
               </Link>
             );
           })}
         </nav>
-
-        <div className="admin-sidebar-footer">
-          <div className="admin-user-card">
-            <div className="admin-avatar">
-              {user?.name ? user.name.charAt(0) : 'A'}
-            </div>
-            <div className="admin-user-info">
-              <span className="admin-name">{user?.name || 'Administrator'}</span>
-              <span className="admin-role">Super Admin</span>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="admin-logout-btn" title="Sign out of Admin Dashboard">
-            <LogOut size={16} />
-          </button>
-        </div>
       </aside>
 
-      {/* Main Administrative Content Area */}
-      <main className="admin-main">
-        <div className="admin-page-content">
+      {/* Main Administrative Container */}
+      <div className="eco-admin-main-container">
+        {/* Top Header Bar */}
+        <header className="eco-admin-topbar">
+          <h1 className="eco-admin-page-heading">Admin Dashboard</h1>
+
+          <div className="eco-admin-topbar-actions">
+            {/* Bell Notification with Red Badge Dot */}
+            <button className="eco-topbar-bell-btn" title="Notifications">
+              <Bell size={20} />
+              <span className="bell-red-badge"></span>
+            </button>
+
+            {/* Admin User Profile Pill with Dropdown */}
+            <div className="eco-admin-profile-menu-wrap">
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="eco-admin-profile-btn"
+                title="Admin Account Options"
+              >
+                <div className="eco-avatar-circle">
+                  <User size={16} />
+                </div>
+                <span className="eco-admin-user-title">Admin</span>
+                <ChevronDown size={14} className="eco-chevron-down" />
+              </button>
+
+              {showProfileMenu && (
+                <div className="eco-profile-dropdown-card">
+                  <div className="profile-dropdown-user-info">
+                    <p className="font-bold text-gray-900 text-sm">
+                      {user?.name || 'Administrator'}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {user?.email || 'admin@gmail.com'}
+                    </p>
+                  </div>
+                  <div className="profile-dropdown-divider"></div>
+                  <Link
+                    to="/admin/settings"
+                    onClick={() => setShowProfileMenu(false)}
+                    className="profile-dropdown-row"
+                  >
+                    <Settings size={14} /> Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="profile-dropdown-row text-red-600"
+                  >
+                    <LogOut size={14} /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* Dynamic Nested Content */}
+        <main className="eco-admin-content-area">
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };

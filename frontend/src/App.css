@@ -1330,182 +1330,126 @@
 }
 
 /* -------------------------------------------------------------
-   ADMIN DASHBOARD & MEMBER APP STYLES (COMPACT & SLEEK)
+   GODHAVARI NGO ADMIN DASHBOARD & APPLICATION STYLES
+   (EXACT 1:1 MATCH TO REFERENCE DESIGN)
 -------------------------------------------------------------- */
+.eco-admin-wrapper,
 .admin-wrapper {
   display: flex;
   height: 100vh;
   max-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #f8faf9;
   overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* Sidebar: Deep Forest Green matching reference image (#063b2c) */
+.eco-admin-sidebar,
 .admin-sidebar {
-  width: 236px;
-  background-color: #0f172a;
-  color: #e2e8f0;
+  width: 250px;
+  background-color: #063b2c;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   height: 100vh;
   max-height: 100vh;
-  overflow: hidden;
-  border-right: 1px solid #1e293b;
-  user-select: none;
-}
-
-.admin-brand {
-  padding: 0.95rem 1.15rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  border-bottom: 1px solid #1e293b;
-  flex-shrink: 0;
-}
-
-.admin-logo-circle {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background-color: rgba(220, 252, 231, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.admin-brand-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.admin-brand-sub {
-  font-size: 0.7rem;
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.admin-nav {
-  padding: 0.85rem 0.65rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem; /* Equal space between all navigation items */
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  border-right: 1px solid #042e22;
+  user-select: none;
+  z-index: 20;
 }
 
-.admin-nav::-webkit-scrollbar {
+.eco-admin-sidebar::-webkit-scrollbar,
+.admin-sidebar::-webkit-scrollbar {
   display: none;
 }
 
-.admin-nav-section-title {
-  font-size: 0.64rem;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.08em;
-  padding: 0.25rem 0.65rem 0.4rem 0.65rem;
+/* Brand Lockup: Vector Emblem + 3-line Stacked Name */
+.eco-sidebar-brand {
+  padding: 1.25rem 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
-.admin-nav-link {
+.eco-sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-title-primary {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.brand-title-sub {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #d1fae5;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Navigation List */
+.eco-sidebar-nav {
+  padding: 1.1rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem; /* Exactly equal space between all sidebar items */
+  flex: 1;
+}
+
+.eco-nav-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.58rem 0.8rem;
-  border-radius: 7px;
-  font-size: 0.88rem; /* Proper increased size for sidebar names */
-  color: #94a3b8;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
   font-weight: 500;
+  color: #e2e8f0;
+  text-decoration: none;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
 
-.admin-nav-link:hover {
-  background-color: #1e293b;
+.eco-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 
-.admin-nav-link.active {
-  background-color: #0d5c3a;
-  color: #ffffff;
+/* Active State: Mint Green Background (#dcfce7) + Dark Forest Green Text (#064e3b) */
+.eco-nav-item.active {
+  background-color: #dcfce7;
+  color: #064e3b;
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
-.nav-arrow {
+.eco-nav-item .eco-nav-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.eco-nav-item.active .eco-nav-icon {
+  color: #064e3b;
+}
+
+.eco-nav-chevron {
   margin-left: auto;
-  opacity: 0.85;
+  opacity: 0.7;
 }
 
-.admin-sidebar-footer {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid #1e293b;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  background-color: rgba(15, 23, 42, 0.6);
-}
-
-.admin-user-card {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.admin-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: #15803d;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.8rem;
-  flex-shrink: 0;
-}
-
-.admin-name {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #ffffff;
-  max-width: 125px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.admin-role {
-  display: block;
-  font-size: 0.66rem;
-  color: #94a3b8;
-}
-
-.admin-logout-btn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 0.35rem;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-}
-
-.admin-logout-btn:hover {
-  color: #ef4444;
-  background-color: #1e293b;
-}
-
+/* Main Container & Topbar */
+.eco-admin-main-container,
 .admin-main {
   flex: 1;
   display: flex;
@@ -1515,265 +1459,571 @@
   max-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: #f8faf9;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
 
+.eco-admin-main-container::-webkit-scrollbar,
 .admin-main::-webkit-scrollbar {
   width: 5px;
 }
-
-.admin-main::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.eco-admin-main-container::-webkit-scrollbar-thumb,
 .admin-main::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-.admin-main::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.admin-topbar {
+.eco-admin-topbar {
   background-color: #ffffff;
-  border-bottom: 1px solid var(--border);
-  padding: 0.4rem 1.15rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 40px;
+  min-height: 58px;
   flex-shrink: 0;
 }
 
-.admin-breadcrumbs {
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
+.eco-admin-page-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
 }
 
-.breadcrumb-slash { color: var(--text-muted); }
-.breadcrumb-active { font-weight: 600; color: #0d5c3a; }
+.eco-admin-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
 
-.admin-topbar-actions {
+.eco-topbar-bell-btn {
+  position: relative;
+  background: #f1f5f9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #334155;
+  transition: all 0.15s;
+}
+
+.eco-topbar-bell-btn:hover {
+  background: #e2e8f0;
+}
+
+.bell-red-badge {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.eco-admin-profile-menu-wrap {
+  position: relative;
+}
+
+.eco-admin-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+}
+
+.eco-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #15803d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.eco-admin-user-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.eco-chevron-down {
+  color: #64748b;
+}
+
+.eco-profile-dropdown-card {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 200px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  padding: 0.5rem 0;
+  z-index: 100;
+}
+
+.profile-dropdown-user-info {
+  padding: 0.65rem 1rem;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 0.35rem 0;
+}
+
+.profile-dropdown-row {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.84rem;
+  color: #334155;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: left;
 }
 
-.live-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #065f46;
-  background-color: #d1fae5;
-  padding: 0.18rem 0.55rem;
-  border-radius: 9999px;
+.profile-dropdown-row:hover {
+  background-color: #f1f5f9;
 }
 
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background-color: #10b981;
-}
-
+/* Content Area */
+.eco-admin-content-area,
 .admin-page-content {
-  padding: 1.15rem 1.4rem;
+  padding: 1.25rem 1.75rem;
   flex: 1;
 }
 
-.admin-welcome-banner {
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.75rem 1.15rem;
+/* 1. Scenic Hero Welcome Banner */
+.eco-welcome-banner-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.85rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  min-height: 145px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
-.admin-welcome-banner h2 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  margin-bottom: 0.1rem;
+.eco-banner-text-side {
+  padding: 1.5rem 1.75rem;
+  z-index: 2;
+  max-width: 56%;
+}
+
+.eco-accent-pill-bar {
+  width: 36px;
+  height: 4px;
+  background-color: #22c55e;
+  border-radius: 9999px;
+  margin-bottom: 0.65rem;
+}
+
+.eco-welcome-headline {
+  font-size: 1.45rem;
+  font-weight: 800;
   color: #0f172a;
+  margin-bottom: 0.35rem;
+  line-height: 1.2;
 }
 
-.admin-welcome-banner p {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  line-height: 1.35;
+.eco-welcome-subtext {
+  color: #64748b;
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
-.quick-action-buttons {
-  display: flex;
-  gap: 0.4rem;
+.eco-banner-scenic-overlay {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 56%;
+  background-image: url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1600&auto=format&fit=crop&q=80');
+  background-size: cover;
+  background-position: center right;
+  mask-image: linear-gradient(to right, transparent, rgba(0,0,0,0.8) 35%, black 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent, rgba(0,0,0,0.8) 35%, black 100%);
+  z-index: 1;
 }
 
-.quick-action-buttons .btn {
-  padding: 0.28rem 0.65rem;
-  font-size: 0.72rem;
-  border-radius: 5px;
-}
-
-.stats-metric-grid {
+/* 2. Four Pastel KPI Stat Cards */
+.eco-kpi-metric-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
+  gap: 1.15rem;
+  margin-bottom: 1.25rem;
 }
 
-@media (max-width: 1100px) {
-  .stats-metric-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .stats-metric-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.metric-card {
-  background-color: #ffffff;
-  padding: 0.7rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-}
-
-.metric-header {
+.eco-stat-card {
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.25rem;
+  align-items: center;
+  gap: 0.95rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  transition: transform 0.15s ease;
 }
 
-.metric-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--text-muted);
+.eco-stat-card:hover {
+  transform: translateY(-2px);
 }
 
-.metric-icon-wrap {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+.eco-stat-green {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border-color: #dcfce7;
+}
+
+.eco-stat-blue {
+  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+  border-color: #e0f2fe;
+}
+
+.eco-stat-orange {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+  border-color: #ffedd5;
+}
+
+.eco-stat-purple {
+  background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+  border-color: #f3e8ff;
+}
+
+.eco-stat-icon-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.metric-value {
-  font-size: 1.35rem;
+.bg-green-bubble { background-color: #dcfce7; }
+.text-green-icon { color: #16a34a; }
+
+.bg-blue-bubble { background-color: #e0f2fe; }
+.text-blue-icon { color: #0284c7; }
+
+.bg-orange-bubble { background-color: #ffedd5; }
+.text-orange-icon { color: #ea580c; }
+
+.bg-purple-bubble { background-color: #f3e8ff; }
+.text-purple-icon { color: #7c3aed; }
+
+.eco-stat-details {
+  flex: 1;
+}
+
+.eco-stat-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+}
+
+.eco-stat-number {
+  font-size: 1.55rem;
   font-weight: 800;
   color: #0f172a;
   line-height: 1.1;
   margin-bottom: 0.2rem;
 }
 
-.metric-footer {
-  font-size: 0.66rem;
-  color: var(--text-muted);
+.eco-stat-trend {
+  display: inline-block;
+  font-size: 0.74rem;
+  font-weight: 600;
 }
 
-.admin-grid-two {
+.text-trend-green {
+  color: #16a34a;
+}
+
+.eco-stat-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.status-green-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #22c55e;
+}
+
+/* 3. Middle Two-Column Grid: Chart & Events */
+.eco-mid-dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.85rem;
-  margin-top: 0.85rem;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 1.15rem;
+  margin-bottom: 1.25rem;
 }
 
-@media (max-width: 900px) {
-  .admin-grid-two {
-    grid-template-columns: 1fr;
-  }
-}
-
-.admin-card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+.eco-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   overflow: hidden;
 }
 
-.admin-card-header {
-  padding: 0.55rem 0.85rem;
-  border-bottom: 1px solid var(--border);
+.eco-card-header {
+  padding: 0.95rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.admin-card-header h3 {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.card-header-link {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #0d5c3a;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-}
-
-.admin-card-body {
-  padding: 0.65rem 0.85rem;
-}
-
-.admin-event-row {
+.eco-card-title-lockup {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.45rem 0;
-  border-bottom: 1px solid var(--border-light);
+  gap: 0.5rem;
 }
 
-.admin-event-row:last-child {
-  border-bottom: none;
+.eco-card-title-lockup h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
 }
 
-.event-date-box {
-  width: 38px;
-  background-color: #f1f5f9;
-  border-radius: 5px;
+.text-emerald-icon {
+  color: #16a34a;
+}
+
+.eco-period-dropdown {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+
+.eco-card-view-all-link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+}
+
+.eco-card-view-all-link:hover {
+  text-decoration: underline;
+}
+
+.eco-chart-body {
+  padding: 1rem 1.25rem;
+}
+
+.eco-growth-chart-svg {
+  width: 100%;
+  height: 175px;
+  overflow: visible;
+}
+
+.chart-axis-label {
+  font-size: 11px;
+  fill: #94a3b8;
+  font-weight: 500;
+}
+
+.chart-month-label {
+  font-size: 12px;
+  fill: #475569;
+  font-weight: 600;
+}
+
+.eco-events-list {
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.eco-event-card-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.85rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.eco-event-date-badge {
+  width: 44px;
+  height: 46px;
+  background-color: #dcfce7;
+  border-radius: 8px;
   text-align: center;
-  padding: 0.2rem 0.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.date-month {
-  display: block;
-  font-size: 0.56rem;
+.date-badge-day {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #166534;
+  line-height: 1;
+}
+
+.date-badge-month {
+  font-size: 0.68rem;
   font-weight: 700;
-  color: #0d5c3a;
+  color: #16a34a;
   text-transform: uppercase;
 }
 
-.date-day {
-  display: block;
-  font-size: 0.92rem;
-  font-weight: 800;
-  color: #0f172a;
+.eco-event-info {
+  flex: 1;
 }
 
-.event-info { flex: 1; }
-.event-title { font-size: 0.78rem; font-weight: 600; margin-bottom: 0.1rem; color: #0f172a; }
-.event-meta { display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; color: var(--text-muted); }
-.vol-count { display: block; font-size: 0.85rem; text-align: right; font-weight: 700; }
-.vol-label { display: block; font-size: 0.6rem; color: var(--text-muted); }
+.eco-event-heading {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.2rem;
+}
+
+.eco-event-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.meta-icon {
+  color: #94a3b8;
+}
+
+/* 4. Quick Actions */
+.eco-quick-actions-section {
+  margin-top: 0.25rem;
+}
+
+.eco-section-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+}
+
+.eco-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.eco-quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.85rem;
+}
+
+.eco-quick-action-tile {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.15rem 0.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.eco-quick-action-tile:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.tile-icon {
+  color: #16a34a;
+}
+
+.tile-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1100px) {
+  .eco-kpi-metric-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .eco-quick-actions-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .eco-mid-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .eco-kpi-metric-strip {
+    grid-template-columns: 1fr;
+  }
+  .eco-quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 /* Data tables */
 .admin-table-wrap { overflow-x: auto; }

@@ -94,6 +94,8 @@ function App() {
             <Route path="announcements" element={<AdminAnnouncements />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="website" element={<AdminWebsite />} />
+            <Route path="reports" element={<AdminDashboard />} />
+            <Route path="users" element={<AdminSettings />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
 
