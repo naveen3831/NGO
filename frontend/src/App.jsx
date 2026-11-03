@@ -96,6 +96,7 @@ function App() {
             <Route path="website" element={<AdminWebsite />} />
             <Route path="reports" element={<AdminDashboard />} />
             <Route path="users" element={<AdminSettings />} />
+            <Route path="profile" element={<AdminSettings />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
 

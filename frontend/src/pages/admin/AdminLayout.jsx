@@ -15,6 +15,7 @@ import {
   Settings,
   ChevronDown,
   User,
+  Edit3,
   LogOut,
 } from 'lucide-react';
 
@@ -39,6 +40,7 @@ const AdminLayout = () => {
     { label: 'Notifications', path: '/admin/notifications', icon: Bell },
     { label: 'Reports', path: '/admin/reports', icon: BarChart2 },
     { label: 'Admin Users', path: '/admin/users', icon: UserCheck },
+    { label: 'Profile', path: '/admin/profile', icon: User },
     { label: 'Settings', path: '/admin/settings', icon: Settings },
   ];
 
@@ -118,21 +120,31 @@ const AdminLayout = () => {
           </div>
         </nav>
 
-        {/* Sidebar Admin Profile Footer matching reference image */}
+        {/* Sidebar Admin Profile Footer */}
         <div className="admin-sidebar-footer">
-          <Link
-            to="/admin/settings"
-            className="admin-user-card"
-            title="Edit Profile & Settings"
-          >
-            <div className="admin-avatar">
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
-            </div>
-            <div className="admin-user-info">
-              <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
-              <span className="admin-role">Super Admin</span>
-            </div>
-          </Link>
+          <div className="admin-sidebar-profile-group">
+            <Link
+              to="/admin/profile"
+              className="admin-user-card"
+              title="View Admin Profile"
+            >
+              <div className="admin-avatar">
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
+              </div>
+              <div className="admin-user-info">
+                <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
+                <span className="admin-role">Super Admin</span>
+              </div>
+            </Link>
+            <Link
+              to="/admin/profile"
+              className="admin-edit-pill-btn"
+              title="Edit Profile"
+            >
+              <Edit3 size={11} />
+              <span>Edit Profile</span>
+            </Link>
+          </div>
           <button
             onClick={handleLogout}
             className="admin-logout-btn"

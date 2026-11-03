@@ -1528,6 +1528,37 @@
   line-height: 1.2;
 }
 
+.admin-sidebar-profile-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-edit-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #d1fae5;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.18rem 0.5rem;
+  border-radius: 5px;
+  text-decoration: none;
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: all 0.15s ease;
+  margin-left: 2.65rem;
+}
+
+.admin-edit-pill-btn:hover {
+  background-color: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+
 .admin-logout-btn {
   background: transparent;
   border: none;
