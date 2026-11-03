@@ -22,7 +22,6 @@ const AdminLayout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -118,6 +117,46 @@ const AdminLayout = () => {
               })}
           </div>
         </nav>
+
+        {/* Sidebar Admin Profile Section with Edit Profile & Logout */}
+        <div className="eco-sidebar-profile-card">
+          <Link
+            to="/admin/settings"
+            className="eco-sidebar-profile-identity"
+            title="Manage Administrator Profile"
+          >
+            <div className="eco-sidebar-avatar">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
+            </div>
+            <div className="eco-sidebar-profile-info">
+              <span className="eco-sidebar-user-name" title={user?.name || 'Dr. K. V. Subba Rao'}>
+                {user?.name || 'Dr. K. V. Subba Rao'}
+              </span>
+              <span className="eco-sidebar-user-role">
+                {user?.role === 'admin' ? 'Super Admin' : (user?.role || 'Administrator')}
+              </span>
+            </div>
+          </Link>
+
+          <div className="eco-sidebar-profile-actions">
+            <Link
+              to="/admin/settings"
+              className="eco-sidebar-profile-action-btn edit"
+              title="Edit Profile Settings"
+            >
+              <User size={12} />
+              <span>Edit Profile</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="eco-sidebar-profile-action-btn logout"
+              title="Logout from Account"
+            >
+              <LogOut size={12} />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
       </aside>
 
       {/* Main Administrative Container */}
@@ -132,48 +171,6 @@ const AdminLayout = () => {
               <Bell size={20} />
               <span className="bell-red-badge"></span>
             </button>
-
-            {/* Admin User Profile Pill with Dropdown */}
-            <div className="eco-admin-profile-menu-wrap">
-              <button
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="eco-admin-profile-btn"
-                title="Admin Account Options"
-              >
-                <div className="eco-avatar-circle">
-                  <User size={16} />
-                </div>
-                <span className="eco-admin-user-title">Admin</span>
-                <ChevronDown size={14} className="eco-chevron-down" />
-              </button>
-
-              {showProfileMenu && (
-                <div className="eco-profile-dropdown-card">
-                  <div className="profile-dropdown-user-info">
-                    <p className="font-bold text-gray-900 text-sm">
-                      {user?.name || 'Administrator'}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {user?.email || 'admin@gmail.com'}
-                    </p>
-                  </div>
-                  <div className="profile-dropdown-divider"></div>
-                  <Link
-                    to="/admin/settings"
-                    onClick={() => setShowProfileMenu(false)}
-                    className="profile-dropdown-row"
-                  >
-                    <Settings size={14} /> Settings
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="profile-dropdown-row text-red-600"
-                  >
-                    <LogOut size={14} /> Logout
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
         </header>
 
