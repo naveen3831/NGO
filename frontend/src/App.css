@@ -2014,6 +2014,589 @@
   color: #1e293b;
 }
 
+/* ==========================================================================
+   Website Content Management (CMS) - Modern Eco Admin Styling
+   ========================================================================== */
+
+.eco-cms-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding-bottom: 2.5rem;
+}
+
+/* Top CMS Header */
+.eco-cms-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  gap: 1.5rem;
+}
+
+.eco-cms-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.eco-cms-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #ecfdf5;
+  color: #047857;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid #a7f3d0;
+}
+
+.live-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.15);
+  }
+}
+
+.eco-cms-preview-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #047857;
+  text-decoration: none;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  transition: all 0.15s ease;
+}
+
+.eco-cms-preview-link:hover {
+  background-color: #e2e8f0;
+  color: #064e3b;
+}
+
+.eco-cms-main-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.eco-cms-sub-title {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.45;
+  max-width: 680px;
+}
+
+.eco-cms-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.eco-cms-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.eco-cms-btn-secondary:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.eco-cms-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 9px;
+  background: #063b2c;
+  border: 1px solid #063b2c;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(6, 59, 44, 0.2);
+}
+
+.eco-cms-btn-primary:hover:not(:disabled) {
+  background: #084c39;
+}
+
+/* Alert Banner */
+.eco-cms-alert-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+}
+
+.eco-cms-alert-banner.alert-success {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.eco-cms-alert-banner.alert-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.eco-cms-alert-content {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.eco-cms-alert-dismiss {
+  background: none;
+  border: none;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.eco-cms-alert-dismiss:hover {
+  opacity: 1;
+}
+
+.eco-cms-loading-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 3.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.eco-cms-form-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Card Design */
+.eco-cms-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.eco-cms-card-header {
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: #fafbfc;
+}
+
+.eco-cms-card-icon-tile {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.eco-cms-card-icon-tile.green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.eco-cms-card-icon-tile.teal {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.eco-cms-card-icon-tile.amber {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.eco-cms-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.15rem 0;
+}
+
+.eco-cms-card-subtitle {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.eco-cms-card-body {
+  padding: 1.35rem 1.5rem;
+}
+
+/* Form Groups and Inputs */
+.eco-form-field-group {
+  margin-bottom: 1.15rem;
+}
+
+.eco-form-field-group:last-child {
+  margin-bottom: 0;
+}
+
+.eco-form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.45rem;
+}
+
+.required-star {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.eco-form-input {
+  width: 100%;
+  padding: 0.68rem 0.95rem;
+  font-size: 0.88rem;
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.eco-form-input:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+  background-color: #ffffff;
+}
+
+.eco-form-textarea {
+  width: 100%;
+  padding: 0.75rem 0.95rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  outline: none;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.eco-form-textarea:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+.eco-form-help-text {
+  display: block;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 0.35rem;
+}
+
+.eco-cms-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.eco-cms-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.15rem;
+}
+
+/* Left Icon in Inputs */
+.eco-input-icon-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.eco-input-left-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+
+.eco-form-input.with-icon {
+  padding-left: 2.35rem;
+}
+
+.emergency-input:focus {
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15) !important;
+}
+
+.emergency-badge {
+  background-color: #ffe4e6;
+  color: #e11d48;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  margin-left: 0.35rem;
+}
+
+/* 5-Column Public Impact Metric Editor Grid */
+.eco-metric-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.eco-metric-input-card {
+  border-radius: 12px;
+  padding: 1rem 0.85rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.15s ease;
+}
+
+.eco-metric-input-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+}
+
+.eco-metric-input-card.card-green {
+  background: linear-gradient(to bottom, #f0fdf4 0%, #ffffff 45%);
+  border-color: #dcfce7;
+}
+
+.eco-metric-input-card.card-blue {
+  background: linear-gradient(to bottom, #f0f9ff 0%, #ffffff 45%);
+  border-color: #e0f2fe;
+}
+
+.eco-metric-input-card.card-amber {
+  background: linear-gradient(to bottom, #fffbeb 0%, #ffffff 45%);
+  border-color: #fef3c7;
+}
+
+.eco-metric-input-card.card-cyan {
+  background: linear-gradient(to bottom, #ecfeff 0%, #ffffff 45%);
+  border-color: #cffafe;
+}
+
+.eco-metric-input-card.card-emerald {
+  background: linear-gradient(to bottom, #ecfdf5 0%, #ffffff 45%);
+  border-color: #d1fae5;
+}
+
+.metric-tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.metric-tile-icon-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-tile-icon-bubble.green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.metric-tile-icon-bubble.blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.metric-tile-icon-bubble.amber {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.metric-tile-icon-bubble.cyan {
+  background: #cffafe;
+  color: #0e7490;
+}
+
+.metric-tile-icon-bubble.emerald {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.metric-tag-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.metric-tag-pill.green { background: #dcfce7; color: #166534; }
+.metric-tag-pill.blue { background: #dbeafe; color: #1e40af; }
+.metric-tag-pill.amber { background: #fef3c7; color: #92400e; }
+.metric-tag-pill.cyan { background: #cffafe; color: #155e75; }
+.metric-tag-pill.emerald { background: #d1fae5; color: #065f46; }
+
+.metric-tile-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.metric-input-wrapper {
+  width: 100%;
+}
+
+.eco-metric-number-field {
+  width: 100%;
+  text-align: center;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #064e3b;
+  padding: 0.45rem 0.35rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.eco-metric-number-field:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+  background: #f0fdf4;
+}
+
+.metric-tile-footnote {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Bottom Docked Action Bar */
+.eco-cms-bottom-bar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+  margin-top: 0.25rem;
+}
+
+.eco-cms-bottom-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+.eco-cms-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.eco-cms-btn-save-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 9px;
+  background-color: #063b2c;
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(6, 59, 44, 0.25);
+}
+
+.eco-cms-btn-save-primary:hover:not(:disabled) {
+  background-color: #084c39;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(6, 59, 44, 0.3);
+}
+
+.eco-cms-btn-save-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1100px) {
   .eco-kpi-metric-strip {
@@ -2022,11 +2605,33 @@
   .eco-quick-actions-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+  .eco-metric-editor-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
   .eco-mid-dashboard-grid {
     grid-template-columns: 1fr;
+  }
+  .eco-cms-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .eco-cms-grid-2,
+  .eco-cms-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .eco-metric-editor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .eco-cms-bottom-bar {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  .eco-cms-bottom-actions {
+    justify-content: flex-end;
   }
 }
 
@@ -2036,6 +2641,17 @@
   }
   .eco-quick-actions-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .eco-metric-editor-grid {
+    grid-template-columns: 1fr;
+  }
+  .eco-cms-header-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .eco-cms-header-actions button {
+    flex: 1;
+    justify-content: center;
   }
 }
 

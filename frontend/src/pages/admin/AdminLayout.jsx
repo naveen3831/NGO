@@ -48,6 +48,19 @@ const AdminLayout = () => {
     return location.pathname.startsWith(item.path);
   };
 
+  const getPageTitle = () => {
+    if (location.pathname === '/admin' || location.pathname === '/admin/') {
+      return 'Admin Dashboard';
+    }
+    const current = navItems.find((item) => isActive(item));
+    if (current) {
+      if (current.label === 'Dashboard') return 'Admin Dashboard';
+      return current.label;
+    }
+    if (location.pathname.startsWith('/admin/meetings')) return 'Meetings & Events';
+    return 'Admin Dashboard';
+  };
+
   return (
     <div className="eco-admin-wrapper">
       {/* Dark Forest Green Sidebar Navigation */}
@@ -111,7 +124,7 @@ const AdminLayout = () => {
       <div className="eco-admin-main-container">
         {/* Top Header Bar */}
         <header className="eco-admin-topbar">
-          <h1 className="eco-admin-page-heading">Admin Dashboard</h1>
+          <h1 className="eco-admin-page-heading">{getPageTitle()}</h1>
 
           <div className="eco-admin-topbar-actions">
             {/* Bell Notification with Red Badge Dot */}
