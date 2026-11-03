@@ -54,7 +54,7 @@ const AdminLayout = () => {
       <aside className="eco-admin-sidebar">
         {/* Brand Lockup: Vector Emblem + 3-line Stacked Name */}
         <div className="eco-sidebar-brand">
-          <Logo variant="light" size={38} showText={false} />
+          <Logo variant="light" size={32} showText={false} />
           <div className="eco-sidebar-brand-text">
             <span className="brand-title-primary">Godhavari Nadhi</span>
             <span className="brand-title-sub">Paryavarana</span>
@@ -76,7 +76,7 @@ const AdminLayout = () => {
                     to={item.path}
                     className={`eco-nav-item ${active ? 'active' : ''}`}
                   >
-                    <Icon size={18} className="eco-nav-icon" />
+                    <Icon size={16} className="eco-nav-icon" />
                     <span className="eco-nav-label">{item.label}</span>
                     {item.hasSubmenu && (
                       <ChevronDown size={14} className="eco-nav-chevron" />
@@ -98,7 +98,7 @@ const AdminLayout = () => {
                     to={item.path}
                     className={`eco-nav-item ${active ? 'active' : ''}`}
                   >
-                    <Icon size={18} className="eco-nav-icon" />
+                    <Icon size={16} className="eco-nav-icon" />
                     <span className="eco-nav-label">{item.label}</span>
                   </Link>
                 );
