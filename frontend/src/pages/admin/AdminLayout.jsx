@@ -94,30 +94,6 @@ const AdminLayout = () => {
 
       {/* Main Administrative Content Area */}
       <main className="admin-main">
-        <header className="admin-topbar">
-          <div className="admin-breadcrumbs">
-            <span className="text-muted">Admin Console</span>
-            <span className="breadcrumb-slash">/</span>
-            <span className="breadcrumb-active">
-              {navItems.find((n) => isActive(n))?.label || 'Dashboard'}
-            </span>
-          </div>
-
-          <div className="admin-topbar-actions">
-            <span className="live-status-pill">
-              <span className="status-dot"></span> Live DB Connected
-            </span>
-            <button
-              onClick={handleLogout}
-              className="btn btn-outline btn-sm flex items-center gap-1 text-xs"
-              title="Sign Out"
-            >
-              <LogOut size={13} />
-              <span>Logout</span>
-            </button>
-          </div>
-        </header>
-
         <div className="admin-page-content">
           <Outlet />
         </div>
