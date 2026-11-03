@@ -56,13 +56,13 @@ const AdminDashboard = () => {
         </div>
         <div className="quick-action-buttons">
           <Link to="/admin/members" className="btn btn-primary btn-sm">
-            <PlusCircle size={16} /> Add Member
+            <PlusCircle size={13} /> Add Member
           </Link>
           <Link to="/admin/events" className="btn btn-outline btn-sm">
-            <Calendar size={16} /> New Cleanliness Drive
+            <Calendar size={13} /> New Cleanliness Drive
           </Link>
           <Link to="/admin/notifications" className="btn btn-secondary btn-sm">
-            <Bell size={16} /> Send Alert
+            <Bell size={13} /> Send Alert
           </Link>
         </div>
       </div>
@@ -73,7 +73,7 @@ const AdminDashboard = () => {
           <div className="metric-header">
             <span className="metric-label">Total Registered Members</span>
             <div className="metric-icon-wrap bg-blue-light">
-              <Users size={20} className="text-blue" />
+              <Users size={15} className="text-blue" />
             </div>
           </div>
           <div className="metric-value">{counts.totalMembers || 0}</div>
@@ -88,7 +88,7 @@ const AdminDashboard = () => {
           <div className="metric-header">
             <span className="metric-label">Drives & Events</span>
             <div className="metric-icon-wrap bg-green-light">
-              <Calendar size={20} className="text-green" />
+              <Calendar size={15} className="text-green" />
             </div>
           </div>
           <div className="metric-value">{counts.totalEvents || 0}</div>
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
           <div className="metric-header">
             <span className="metric-label">Meetings Organized</span>
             <div className="metric-icon-wrap bg-amber-light">
-              <Clock size={20} className="text-amber" />
+              <Clock size={15} className="text-amber" />
             </div>
           </div>
           <div className="metric-value">{counts.totalMeetings || 0}</div>
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
           <div className="metric-header">
             <span className="metric-label">Announcements & Circulars</span>
             <div className="metric-icon-wrap bg-purple-light">
-              <Megaphone size={20} className="text-purple" />
+              <Megaphone size={15} className="text-purple" />
             </div>
           </div>
           <div className="metric-value">{counts.totalAnnouncements || 0}</div>
@@ -127,7 +127,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Two Column Section */}
-      <div className="admin-grid-two mt-4">
+      <div className="admin-grid-two">
         {/* Left: Upcoming Cleanliness Drives */}
         <div className="admin-card">
           <div className="admin-card-header">

@@ -49,7 +49,7 @@ const AdminLayout = () => {
       <aside className="admin-sidebar">
         <div className="admin-brand">
           <div className="admin-logo-circle">
-            <Droplet size={20} className="text-primary" />
+            <Droplet size={15} className="text-primary" />
           </div>
           <div>
             <h2 className="admin-brand-title">GNPP Admin</h2>
@@ -68,9 +68,9 @@ const AdminLayout = () => {
                 to={item.path}
                 className={`admin-nav-link ${active ? 'active' : ''}`}
               >
-                <Icon size={18} />
+                <Icon size={15} />
                 <span>{item.label}</span>
-                {active && <ChevronRight size={14} className="nav-arrow" />}
+                {active && <ChevronRight size={12} className="nav-arrow" />}
               </Link>
             );
           })}
@@ -87,7 +87,7 @@ const AdminLayout = () => {
             </div>
           </div>
           <button onClick={handleLogout} className="admin-logout-btn" title="Sign out of Admin Dashboard">
-            <LogOut size={18} />
+            <LogOut size={15} />
           </button>
         </div>
       </aside>
