@@ -51,15 +51,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Primary API v1 Routes
+// Dual mounts: support both /api and /api/v1 for 100% frontend compatibility
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/member', memberRoutes);
 
-// Fallback compatibility mounts
 app.use('/api/auth', authRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/member', memberRoutes);
 
 // Error Handling Middlewares
 app.use(notFound);
