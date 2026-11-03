@@ -7,6 +7,8 @@ import {
   updateMemberById,
   updateMembershipStatus,
   deleteMemberById,
+  getAllMemberships,
+  updateMembershipById,
 } from '../controllers/memberController.js';
 import {
   createEvent,
@@ -32,16 +34,22 @@ import {
 } from '../controllers/notificationController.js';
 import {
   getAdminStats,
+  getWebsiteContent,
   updateWebsiteContent,
 } from '../controllers/websiteController.js';
+import { updateAdminSettings } from '../controllers/authController.js';
 
 const router = express.Router();
 
 // Enforce Admin protection on all routes in this file
 router.use(protect, requireAdmin);
 
-// Dashboard Metrics
+// Dashboard Metrics & Settings
 router.get('/stats', getAdminStats);
+router.patch('/settings', updateAdminSettings);
+
+// Website CMS Management (stored in database)
+router.route('/website').get(getWebsiteContent).patch(updateWebsiteContent);
 router.patch('/content', updateWebsiteContent);
 
 // Members CRUD
@@ -52,6 +60,10 @@ router
   .patch(updateMemberById)
   .delete(deleteMemberById);
 router.patch('/members/:id/membership', updateMembershipStatus);
+
+// Memberships Management
+router.route('/memberships').get(getAllMemberships);
+router.route('/memberships/:id').patch(updateMembershipById);
 
 // Events CRUD
 router.route('/events').get(getMemberEvents).post(createEvent);
@@ -69,4 +81,3 @@ router.route('/announcements/:id').patch(updateAnnouncement).delete(deleteAnnoun
 router.route('/notifications').get(getAllNotifications).post(sendNotification);
 
 export default router;
-

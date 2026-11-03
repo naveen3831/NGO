@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Droplet, Menu, X, Shield, Smartphone, LogOut, User, LogIn } from 'lucide-react';
+import { User, Menu, X, LogOut, Shield } from 'lucide-react';
+import Logo from './Logo';
 
 const Navbar = () => {
   const { user, isAdmin, isMember, logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -18,168 +19,130 @@ const Navbar = () => {
   const navLinks = [
     { label: 'Home', path: '/' },
     { label: 'About Us', path: '/about' },
-    { label: 'Cleanliness Drives', path: '/activities' },
-    { label: 'Awareness', path: '/awareness' },
+    { label: 'Activities', path: '/activities' },
+    { label: 'Awareness Programs', path: '/awareness' },
     { label: 'Events', path: '/events' },
     { label: 'Announcements', path: '/announcements' },
-    { label: 'Contact', path: '/contact' },
-    { label: 'Login', path: '/login' },
+    { label: 'Gallery', path: '/gallery' },
+    { label: 'Contact Us', path: '/contact' },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
 
   return (
-    <header className="site-header">
-      {/* Top Utility Strip */}
-      <div className="top-utility-bar">
-        <div className="container utility-content">
-          <div className="utility-left">
-            <span className="location-indicator">Rajahmundry, Andhra Pradesh</span>
-            <span className="dot-sep">•</span>
-            <span>Godhavari Nadhi Paryavarana Parishubratha</span>
-          </div>
-          <div className="utility-right">
-            <span className="helpline-text">Helpline: +91 944 012 3456</span>
-            <span className="dot-sep">•</span>
-            {isAdmin ? (
-              <Link to="/admin" className="portal-pill admin-pill">
-                <Shield size={12} /> Admin Dashboard
+    <header className="eco-header">
+      <div className="container eco-nav-container">
+        {/* Brand Logo with Vertical Divider */}
+        <div className="eco-brand-wrap">
+          <Link to="/" className="eco-brand-link" onClick={() => setMobileMenuOpen(false)}>
+            <Logo variant="dark" size={38} />
+          </Link>
+          <span className="eco-nav-divider">|</span>
+        </div>
+
+        {/* Desktop Navigation Links */}
+        <nav className="eco-desktop-nav">
+          {navLinks.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`eco-nav-link ${active ? 'active-pill' : ''}`}
+              >
+                {item.label}
               </Link>
-            ) : isMember ? (
-              <Link to="/member" className="portal-pill member-pill">
-                <Smartphone size={12} /> Member App
+            );
+          })}
+        </nav>
+
+        {/* Right CTA Action: Member Login Pill */}
+        <div className="eco-header-actions">
+          {user ? (
+            <div className="eco-user-actions">
+              <Link
+                to={isAdmin ? '/admin' : '/member'}
+                className="btn-eco-member-login"
+                title={isAdmin ? 'Administrator Dashboard' : 'Member Portal'}
+              >
+                {isAdmin ? <Shield size={16} /> : <User size={16} />}
+                <span>{isAdmin ? 'Admin Dashboard' : `Hi, ${user.name.split(' ')[0]}`}</span>
               </Link>
-            ) : (
-              <div className="portal-quick-links">
-                <Link to="/login?role=member" className="portal-quick-link">
-                  Member Login
-                </Link>
-                <span className="dot-sep">/</span>
-                <Link to="/login?role=admin" className="portal-quick-link">
-                  Admin Login
-                </Link>
-              </div>
-            )}
-          </div>
+              <button
+                onClick={handleLogout}
+                className="btn-eco-logout"
+                title="Sign Out"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="btn-eco-member-login">
+              <User size={16} />
+              <span>Member Login</span>
+            </Link>
+          )}
+
+          {/* Mobile Menu Button */}
+          <button
+            className="eco-mobile-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
-      {/* Main Navigation Bar */}
-      <nav className="main-navbar">
-        <div className="container nav-wrapper">
-          {/* Brand Logo */}
-          <Link to="/" className="brand-logo" onClick={() => setMobileMenuOpen(false)}>
-            <div className="logo-icon-wrap">
-              <Droplet size={22} className="logo-icon" />
-            </div>
-            <div className="logo-text">
-              <span className="brand-name">Godhavari Nadhi</span>
-              <span className="brand-sub">Paryavarana Parishubratha</span>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation Links */}
-          <div className="desktop-links">
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="eco-mobile-drawer">
+          <div className="container eco-mobile-inner">
             {navLinks.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                className={`eco-mobile-link ${isActive(item.path) ? 'active' : ''}`}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-          </div>
 
-          {/* Right Action Buttons */}
-          <div className="desktop-actions">
-            {user ? (
-              <div className="user-dropdown">
-                <Link
-                  to={isAdmin ? '/admin' : '/member'}
-                  className="btn btn-outline btn-sm user-btn"
-                >
-                  <User size={15} />
-                  <span>{user.name.split(' ')[0]}</span>
-                </Link>
-                <button onClick={handleLogout} className="btn btn-icon btn-sm" title="Logout">
-                  <LogOut size={15} />
-                </button>
-              </div>
-            ) : (
-              <div className="auth-buttons">
-                <Link to="/login" className="btn btn-outline btn-sm">
-                  <LogIn size={15} /> Login
-                </Link>
-                <Link to="/register" className="btn btn-primary btn-sm">
-                  Join Volunteer
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="mobile-toggle-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </div>
-
-        {/* Mobile Dropdown Menu */}
-        {mobileMenuOpen && (
-          <div className="mobile-menu-drawer">
-            <div className="mobile-nav-links">
-              {navLinks.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''}`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-
-              <div className="mobile-divider"></div>
-
+            <div className="eco-mobile-action-wrap">
               {user ? (
-                <div className="mobile-auth-actions">
+                <>
                   <Link
                     to={isAdmin ? '/admin' : '/member'}
-                    className="btn btn-primary btn-block mb-2"
+                    className="btn-eco-member-login btn-block text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {isAdmin ? 'Open Admin Dashboard' : 'Open Member App'}
+                    {isAdmin ? 'Open Admin Console' : 'Open Member App'}
                   </Link>
-                  <button onClick={handleLogout} className="btn btn-outline btn-block">
+                  <button
+                    onClick={handleLogout}
+                    className="btn-eco-logout-block mt-2"
+                  >
                     Logout
                   </button>
-                </div>
+                </>
               ) : (
-                <div className="mobile-auth-actions">
-                  <Link
-                    to="/login"
-                    className="btn btn-outline btn-block mb-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <LogIn size={15} className="inline mr-1" /> Role-Based Login (Admin / Member)
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="btn btn-primary btn-block"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Join as Volunteer
-                  </Link>
-                </div>
+                <Link
+                  to="/login"
+                  className="btn-eco-member-login btn-block text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <User size={16} />
+                  <span>Member Login</span>
+                </Link>
               )}
             </div>
           </div>
-        )}
-      </nav>
+        </div>
+      )}
     </header>
   );
 };

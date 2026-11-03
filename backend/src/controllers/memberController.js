@@ -233,6 +233,65 @@ export const deleteMemberById = async (req, res, next) => {
   }
 };
 
+// @desc    Get all memberships with user details
+// @route   GET /api/v1/admin/memberships
+// @access  Private (Admin)
+export const getAllMemberships = async (req, res, next) => {
+  try {
+    const { status, membershipType, search } = req.query;
+    const query = {};
+
+    if (status) query.status = status;
+    if (membershipType) query.membershipType = membershipType;
+
+    let memberships = await Membership.find(query)
+      .populate('user', 'name email phone memberId designation bloodGroup address')
+      .populate('approvedBy', 'name')
+      .sort({ createdAt: -1 });
+
+    if (search) {
+      const s = search.toLowerCase();
+      memberships = memberships.filter(
+        (m) =>
+          (m.user?.name && m.user.name.toLowerCase().includes(s)) ||
+          (m.user?.memberId && m.user.memberId.toLowerCase().includes(s)) ||
+          (m.membershipNumber && m.membershipNumber.toLowerCase().includes(s))
+      );
+    }
+
+    res.json(memberships);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update single membership by ID
+// @route   PATCH /api/v1/admin/memberships/:id
+// @access  Private (Admin)
+export const updateMembershipById = async (req, res, next) => {
+  try {
+    const membership = await Membership.findById(req.params.id);
+    if (!membership) {
+      return res.status(404).json({ message: 'Membership not found' });
+    }
+
+    const { status, membershipType, validTo, feePaid, paymentStatus, remarks } = req.body;
+
+    if (status) membership.status = status;
+    if (membershipType) membership.membershipType = membershipType;
+    if (validTo) membership.validTo = new Date(validTo);
+    if (feePaid !== undefined) membership.feePaid = feePaid;
+    if (paymentStatus) membership.paymentStatus = paymentStatus;
+    if (remarks !== undefined) membership.remarks = remarks;
+
+    const updated = await membership.save();
+    const populated = await Membership.findById(updated._id).populate('user', 'name email phone memberId');
+    res.json(populated);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get logged in member's membership details
 // @route   GET /api/v1/member/membership
 // @access  Private (Member)

@@ -7,21 +7,29 @@ import generateToken from '../utils/generateToken.js';
 // @access  Public
 export const adminLogin = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
+    email = email.trim().toLowerCase();
+    password = password.trim();
+
+    // Find admin by email (case-insensitive)
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || user.role !== 'admin') {
-      return res.status(401).json({ message: 'Invalid admin credentials or unauthorized' });
+    if (!user) {
+      return res.status(401).json({ message: 'No administrator account found with this email' });
+    }
+
+    if (user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied: Account does not have administrator privileges' });
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid admin credentials' });
+      return res.status(401).json({ message: 'Invalid password. Please check and try again.' });
     }
 
     res.json({
@@ -40,16 +48,19 @@ export const adminLogin = async (req, res, next) => {
   }
 };
 
-// @desc    Member login (email or memberId + password)
+// @desc    Member login (email, memberId, or phone)
 // @route   POST /api/v1/auth/member/login
 // @access  Public
 export const memberLogin = async (req, res, next) => {
   try {
-    const { identifier, password } = req.body; // Can be email, memberId, or phone
+    let { identifier, password } = req.body;
 
     if (!identifier || !password) {
       return res.status(400).json({ message: 'Please provide Member ID / Email and password' });
     }
+
+    identifier = identifier.trim();
+    password = password.trim();
 
     // Match by email, memberId, or phone
     const user = await User.findOne({
@@ -61,15 +72,15 @@ export const memberLogin = async (req, res, next) => {
     }).select('+password');
 
     if (!user) {
-      return res.status(401).json({ message: 'Member record not found' });
+      return res.status(401).json({ message: 'Member record not found. Please verify your Member ID or email.' });
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid password' });
+      return res.status(401).json({ message: 'Invalid password. Please try again.' });
     }
 
-    // Fetch membership status
+    // Fetch membership details
     const membership = await Membership.findOne({ user: user._id });
 
     res.json({
@@ -95,14 +106,18 @@ export const memberLogin = async (req, res, next) => {
 // @access  Public
 export const registerMember = async (req, res, next) => {
   try {
-    const { name, email, phone, password, address, bloodGroup, membershipType } = req.body;
+    let { name, email, phone, password, address, bloodGroup, membershipType } = req.body;
+
+    email = email.trim().toLowerCase();
+    phone = phone.trim();
+    name = name.trim();
 
     const existingUser = await User.findOne({
-      $or: [{ email: email.toLowerCase() }, { phone }],
+      $or: [{ email }, { phone }],
     });
 
     if (existingUser) {
-      return res.status(400).json({ message: 'A user with this email or phone already exists' });
+      return res.status(400).json({ message: 'A user with this email or phone number already exists' });
     }
 
     // Generate unique Member ID: GNPP-2026-XXXX
@@ -112,9 +127,9 @@ export const registerMember = async (req, res, next) => {
     const user = await User.create({
       memberId,
       name,
-      email: email.toLowerCase(),
+      email,
       phone,
-      password,
+      password: password.trim(),
       role: 'member',
       bloodGroup: bloodGroup || 'O+',
       address: address || { city: 'Rajahmundry', state: 'Andhra Pradesh' },
@@ -162,6 +177,50 @@ export const getMe = async (req, res, next) => {
     res.json({
       user,
       membership,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update admin settings / profile
+// @route   PATCH /api/v1/admin/settings
+// @access  Private (Admin)
+export const updateAdminSettings = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { name, email, phone, currentPassword, newPassword } = req.body;
+
+    if (name) user.name = name.trim();
+    if (email) user.email = email.trim().toLowerCase();
+    if (phone) user.phone = phone.trim();
+
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to set a new password' });
+      }
+      const isMatch = await user.matchPassword(currentPassword);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Current password does not match' });
+      }
+      user.password = newPassword.trim();
+    }
+
+    await user.save();
+
+    res.json({
+      message: 'Settings updated successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
     });
   } catch (error) {
     next(error);

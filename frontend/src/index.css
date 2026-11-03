@@ -1,11 +1,15 @@
 :root {
-  --primary: #0284c7;
-  --primary-hover: #0369a1;
-  --primary-light: #e0f2fe;
+  --primary: #0d5c3a;
+  --primary-hover: #09462c;
+  --primary-light: #e8f5e9;
   
-  --secondary: #059669;
-  --secondary-hover: #047857;
-  --secondary-light: #d1fae5;
+  --secondary: #16a34a;
+  --secondary-hover: #15803d;
+  --secondary-light: #dcfce7;
+
+  --accent-green: #22c55e;
+  --accent-green-bright: #4ade80;
+  --accent-blue: #0284c7;
 
   --accent-amber: #d97706;
   --accent-amber-light: #fef3c7;

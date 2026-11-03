@@ -4,34 +4,38 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
   Users,
+  Award,
   Calendar,
   Clock,
   Bell,
   Megaphone,
   Globe,
+  Settings,
   LogOut,
-  Shield,
   Droplet,
   ChevronRight,
 } from 'lucide-react';
 
 const AdminLayout = () => {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    navigate('/login?role=admin');
   };
 
+  // Sidebar structure strictly matching Section 5.3 of the UI/UX Document
   const navItems = [
-    { label: 'Overview', path: '/admin', icon: LayoutDashboard, exact: true },
-    { label: 'Members & Membership', path: '/admin/members', icon: Users },
-    { label: 'Drives & Events', path: '/admin/events', icon: Calendar },
-    { label: 'Meetings', path: '/admin/meetings', icon: Clock },
+    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'Members', path: '/admin/members', icon: Users },
+    { label: 'Memberships', path: '/admin/memberships', icon: Award },
+    { label: 'Meetings & Events', path: '/admin/events', icon: Calendar },
     { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
     { label: 'Notifications', path: '/admin/notifications', icon: Bell },
+    { label: 'Website Management', path: '/admin/website', icon: Globe },
+    { label: 'Settings', path: '/admin/settings', icon: Settings },
   ];
 
   const isActive = (item) => {
@@ -41,7 +45,7 @@ const AdminLayout = () => {
 
   return (
     <div className="admin-wrapper">
-      {/* Sidebar */}
+      {/* Sidebar Navigation - Strictly Administrative */}
       <aside className="admin-sidebar">
         <div className="admin-brand">
           <div className="admin-logo-circle">
@@ -49,12 +53,12 @@ const AdminLayout = () => {
           </div>
           <div>
             <h2 className="admin-brand-title">GNPP Admin</h2>
-            <p className="admin-brand-sub">Parishubratha Portal</p>
+            <p className="admin-brand-sub">Management Portal</p>
           </div>
         </div>
 
         <nav className="admin-nav">
-          <div className="admin-nav-section-title">MANAGEMENT</div>
+          <div className="admin-nav-section-title">ADMINISTRATIVE MODULES</div>
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item);
@@ -70,16 +74,6 @@ const AdminLayout = () => {
               </Link>
             );
           })}
-
-          <div className="admin-nav-section-title mt-4">PORTALS</div>
-          <Link to="/" className="admin-nav-link" target="_blank" rel="noopener noreferrer">
-            <Globe size={18} />
-            <span>Public Website</span>
-          </Link>
-          <Link to="/member" className="admin-nav-link" target="_blank" rel="noopener noreferrer">
-            <Shield size={18} />
-            <span>Member App View</span>
-          </Link>
         </nav>
 
         <div className="admin-sidebar-footer">
@@ -92,17 +86,17 @@ const AdminLayout = () => {
               <span className="admin-role">Super Admin</span>
             </div>
           </div>
-          <button onClick={handleLogout} className="admin-logout-btn" title="Sign out">
+          <button onClick={handleLogout} className="admin-logout-btn" title="Sign out of Admin Dashboard">
             <LogOut size={18} />
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Main Administrative Content Area */}
       <main className="admin-main">
         <header className="admin-topbar">
           <div className="admin-breadcrumbs">
-            <span className="text-muted">Godhavari Nadhi Paryavarana Parishubratha</span>
+            <span className="text-muted">Admin Console</span>
             <span className="breadcrumb-slash">/</span>
             <span className="breadcrumb-active">
               {navItems.find((n) => isActive(n))?.label || 'Dashboard'}
@@ -113,9 +107,14 @@ const AdminLayout = () => {
             <span className="live-status-pill">
               <span className="status-dot"></span> Live DB Connected
             </span>
-            <Link to="/" className="btn btn-outline btn-sm">
-              View Website
-            </Link>
+            <button
+              onClick={handleLogout}
+              className="btn btn-outline btn-sm flex items-center gap-1 text-xs"
+              title="Sign Out"
+            >
+              <LogOut size={13} />
+              <span>Logout</span>
+            </button>
           </div>
         </header>
 
@@ -128,4 +127,3 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
-

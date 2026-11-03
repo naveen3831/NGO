@@ -15,6 +15,7 @@ import Activities from './pages/Activities';
 import AwarenessPrograms from './pages/AwarenessPrograms';
 import Events from './pages/Events';
 import Announcements from './pages/Announcements';
+import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -23,10 +24,13 @@ import Register from './pages/Register';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminMembers from './pages/admin/AdminMembers';
+import AdminMemberships from './pages/admin/AdminMemberships';
 import AdminEvents from './pages/admin/AdminEvents';
 import AdminMeetings from './pages/admin/AdminMeetings';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
 import AdminNotifications from './pages/admin/AdminNotifications';
+import AdminWebsite from './pages/admin/AdminWebsite';
+import AdminSettings from './pages/admin/AdminSettings';
 
 // Member Pages
 import MemberLayout from './pages/member/MemberLayout';
@@ -63,12 +67,15 @@ function App() {
             <Route path="/awareness" element={<AwarenessPrograms />} />
             <Route path="/events" element={<Events />} />
             <Route path="/announcements" element={<Announcements />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/member/login" element={<Login initialRole="member" />} />
-            <Route path="/admin/login" element={<Login initialRole="admin" />} />
             <Route path="/register" element={<Register />} />
           </Route>
+
+          {/* Standalone Authentication - Split Screen Design matching User Requirement */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/member/login" element={<Login />} />
+          <Route path="/admin/login" element={<Login />} />
 
           {/* Admin Dashboard Protected Routes */}
           <Route
@@ -81,10 +88,13 @@ function App() {
           >
             <Route index element={<AdminDashboard />} />
             <Route path="members" element={<AdminMembers />} />
+            <Route path="memberships" element={<AdminMemberships />} />
             <Route path="events" element={<AdminEvents />} />
             <Route path="meetings" element={<AdminMeetings />} />
             <Route path="announcements" element={<AdminAnnouncements />} />
             <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="website" element={<AdminWebsite />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           {/* Member Mobile Portal Protected Routes */}
