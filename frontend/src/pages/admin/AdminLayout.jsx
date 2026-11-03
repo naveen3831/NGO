@@ -64,23 +64,46 @@ const AdminLayout = () => {
 
         {/* Navigation Items with Equal Spacing */}
         <nav className="eco-sidebar-nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item);
-            return (
-              <Link
-                key={item.label}
-                to={item.path}
-                className={`eco-nav-item ${active ? 'active' : ''}`}
-              >
-                <Icon size={18} className="eco-nav-icon" />
-                <span className="eco-nav-label">{item.label}</span>
-                {item.hasSubmenu && (
-                  <ChevronDown size={14} className="eco-nav-chevron" />
-                )}
-              </Link>
-            );
-          })}
+          <div className="eco-nav-main-group">
+            {navItems
+              .filter((item) => item.label !== 'Settings')
+              .map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item);
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    className={`eco-nav-item ${active ? 'active' : ''}`}
+                  >
+                    <Icon size={18} className="eco-nav-icon" />
+                    <span className="eco-nav-label">{item.label}</span>
+                    {item.hasSubmenu && (
+                      <ChevronDown size={14} className="eco-nav-chevron" />
+                    )}
+                  </Link>
+                );
+              })}
+          </div>
+
+          <div className="eco-nav-bottom-group">
+            {navItems
+              .filter((item) => item.label === 'Settings')
+              .map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item);
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    className={`eco-nav-item ${active ? 'active' : ''}`}
+                  >
+                    <Icon size={18} className="eco-nav-icon" />
+                    <span className="eco-nav-label">{item.label}</span>
+                  </Link>
+                );
+              })}
+          </div>
         </nav>
       </aside>
 
