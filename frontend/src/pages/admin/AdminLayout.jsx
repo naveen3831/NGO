@@ -150,25 +150,10 @@ const AdminLayout = () => {
           <h1 className="eco-admin-page-heading">{getPageTitle()}</h1>
 
           <div className="eco-admin-topbar-actions">
-            {/* Live DB Connection Status Badge */}
-            <span className="live-status-pill">
-              <span className="status-dot"></span> Live DB Connected
-            </span>
-
             {/* Bell Notification with Red Badge Dot */}
             <button className="eco-topbar-bell-btn" title="Notifications">
-              <Bell size={18} />
+              <Bell size={20} />
               <span className="bell-red-badge"></span>
-            </button>
-
-            {/* Topbar Logout Button matching reference image */}
-            <button
-              onClick={handleLogout}
-              className="eco-topbar-logout-btn"
-              title="Sign Out"
-            >
-              <LogOut size={14} />
-              <span>Logout</span>
             </button>
           </div>
         </header>
