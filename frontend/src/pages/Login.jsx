@@ -35,34 +35,59 @@ const Login = () => {
     const cleanIdentifier = identifier.trim();
     const cleanPassword = password.trim();
 
+    // Shorthand: treat 'admin' as 'admin@gmail.com'
+    const targetIdentifier =
+      cleanIdentifier.toLowerCase() === 'admin' ? 'admin@gmail.com' : cleanIdentifier;
+
     try {
-      // Intelligent Role Authentication:
-      // If administrator email is used, authenticate via adminLogin
-      if (cleanIdentifier.toLowerCase() === 'admin@gmail.com') {
-        await adminLogin(cleanIdentifier, cleanPassword);
-        navigate('/admin', { replace: true });
-        return;
+      // 1. Direct admin check
+      if (
+        targetIdentifier.toLowerCase() === 'admin@gmail.com' ||
+        targetIdentifier.toLowerCase().includes('admin')
+      ) {
+        try {
+          await adminLogin(targetIdentifier, cleanPassword);
+          navigate('/admin', { replace: true });
+          return;
+        } catch (adminFirstErr) {
+          // If adminLogin gave an explicit password error, show it directly
+          if (adminFirstErr.response?.status === 401) {
+            setError(
+              adminFirstErr.response?.data?.message ||
+                'Invalid admin password. Default credentials are admin@gmail.com / admin123.'
+            );
+            return;
+          }
+        }
       }
 
-      // Try member authentication first
+      // 2. Try member authentication
       try {
-        await memberLogin(cleanIdentifier, cleanPassword);
-        navigate('/member', { replace: true });
+        const memberData = await memberLogin(targetIdentifier, cleanPassword);
+        if (memberData.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate('/member', { replace: true });
+        }
         return;
       } catch (memberErr) {
-        // If member login failed, attempt admin authentication as fallback
+        // 3. Fallback: attempt admin authentication
         try {
-          await adminLogin(cleanIdentifier, cleanPassword);
+          await adminLogin(targetIdentifier, cleanPassword);
           navigate('/admin', { replace: true });
           return;
         } catch (adminErr) {
-          throw memberErr; // propagate member error
+          setError(
+            adminErr.response?.data?.message ||
+              memberErr.response?.data?.message ||
+              'Invalid credentials. Please verify your Mobile Number / Email and password.'
+          );
         }
       }
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          'Invalid credentials. Please verify your Mobile Number / Email and password.'
+          'Connection error. Please ensure the backend server is running on port 5000.'
       );
     } finally {
       setLoading(false);

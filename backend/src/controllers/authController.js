@@ -16,11 +16,26 @@ export const adminLogin = async (req, res, next) => {
     email = email.trim().toLowerCase();
     password = password.trim();
 
-    // Find admin by email (case-insensitive)
-    const user = await User.findOne({ email }).select('+password');
+    // Map shorthand 'admin' or 'administrator' to 'admin@gmail.com'
+    const targetEmail =
+      email === 'admin' || email === 'administrator' ? 'admin@gmail.com' : email;
+
+    // Find admin by email, memberId, or phone
+    let user = await User.findOne({
+      $or: [
+        { email: targetEmail },
+        { memberId: targetEmail.toUpperCase() },
+        { phone: targetEmail },
+      ],
+    }).select('+password');
+
+    // Fallback: If searched email contains 'admin' and no user found, find the active admin
+    if (!user && (targetEmail === 'admin@gmail.com' || targetEmail.includes('admin'))) {
+      user = await User.findOne({ role: 'admin' }).select('+password');
+    }
 
     if (!user) {
-      return res.status(401).json({ message: 'No administrator account found with this email' });
+      return res.status(401).json({ message: 'No administrator account found with this email or ID' });
     }
 
     if (user.role !== 'admin') {

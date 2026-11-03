@@ -83,3 +83,4 @@ const Logo = ({ variant = 'dark', showText = true, size = 42, className = '' }) 
 };
 
 export default Logo;
+

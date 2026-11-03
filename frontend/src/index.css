@@ -57,7 +57,7 @@ button, input, select, textarea {
 }
 
 .container {
-  max-width: 1240px;
+  max-width: 1340px;
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 2rem;
 }
