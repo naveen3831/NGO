@@ -118,44 +118,28 @@ const AdminLayout = () => {
           </div>
         </nav>
 
-        {/* Sidebar Admin Profile Section with Edit Profile & Logout */}
-        <div className="eco-sidebar-profile-card">
+        {/* Sidebar Admin Profile Footer matching reference image */}
+        <div className="admin-sidebar-footer">
           <Link
             to="/admin/settings"
-            className="eco-sidebar-profile-identity"
-            title="Manage Administrator Profile"
+            className="admin-user-card"
+            title="Edit Profile & Settings"
           >
-            <div className="eco-sidebar-avatar">
+            <div className="admin-avatar">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
             </div>
-            <div className="eco-sidebar-profile-info">
-              <span className="eco-sidebar-user-name" title={user?.name || 'Dr. K. V. Subba Rao'}>
-                {user?.name || 'Dr. K. V. Subba Rao'}
-              </span>
-              <span className="eco-sidebar-user-role">
-                {user?.role === 'admin' ? 'Super Admin' : (user?.role || 'Administrator')}
-              </span>
+            <div className="admin-user-info">
+              <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
+              <span className="admin-role">Super Admin</span>
             </div>
           </Link>
-
-          <div className="eco-sidebar-profile-actions">
-            <Link
-              to="/admin/settings"
-              className="eco-sidebar-profile-action-btn edit"
-              title="Edit Profile Settings"
-            >
-              <User size={12} />
-              <span>Edit Profile</span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="eco-sidebar-profile-action-btn logout"
-              title="Logout from Account"
-            >
-              <LogOut size={12} />
-              <span>Logout</span>
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="admin-logout-btn"
+            title="Sign out of Admin Dashboard"
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </aside>
 
@@ -166,10 +150,25 @@ const AdminLayout = () => {
           <h1 className="eco-admin-page-heading">{getPageTitle()}</h1>
 
           <div className="eco-admin-topbar-actions">
+            {/* Live DB Connection Status Badge */}
+            <span className="live-status-pill">
+              <span className="status-dot"></span> Live DB Connected
+            </span>
+
             {/* Bell Notification with Red Badge Dot */}
             <button className="eco-topbar-bell-btn" title="Notifications">
-              <Bell size={20} />
+              <Bell size={18} />
               <span className="bell-red-badge"></span>
+            </button>
+
+            {/* Topbar Logout Button matching reference image */}
+            <button
+              onClick={handleLogout}
+              className="eco-topbar-logout-btn"
+              title="Sign Out"
+            >
+              <LogOut size={14} />
+              <span>Logout</span>
             </button>
           </div>
         </header>
