@@ -15,7 +15,6 @@ import {
   Settings,
   ChevronDown,
   User,
-  Edit3,
   LogOut,
 } from 'lucide-react';
 
@@ -122,29 +121,19 @@ const AdminLayout = () => {
 
         {/* Sidebar Admin Profile Footer */}
         <div className="admin-sidebar-footer">
-          <div className="admin-sidebar-profile-group">
-            <Link
-              to="/admin/profile"
-              className="admin-user-card"
-              title="View Admin Profile"
-            >
-              <div className="admin-avatar">
-                {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
-              </div>
-              <div className="admin-user-info">
-                <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
-                <span className="admin-role">Super Admin</span>
-              </div>
-            </Link>
-            <Link
-              to="/admin/profile"
-              className="admin-edit-pill-btn"
-              title="Edit Profile"
-            >
-              <Edit3 size={11} />
-              <span>Edit Profile</span>
-            </Link>
-          </div>
+          <Link
+            to="/admin/profile"
+            className="admin-user-card"
+            title="View Admin Profile"
+          >
+            <div className="admin-avatar">
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
+            </div>
+            <div className="admin-user-info">
+              <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
+              <span className="admin-role">Super Admin</span>
+            </div>
+          </Link>
           <button
             onClick={handleLogout}
             className="admin-logout-btn"
