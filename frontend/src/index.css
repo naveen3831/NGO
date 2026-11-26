@@ -31,6 +31,16 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  --footer-bg: #004D2B;
+  --footer-secondary: #006B3C;
+  --footer-heading: #FFFFFF;
+  --footer-text: #D9F2E3;
+  --footer-link: #B7E4C7;
+  --footer-link-hover: #52D273;
+  --footer-border: #38845C;
+  --footer-button: #008C4A;
+  --footer-bottom: #003820;
 }
 
 * {
@@ -74,6 +84,18 @@ a {
 
 button, input, select, textarea {
   font-family: inherit;
+}
+
+.site-wrapper h1,
+.site-wrapper h2 {
+  font-family: 'Merriweather', Georgia, serif;
+}
+
+.eco-header,
+.eco-nav-link,
+.eco-footer,
+h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .container {

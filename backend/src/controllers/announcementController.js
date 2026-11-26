@@ -31,6 +31,33 @@ export const getMemberAnnouncements = async (req, res, next) => {
   }
 };
 
+// @desc    Create announcement by volunteer / member
+// @route   POST /api/v1/member/announcements
+// @access  Private (Member)
+export const createMemberAnnouncement = async (req, res, next) => {
+  try {
+    const { title, content, category, priority } = req.body;
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Please provide announcement title and content' });
+    }
+
+    const announcement = await Announcement.create({
+      title: title.trim(),
+      content: content.trim(),
+      category: category || 'Cleanliness Alert',
+      priority: priority || 'Normal',
+      visibility: 'Volunteers Only',
+      isPublished: true,
+      createdBy: req.user._id,
+    });
+
+    await announcement.populate('createdBy', 'name designation');
+    res.status(201).json(announcement);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get all announcements (Admin)
 // @route   GET /api/v1/admin/announcements
 // @access  Private (Admin)

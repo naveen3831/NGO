@@ -5,6 +5,9 @@ import Meeting from '../models/Meeting.js';
 import Announcement from '../models/Announcement.js';
 import Notification from '../models/Notification.js';
 import Membership from '../models/Membership.js';
+import GalleryItem from '../models/GalleryItem.js';
+import ContactMessage from '../models/ContactMessage.js';
+import Donation from '../models/Donation.js';
 
 // @desc    Get public website content and stats
 // @route   GET /api/v1/public/content
@@ -48,6 +51,13 @@ export const getAdminStats = async (req, res, next) => {
     const scheduledMeetings = await Meeting.countDocuments({ status: 'Scheduled' });
     const totalAnnouncements = await Announcement.countDocuments();
     const totalNotifications = await Notification.countDocuments();
+    const totalGallery = await GalleryItem.countDocuments();
+    const totalContacts = await ContactMessage.countDocuments();
+    const totalDonations = await Donation.countDocuments();
+    const donationAgg = await Donation.aggregate([
+      { $group: { _id: null, totalAmount: { $sum: '$amount' } } },
+    ]);
+    const totalDonationAmount = donationAgg[0]?.totalAmount || 0;
 
     // Recent items for quick preview
     const recentMembers = await User.find({ role: { $ne: 'admin' } })
@@ -73,6 +83,10 @@ export const getAdminStats = async (req, res, next) => {
         scheduledMeetings,
         totalAnnouncements,
         totalNotifications,
+        totalGallery,
+        totalContacts,
+        totalDonations,
+        totalDonationAmount,
       },
       recentMembers,
       upcomingEventsList,

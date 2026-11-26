@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle, Droplet } from 'lucide-react';
+import API from '../services/api';
+import HeroBanner from '../components/HeroBanner';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, AlertCircle, Globe, Share2, MessageCircle, Video } from 'lucide-react';
 
 const Contact = () => {
   const location = useLocation();
@@ -12,6 +14,8 @@ const Contact = () => {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (location.hash) {
@@ -25,24 +29,30 @@ const Contact = () => {
     }
   }, [location]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    setError('');
+    setSubmitting(true);
+    try {
+      await API.post('/public/contact', {
+        ...formData,
+        subject: formData.subject || 'General Inquiry',
+      });
+      setSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Unable to send message right now. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="clean-page-wrapper">
-      <div className="clean-page-header">
-        <div className="container">
-          <span className="clean-badge">CONNECT</span>
-          <h1>Contact Our Secretariat</h1>
-          <p className="clean-page-sub">
-            Get in touch for volunteer group coordination, ghat cleanliness sponsorships, or student
-            outreach.
-          </p>
-        </div>
-      </div>
+      <HeroBanner
+        title="Contact Us"
+        subtitle="Together for a Cleaner and Greener Godavari"
+      />
 
       <div className="container section-padding">
         <div className="grid-two-cards">
@@ -97,11 +107,49 @@ const Contact = () => {
                 </div>
               </div>
             </div>
+
+            <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1.25rem' }}>
+              {[
+                { icon: Globe, label: 'Facebook', href: 'https://facebook.com' },
+                { icon: Share2, label: 'Instagram', href: 'https://instagram.com' },
+                { icon: MessageCircle, label: 'Twitter', href: 'https://twitter.com' },
+                { icon: Video, label: 'YouTube', href: 'https://youtube.com' },
+              ].map((s) => {
+                const Icon = s.icon;
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={s.label}
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: '#e8f5e9',
+                      color: '#006B3C',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon size={16} />
+                  </a>
+                );
+              })}
+            </div>
           </div>
 
           {/* Clean Inquiry Form */}
           <div id="inquiry" className="clean-content-box form-card-box" style={{ scrollMarginTop: '100px' }}>
             <h3>Send an Inquiry</h3>
+            {error && (
+              <div className="alert-banner alert-danger mb-3" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <AlertCircle size={16} />
+                <span>{error}</span>
+              </div>
+            )}
             {submitted ? (
               <div className="clean-success-box text-center py-4">
                 <CheckCircle size={36} className="text-green mb-2 inline" />
@@ -171,12 +219,26 @@ const Contact = () => {
                   ></textarea>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block">
-                  <Send size={15} /> Submit Inquiry
+                <button type="submit" disabled={submitting} className="btn btn-primary btn-block">
+                  <Send size={15} /> {submitting ? 'Sending Message...' : 'Send Message'}
                 </button>
               </form>
             )}
           </div>
+        </div>
+
+        {/* Google Maps Location */}
+        <div className="clean-content-box" style={{ marginTop: '2rem', padding: '1.25rem' }}>
+          <h3 style={{ color: '#064e3b', marginBottom: '0.75rem' }}>Our Location on Google Maps</h3>
+          <iframe
+            title="Godavari Bund Road Rajahmundry Map"
+            src="https://www.google.com/maps?q=Kotilingala+Ghat+Rajahmundry+Andhra+Pradesh&output=embed"
+            width="100%"
+            height="300"
+            style={{ border: 0, borderRadius: '12px' }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </div>
     </div>

@@ -16,6 +16,9 @@ import {
   User,
   LogOut,
   Menu,
+  Image as ImageIcon,
+  HeartHandshake,
+  Mail,
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -50,7 +53,10 @@ const AdminLayout = () => {
     { label: 'Dashboard', path: '/admin', icon: Home, exact: true },
     { label: 'Members', path: '/admin/members', icon: Users },
     { label: 'Drives & Events', path: '/admin/events', icon: Calendar },
+    { label: 'Gallery', path: '/admin/gallery', icon: ImageIcon },
     { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
+    { label: 'Donations', path: '/admin/donations', icon: HeartHandshake },
+    { label: 'Contact Messages', path: '/admin/contacts', icon: Mail },
     { label: 'Notifications', path: '/admin/notifications', icon: Bell },
     { label: 'Reports', path: '/admin/reports', icon: BarChart2 },
     { label: 'Website Content', path: '/admin/website', icon: FileText },

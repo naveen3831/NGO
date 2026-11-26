@@ -24,10 +24,10 @@ const MemberDrives = () => {
 
   const handleEnroll = async (id) => {
     try {
-      await API.post(`/member/events/${id}/enroll`);
-      setEnrolledMap((prev) => ({ ...prev, [id]: true }));
+      const { data } = await API.post(`/member/events/${id}/enroll`);
+      setEnrolledMap((prev) => ({ ...prev, [id]: data?.status || 'Pending' }));
     } catch (err) {
-      alert('You are already registered for this drive.');
+      alert(err.response?.data?.message || 'Unable to submit volunteer request.');
     }
   };
 
@@ -47,7 +47,7 @@ const MemberDrives = () => {
       ) : (
         <div className="drives-stack">
           {events.map((evt) => {
-            const isEnrolled = enrolledMap[evt._id];
+            const reqStatus = enrolledMap[evt._id] || evt.myVolunteerStatus;
             return (
               <div key={evt._id} className="app-card drive-card">
                 <div className="drive-card-header">
@@ -84,15 +84,28 @@ const MemberDrives = () => {
                 <div className="drive-footer">
                   <button
                     onClick={() => handleEnroll(evt._id)}
-                    disabled={isEnrolled}
-                    className={`btn btn-sm btn-block ${isEnrolled ? 'btn-outline' : 'btn-primary'}`}
+                    disabled={!!reqStatus}
+                    className={`btn btn-sm btn-block ${reqStatus ? 'btn-outline' : 'btn-primary'}`}
+                    style={
+                      reqStatus === 'Confirmed'
+                        ? { background: '#dcfce7', color: '#064e3b', borderColor: '#86efac' }
+                        : reqStatus === 'Pending'
+                        ? { background: '#fef3c7', color: '#92400e', borderColor: '#fde68a' }
+                        : undefined
+                    }
                   >
-                    {isEnrolled ? (
+                    {reqStatus === 'Confirmed' ? (
                       <>
-                        <CheckCircle size={14} /> Registered for Drive
+                        <CheckCircle size={14} /> Confirmed as Volunteer
                       </>
+                    ) : reqStatus === 'Pending' ? (
+                      <>
+                        <Clock size={14} /> Pending Admin Approval
+                      </>
+                    ) : reqStatus === 'Rejected' ? (
+                      'Request Declined'
                     ) : (
-                      'Participate as Volunteer'
+                      'Join as Volunteer'
                     )}
                   </button>
                 </div>

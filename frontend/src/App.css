@@ -1447,10 +1447,11 @@ body::-webkit-scrollbar {
 }
 
 .footer-bottom-bar {
-  border-top: 1px solid #1e293b;
-  padding: 1.25rem 0;
+  background: var(--footer-bottom);
+  border-top: 1px solid var(--footer-border);
+  padding: 0.75rem 0;
   font-size: 0.82rem;
-  color: #64748b;
+  color: var(--footer-text);
 }
 
 .bottom-bar-flex {
@@ -3325,34 +3326,34 @@ body::-webkit-scrollbar {
   border-top: 1px solid var(--border);
 }
 
-/* Member App Mobile Wrapper */
+/* Member Portal Full Responsive Layout */
 .member-app-container {
   min-height: 100vh;
-  background-color: #0f172a;
+  background-color: #F7FBF7;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
+  flex-direction: column;
+  padding: 0;
 }
 
 .mobile-phone-frame {
   width: 100%;
-  max-width: 440px;
-  height: 860px;
-  background-color: #f8fafc;
-  border-radius: 36px;
-  border: 10px solid #1e293b;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  max-width: 100%;
+  min-height: 100vh;
+  height: auto;
+  background-color: #F7FBF7;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
 .member-app-header {
-  background: linear-gradient(135deg, #0284c7 0%, #059669 100%);
+  background: linear-gradient(135deg, #006B3C 0%, #004D2B 100%);
   color: #ffffff;
-  padding: 1.25rem 1.25rem 0.85rem 1.25rem;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3361,114 +3362,200 @@ body::-webkit-scrollbar {
 .app-header-left {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 .app-logo-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.2);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .app-header-title {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 750;
   line-height: 1.2;
+  margin: 0;
 }
 
 .app-header-sub {
-  font-size: 0.7rem;
-  color: #ccfbf1;
+  font-size: 0.76rem;
+  color: #d1fae5;
+  margin: 0;
 }
 
 .header-icon-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-left: 0.4rem;
+  margin-left: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.header-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .member-quick-status-bar {
-  background-color: #064e3b;
-  color: #a7f3d0;
-  padding: 0.4rem 1.25rem;
+  background-color: #003820;
+  color: #d1fae5;
+  padding: 0.5rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
 }
 
 .dot-active {
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background-color: #34d399;
-  margin-right: 0.35rem;
+  background-color: #52D273;
+  margin-right: 0.4rem;
 }
 
 .membership-tier-badge {
-  background-color: #059669;
+  background-color: #008C4A;
   color: #ffffff;
-  padding: 0.1rem 0.5rem;
+  padding: 0.2rem 0.75rem;
   border-radius: 9999px;
   font-weight: 600;
-  font-size: 0.68rem;
+  font-size: 0.74rem;
 }
 
 .member-app-body {
   flex: 1;
-  overflow-y: auto;
-  padding: 1.25rem;
-  padding-bottom: 5.5rem;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 3.5rem;
+}
+
+.member-welcome-card {
+  background: #ffffff;
+  border: 1px solid #d1fae5;
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 14px rgba(0, 107, 60, 0.05);
+}
+
+.member-quick-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.quick-stat-box {
+  background: #E8F5E9;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 145px;
+}
+
+.quick-stat-box .stat-num {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #006B3C;
+}
+
+.quick-stat-box .stat-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #173D2B;
 }
 
 .member-bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 68px;
+  position: sticky;
+  top: 0;
   background-color: #ffffff;
-  border-top: 1px solid var(--border);
+  border-bottom: 1px solid #d1fae5;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1.5rem;
   z-index: 50;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 107, 60, 0.04);
 }
 
 .bottom-nav-item {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  font-size: 0.68rem;
+  gap: 0.45rem;
+  color: #475569;
+  font-size: 0.88rem;
   font-weight: 600;
   text-decoration: none;
-  flex: 1;
-  padding: 0.4rem 0;
-  transition: color 0.15s;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+}
+
+.bottom-nav-item:hover {
+  background-color: #E8F5E9;
+  color: #006B3C;
 }
 
 .bottom-nav-item.active {
-  color: var(--primary);
+  background-color: #006B3C;
+  color: #ffffff;
 }
 
 .bottom-nav-icon {
-  margin-bottom: 0.2rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .member-app-header,
+  .member-quick-status-bar {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .member-app-body {
+    padding: 1.25rem 1rem 5.5rem;
+  }
+
+  .member-bottom-nav {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    padding: 0;
+    border-bottom: none;
+    border-top: 1px solid #d1fae5;
+    justify-content: space-around;
+  }
+
+  .bottom-nav-item {
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.68rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 8px;
+  }
 }
 
 .app-card {
@@ -4120,7 +4207,7 @@ body::-webkit-scrollbar {
 }
 
 .ngo-logo-title-main {
-  font-size: 0.88rem;
+  font-size: 1.02rem;
   font-weight: 750;
   letter-spacing: -0.01em;
   display: block;
@@ -4129,13 +4216,12 @@ body::-webkit-scrollbar {
 }
 
 .ngo-logo-title-sub {
-  font-size: 0.58rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   display: block;
   white-space: nowrap;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 /* ==========================================================================
@@ -4155,12 +4241,12 @@ body::-webkit-scrollbar {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 62px;
-  gap: 0.75rem;
+  height: 70px;
+  gap: 1rem;
 }
 
 .eco-brand-wrap {
@@ -4175,24 +4261,20 @@ body::-webkit-scrollbar {
   text-decoration: none;
 }
 
-.eco-nav-divider {
-  width: 1px;
-  height: 24px;
-  background-color: #e2e8f0;
-  margin: 0 1.25rem;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
 /* Center Desktop Navigation */
 .eco-desktop-nav {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.35rem;
   flex: 1;
   justify-content: center;
   flex-wrap: nowrap;
   min-width: 0;
+}
+
+.eco-nav-item-icon {
+  color: #166534;
+  flex-shrink: 0;
 }
 
 /* Home Nav Link - Dynamic Green on Hover and Active */
@@ -4281,13 +4363,14 @@ body::-webkit-scrollbar {
   color: #ffffff;
 }
 
-/* Plain Nav Link (e.g., Contact Us) */
+/* Plain Nav Link */
 .eco-nav-link {
   display: inline-flex;
   align-items: center;
-  padding: 0.38rem 0.85rem;
-  font-size: 0.8125rem;
-  font-weight: 550;
+  gap: 0.35rem;
+  padding: 0.38rem 0.68rem;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: #1e293b;
   border-radius: 9999px;
   text-decoration: none;
@@ -4297,15 +4380,15 @@ body::-webkit-scrollbar {
 }
 
 .eco-nav-link:hover,
-.eco-nav-link.active {
-  background-color: #0f4a38;
-  color: #ffffff !important;
-  border-radius: 9999px;
-  box-shadow: 0 2px 6px rgba(15, 74, 56, 0.25);
+.eco-nav-dropdown-wrapper.open .eco-nav-link {
+  background-color: #f0fdf4;
+  color: #064e3b;
 }
 
-.eco-nav-link:hover {
-  background-color: #09382b;
+.eco-nav-link.active {
+  color: #064e3b;
+  font-weight: 650;
+  background-color: transparent;
 }
 
 /* Dropdown Menu Floating Card */
@@ -4382,19 +4465,20 @@ body::-webkit-scrollbar {
 }
 
 .btn-eco-join-pill {
-  background-color: #0f4a38;
+  background-color: #094c34;
   color: #ffffff !important;
   border-radius: 9999px;
-  padding: 0.34rem 0.95rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 0.62rem 2rem;
+  font-size: 0.92rem;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: center;
+  gap: 0.45rem;
   white-space: nowrap;
   text-decoration: none;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(15, 74, 56, 0.25);
+  box-shadow: 0 2px 8px rgba(9, 76, 52, 0.25);
   transition: all 0.15s ease;
 }
 
@@ -4435,24 +4519,24 @@ body::-webkit-scrollbar {
 /* Tablet & Smaller Laptop Responsive scaling for Navbar */
 @media (max-width: 1366px) {
   .eco-nav-container {
-    padding: 0 1.25rem;
+    padding: 0 1.5rem;
     gap: 0.75rem;
   }
 
   .eco-desktop-nav {
-    gap: 0.5rem;
+    gap: 0.35rem;
   }
 
   .eco-nav-link-with-arrow,
   .eco-nav-link,
   .eco-nav-home-pill {
-    padding: 0.34rem 0.7rem;
-    font-size: 0.78rem;
+    padding: 0.36rem 0.62rem;
+    font-size: 0.82rem;
   }
 
   .btn-eco-join-pill {
-    padding: 0.36rem 0.95rem;
-    font-size: 0.78rem;
+    padding: 0.56rem 1.75rem;
+    font-size: 0.88rem;
   }
 
   .ngo-logo-title-main {
@@ -4460,7 +4544,7 @@ body::-webkit-scrollbar {
   }
 
   .ngo-logo-title-sub {
-    font-size: 0.65rem;
+    font-size: 0.74rem;
   }
 }
 
@@ -4533,17 +4617,31 @@ body::-webkit-scrollbar {
   border-top: 1px solid #f1f5f9;
 }
 
+.eco-guest-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
 .btn-eco-login-outline {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 0.6rem 1rem;
-  border: 1.5px solid #0f4a38;
+  padding: 0.56rem 1.35rem;
+  border: 1.5px solid #094c34;
   border-radius: 9999px;
-  color: #0f4a38;
-  font-weight: 600;
+  color: #094c34;
+  font-weight: 650;
   font-size: 0.88rem;
   text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-eco-login-outline:hover {
+  background-color: #f0fdf4;
+  color: #064e3b;
 }
 
 .btn-eco-logout-block {
@@ -4558,21 +4656,20 @@ body::-webkit-scrollbar {
 }
 
 /* ==========================================================================
-   PREMIUM HERO SECTION - High-Res Godavari Panorama with Female Hands
+   PREMIUM HERO SECTION - Clean Godavari Green Future Panorama
    ========================================================================== */
 .eco-hero-master-section {
   position: relative;
   width: 100%;
-  background: #f0f7f3;
+  background: #ffffff;
   overflow: hidden;
   padding: 0;
   margin: 0;
-  border-bottom: 1px solid #eef5f1;
 }
 
 .eco-hero-canvas-wrapper {
   width: 100%;
-  max-width: 1600px;
+  max-width: 100%;
   margin: 0 auto;
   position: relative;
 }
@@ -4580,24 +4677,53 @@ body::-webkit-scrollbar {
 .eco-hero-canvas-inner {
   position: relative;
   width: 100%;
+  height: clamp(300px, 26.5vw, 370px);
+  overflow: hidden;
   line-height: 0;
 }
 
 .eco-hero-panorama-img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center 54%;
   user-select: none;
 }
 
-/* Live Crisp Vector Typography & CTAs Overlay */
+.eco-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(3, 32, 20, 0.56) 0%,
+    rgba(3, 32, 20, 0.32) 42%,
+    rgba(3, 32, 20, 0.06) 72%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.eco-hero-bottom-curve {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 30px;
+  z-index: 6;
+  pointer-events: none;
+  display: block;
+}
+
+/* Left-Aligned Crisp Typography & Single CTA Overlay */
 .eco-hero-content-overlay {
   position: absolute;
-  left: 44%;
+  left: 8%;
   top: 50%;
   transform: translateY(-50%);
-  max-width: 53%;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -4612,130 +4738,86 @@ body::-webkit-scrollbar {
 }
 
 .eco-hero-main-title {
-  font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, sans-serif);
-  font-size: clamp(1.6rem, 2.8vw, 2.9rem);
-  font-weight: 800;
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: clamp(1.9rem, 3.4vw, 3.15rem);
+  font-weight: 900;
   color: #ffffff;
-  line-height: 1.18;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.75rem 0;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.65rem 0;
   text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.55),
-    0 1px 2px rgba(0, 0, 0, 0.4);
-}
-
-.eco-title-green {
-  color: #86efac;
-  font-weight: 800;
-  display: block;
+    0 2px 12px rgba(0, 0, 0, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 .eco-hero-subtitle {
-  font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
-  font-size: clamp(0.88rem, 1.1vw, 1.05rem);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.25vw, 1.18rem);
   color: #f0fdf4;
-  line-height: 1.6;
-  font-weight: 400;
-  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 0 0 1.25rem 0;
   max-width: 520px;
   text-shadow:
-    0 1px 6px rgba(0, 0, 0, 0.5),
+    0 1px 8px rgba(0, 0, 0, 0.5),
     0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .eco-hero-buttons-overlay {
   display: flex;
   align-items: center;
-  gap: 1.15rem;
+  gap: 1rem;
   z-index: 5;
   flex-wrap: wrap;
 }
 
-.btn-hero-primary-green {
+.btn-hero-join-mission {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  background-color: #064e3b;
+  background-color: #15803d;
   color: #ffffff !important;
-  font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, sans-serif);
-  font-size: clamp(0.78rem, 0.92vw, 0.92rem);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.95rem;
   font-weight: 600;
-  padding: 0.65rem 1.45rem;
+  padding: 0.72rem 1.65rem;
   border-radius: 9999px;
   text-decoration: none;
-  border: 1.5px solid #064e3b;
-  box-shadow: 0 4px 14px rgba(6, 78, 59, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 6px 18px rgba(6, 78, 59, 0.4);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  letter-spacing: -0.01em;
 }
 
-.btn-hero-primary-green:hover {
-  background-color: #04382a;
-  border-color: #04382a;
+.btn-hero-join-mission:hover {
+  background-color: #166534;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(6, 78, 59, 0.45);
+  box-shadow: 0 8px 22px rgba(6, 78, 59, 0.5);
 }
 
-.btn-hero-primary-green .btn-hero-arrow {
+.btn-hero-join-mission .btn-hero-arrow {
   transition: transform 0.2s ease;
 }
 
-.btn-hero-primary-green:hover .btn-hero-arrow {
+.btn-hero-join-mission:hover .btn-hero-arrow {
   transform: translateX(3px);
-}
-
-.btn-hero-outline-green {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  background-color: #ffffff;
-  color: #064e3b !important;
-  font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, sans-serif);
-  font-size: clamp(0.78rem, 0.92vw, 0.92rem);
-  font-weight: 600;
-  padding: 0.65rem 1.45rem;
-  border-radius: 9999px;
-  text-decoration: none;
-  border: 1.5px solid #064e3b;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  letter-spacing: -0.01em;
-}
-
-.btn-hero-outline-green:hover {
-  background-color: #f0fdf4;
-  color: #043729 !important;
-  border-color: #043729;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(6, 78, 59, 0.18);
 }
 
 @media (max-width: 1024px) {
   .eco-hero-content-overlay {
-    left: 42%;
-    max-width: 56%;
+    left: 5%;
+    max-width: 520px;
   }
 
-  .eco-hero-main-title {
-    margin-bottom: 0.5rem;
-  }
-
-  .eco-hero-subtitle {
-    margin-bottom: 0.9rem;
-  }
-
-  .eco-hero-buttons-overlay {
-    gap: 0.75rem;
+  .eco-hero-canvas-inner {
+    height: clamp(320px, 38vw, 400px);
   }
 }
 
 @media (max-width: 768px) {
   .eco-hero-master-section {
     position: relative;
-    background: transparent;
-    border-bottom: none;
+    background: #ffffff;
   }
 
   .eco-hero-canvas-inner {
@@ -4751,36 +4833,35 @@ body::-webkit-scrollbar {
     height: 100%;
     min-height: 310px;
     object-fit: cover;
-    object-position: 0% 30%;
+    object-position: center center;
     display: block;
-    filter: none !important;
-    -webkit-filter: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    image-rendering: -webkit-optimize-contrast;
   }
 
-  /* Completely clean overlay without any blur, tint, or haze */
+  .eco-hero-scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(3, 32, 20, 0.15) 0%,
+      rgba(3, 32, 20, 0.45) 55%,
+      rgba(3, 32, 20, 0.78) 100%
+    );
+  }
+
+  .eco-hero-bottom-curve {
+    height: 20px;
+  }
+
   .eco-hero-content-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     transform: none;
     max-width: 100%;
-    padding: 0.85rem 0.85rem 1.15rem 0.85rem;
+    padding: 1.25rem 1rem 2rem 1rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
     text-align: center;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, rgba(6, 40, 30, 0.45) 60%, rgba(6, 30, 24, 0.88) 100%) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    filter: none !important;
     z-index: 5;
-    pointer-events: auto;
   }
 
   .eco-hero-text-block {
@@ -4793,94 +4874,781 @@ body::-webkit-scrollbar {
   }
 
   .eco-hero-main-title {
-    font-size: 1.32rem;
-    font-weight: 800;
-    color: #ffffff;
-    line-height: 1.24;
-    letter-spacing: -0.015em;
-    margin: 0 0 0.35rem 0;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin: 0 0 0.45rem 0;
     text-align: center;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9);
-  }
-
-  .eco-title-green {
-    color: #4ade80;
-    font-weight: 800;
-    display: block;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
   }
 
   .eco-hero-subtitle {
-    font-size: 0.76rem;
-    color: #f0fdf4;
-    line-height: 1.35;
-    font-weight: 400;
-    margin: 0 0 0.85rem 0;
-    max-width: 320px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0 0 1rem 0;
+    max-width: 310px;
     text-align: center;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .eco-hero-buttons-overlay {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    max-width: 340px !important;
-    gap: 0.5rem !important;
+    justify-content: center;
   }
 
-  .btn-hero-primary-green {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    width: auto !important;
-    justify-content: center !important;
-    background-color: #059669 !important;
-    color: #ffffff !important;
-    padding: 0.48rem 0.65rem !important;
-    border-radius: 9999px !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35) !important;
-    gap: 0.3rem !important;
-  }
-
-  .btn-hero-outline-green {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    width: auto !important;
-    justify-content: center !important;
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    color: #064e3b !important;
-    border: none !important;
-    padding: 0.48rem 0.65rem !important;
-    border-radius: 9999px !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
-    gap: 0.3rem !important;
+  .btn-hero-join-mission {
+    padding: 0.6rem 1.4rem;
+    font-size: 0.88rem;
   }
 }
 
 /* ==========================================================================
-   FLOATING 4-CARD FEATURE ROW (Matches Reference Image 1)
+   CENTERED 4-CARD QUICK ACTION ROW
    ========================================================================== */
 .eco-perminu-cards-section {
   position: relative;
   z-index: 10;
-  margin-top: 1.75rem;
-  margin-bottom: 3.5rem;
+  padding: 0.65rem 0 2.75rem 0;
+  background: #ffffff;
+}
+
+/* ==========================================================================
+   ABOUT US PAGE HERO & INTRO SECTION
+   ========================================================================== */
+.eco-subpage-hero-inner {
+  height: clamp(230px, 21vw, 290px);
+}
+
+.eco-subpage-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(3, 32, 20, 0.38) 0%,
+    rgba(3, 32, 20, 0.52) 60%,
+    rgba(3, 32, 20, 0.42) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.eco-subpage-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem 0.75rem;
+  z-index: 5;
+}
+
+.eco-subpage-hero-title {
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: clamp(2rem, 3.6vw, 3.1rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.15;
+  margin: 0 0 0.55rem 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.eco-subpage-hero-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+  font-weight: 600;
+  color: #f0fdf4;
+  margin: 0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.eco-about-intro-section {
+  padding: 1.5rem 0 3rem;
+  background: #ffffff;
+}
+
+.eco-about-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 2.25rem;
+  align-items: center;
+}
+
+.eco-about-intro-photo-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.eco-about-intro-photo {
+  width: 100%;
+  height: 235px;
+  object-fit: cover;
+  display: block;
+}
+
+.eco-about-intro-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.eco-about-intro-heading {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+}
+
+.eco-about-intro-text {
+  font-size: 0.98rem;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0 0 1.35rem 0;
+}
+
+.btn-eco-about-learn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #0c5938;
+  color: #ffffff !important;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(12, 89, 56, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-eco-about-learn:hover {
+  background-color: #09452b;
+  transform: translateY(-2px);
+}
+
+.btn-eco-about-learn:hover .btn-hero-arrow {
+  transform: translateX(3px);
+}
+
+.eco-about-mv-stack {
+  background: #eaf8ee;
+  border: 1px solid #d1fae5;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.eco-about-mv-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.35rem 1.5rem;
+  text-decoration: none;
+  transition: background-color 0.18s ease;
+}
+
+.eco-about-mv-row + .eco-about-mv-row {
+  border-top: 1px solid #d1fae5;
+}
+
+.eco-about-mv-row:hover {
+  background: #dcfce7;
+}
+
+.eco-about-mv-icon-wrap {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #c7f2d4;
+  color: #0c5938;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.eco-about-mv-title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #064e3b;
+  margin: 0 0 0.2rem 0;
+}
+
+.eco-about-mv-desc {
+  font-size: 0.88rem;
+  color: #334155;
+  margin: 0;
+  font-weight: 500;
+}
+
+@media (max-width: 960px) {
+  .eco-about-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .eco-about-intro-photo {
+    height: 240px;
+  }
+}
+
+/* ==========================================================================
+   GALLERY PAGE REFERENCE LAYOUT
+   ========================================================================== */
+.eco-ref-gallery-section {
+  padding: 1.25rem 0 3.75rem;
+  background: #ffffff;
+}
+
+.eco-ref-filter-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.eco-ref-filter-pill {
+  padding: 0.55rem 1.45rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #173D2B;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.eco-ref-filter-pill:hover {
+  background: #E8F5E9;
+  border-color: #bbf7d0;
+  color: #006B3C;
+}
+
+.eco-ref-filter-pill.active {
+  background: #094c34;
+  border-color: #094c34;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(9, 76, 52, 0.22);
+}
+
+.eco-ref-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.eco-ref-photo-tile {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  height: 195px;
+  background: #f1f5f9;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+}
+
+.eco-ref-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.eco-ref-photo-tile:hover .eco-ref-photo-img {
+  transform: scale(1.06);
+}
+
+.eco-ref-photo-hover {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(3, 32, 20, 0.85) 100%);
+  color: #ffffff;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.eco-ref-photo-tile:hover .eco-ref-photo-hover {
+  opacity: 1;
+}
+
+.eco-ref-photo-cat {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #86efac;
+  margin-bottom: 0.2rem;
+}
+
+.eco-ref-photo-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.eco-ref-photo-loc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #d1fae5;
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 1024px) {
+  .eco-ref-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .eco-ref-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   ACTIVITIES PAGE REFERENCE 4-CARD ROW
+   ========================================================================== */
+.eco-ref-activities-section {
+  padding: 1.5rem 0 3.25rem;
+  background: #ffffff;
+}
+
+.eco-ref-activities-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.35rem;
+}
+
+.eco-ref-activity-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.eco-ref-activity-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0, 107, 60, 0.12);
+  border-color: #86efac;
+}
+
+.eco-ref-activity-img-wrap {
+  height: 175px;
+  overflow: hidden;
+}
+
+.eco-ref-activity-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.eco-ref-activity-card:hover .eco-ref-activity-img {
+  transform: scale(1.05);
+}
+
+.eco-ref-activity-body {
+  padding: 1.15rem 1rem 1.35rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.eco-ref-activity-title {
+  font-size: 1.08rem;
+  font-weight: 750;
+  color: #064e3b;
+  margin: 0;
+  line-height: 1.3;
+}
+
+@media (max-width: 1024px) {
+  .eco-ref-activities-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .eco-ref-activities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   EVENTS PAGE REFERENCE 3-CARD GRID
+   ========================================================================== */
+.eco-ref-events-section {
+  padding: 1.25rem 0 3.75rem;
+  background: #ffffff;
+}
+
+.eco-ref-events-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.eco-ref-event-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eco-ref-event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0, 107, 60, 0.12);
+}
+
+.eco-ref-event-img-wrap {
+  position: relative;
+  height: 185px;
+  overflow: hidden;
+}
+
+.eco-ref-event-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eco-ref-event-date-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #094c34;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.eco-ref-event-day {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.eco-ref-event-month {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.eco-ref-event-body {
+  padding: 1.15rem 1.25rem 1rem;
+  flex: 1;
+}
+
+.eco-ref-event-title {
+  font-size: 1.2rem;
+  font-weight: 750;
+  color: #064e3b;
+  margin: 0 0 0.65rem 0;
+  line-height: 1.3;
+}
+
+.eco-ref-event-loc {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+.eco-ref-event-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.85rem 1.25rem;
+  background: #eaf8ee;
+  color: #064e3b;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-top: 1px solid #d1fae5;
+  transition: background-color 0.18s ease;
+}
+
+.eco-ref-event-footer:hover {
+  background: #dcfce7;
+}
+
+@media (max-width: 960px) {
+  .eco-ref-events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .eco-ref-events-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   ANNOUNCEMENTS PAGE REFERENCE HORIZONTAL LIST
+   ========================================================================== */
+.eco-ref-announcements-section {
+  padding: 2rem 0 3.75rem;
+  background: #ffffff;
+}
+
+.eco-ref-announcements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.eco-ref-announcement-row {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1rem 1.35rem;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  display: grid;
+  grid-template-columns: 175px 1fr auto auto;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.eco-ref-announcement-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 107, 60, 0.1);
+  border-color: #bbf7d0;
+}
+
+.eco-ref-announcement-thumb-wrap {
+  width: 175px;
+  height: 94px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.eco-ref-announcement-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eco-ref-announcement-info {
+  min-width: 0;
+}
+
+.eco-ref-announcement-title {
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: #064e3b;
+  margin: 0 0 0.3rem 0;
+  line-height: 1.3;
+}
+
+.eco-ref-announcement-desc {
+  font-size: 0.92rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.eco-ref-announcement-date {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.eco-ref-announcement-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #094c34;
+  color: #ffffff !important;
+  font-size: 0.88rem;
+  font-weight: 650;
+  padding: 0.6rem 1.35rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+
+.eco-ref-announcement-btn:hover {
+  background-color: #006B3C;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 820px) {
+  .eco-ref-announcement-row {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .eco-ref-announcement-thumb-wrap {
+    width: 100%;
+    height: 180px;
+  }
+
+  .eco-ref-announcement-btn {
+    justify-self: start;
+  }
+}
+
+/* ==========================================================================
+   HOME FOUR PILLARS - LEFT IMAGE & RIGHT CONTENT SPLIT CARDS
+   ========================================================================== */
+.eco-home-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.eco-home-pillar-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: row;
+  min-height: 240px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eco-home-pillar-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 107, 60, 0.1);
+}
+
+.eco-home-pillar-media {
+  position: relative;
+  flex: 0 0 43%;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.eco-home-pillar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eco-home-pillar-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ecfdf5;
+  color: #047857;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid #a7f3d0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.eco-home-pillar-body {
+  flex: 1;
+  padding: 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.eco-home-pillar-metric {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #059669;
+  margin-bottom: 0.25rem;
+}
+
+.eco-home-pillar-title {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.45rem;
+  line-height: 1.3;
+}
+
+.eco-home-pillar-desc {
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+  flex: 1;
+}
+
+.eco-home-pillar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.84rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.eco-home-pillar-btn:hover {
+  background: #E8F5E9;
+  border-color: #86efac;
+  color: #006B3C;
+}
+
+@media (max-width: 960px) {
+  .eco-home-pillars-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .eco-home-pillar-card {
+    flex-direction: column;
+  }
+
+  .eco-home-pillar-media {
+    flex: none;
+    height: 190px;
+  }
 }
 
 .eco-perminu-cards-grid {
@@ -4891,77 +5659,64 @@ body::-webkit-scrollbar {
 
 .eco-perminu-card {
   background: #ffffff;
-  border: 1px solid #edf2f7;
-  border-radius: 20px;
-  padding: 1.5rem 1.35rem;
-  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.65rem 1.25rem;
+  box-shadow: 0 6px 20px -4px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   display: flex;
-  align-items: flex-start;
-  gap: 1.15rem;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.9rem;
+  text-decoration: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .eco-perminu-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 32px -4px rgba(15, 74, 56, 0.12);
-  border-color: #bbf7d0;
+  border-color: #86efac;
 }
 
 .eco-pcard-icon-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
   background-color: #dcfce7;
-  color: #15803d;
+  color: #14532d;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .eco-perminu-card:hover .eco-pcard-icon-wrap {
   transform: scale(1.06);
+  background-color: #bbf7d0;
 }
 
 .eco-pcard-body {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  align-items: center;
   min-width: 0;
 }
 
 .eco-pcard-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 0.35rem 0;
+  color: #064e3b;
+  margin: 0 0 0.25rem 0;
   letter-spacing: -0.01em;
 }
 
 .eco-pcard-desc {
-  font-size: 0.82rem;
-  color: #475569;
-  line-height: 1.45;
-  margin: 0 0 0.85rem 0;
-  font-weight: 400;
-}
-
-.eco-pcard-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: #15803d;
   font-size: 0.85rem;
-  font-weight: 650;
-  text-decoration: none;
-  transition: gap 0.15s ease, color 0.15s ease;
-  margin-top: auto;
-}
-
-.eco-pcard-link:hover {
-  gap: 0.55rem;
-  color: #0f4a38;
+  color: #475569;
+  line-height: 1.4;
+  margin: 0;
+  font-weight: 500;
 }
 
 /* Optional Live Community Updates Section */
@@ -5926,22 +6681,34 @@ body::-webkit-scrollbar {
    GODHAVARI PLATFORM - PROPER, PROFESSIONAL & BALANCED FOOTER
    ========================================================================== */
 
+:root {
+  --footer-bg: #004D2B;
+  --footer-secondary: #006B3C;
+  --footer-heading: #FFFFFF;
+  --footer-text: #D9F2E3;
+  --footer-link: #B7E4C7;
+  --footer-link-hover: #52D273;
+  --footer-border: #38845C;
+  --footer-button: #008C4A;
+  --footer-bottom: #003820;
+}
+
 .eco-footer {
-  background: linear-gradient(180deg, #063d2e 0%, #03231a 100%);
-  color: #e2e8f0;
+  background: var(--footer-bg);
+  color: var(--footer-text);
   padding-top: 1.75rem;
-  margin-top: 2.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 0;
+  border-top: 1px solid var(--footer-border);
 }
 
 .eco-footer a {
-  color: #cbd5e1;
+  color: var(--footer-link);
   text-decoration: none;
   transition: all 0.15s ease;
 }
 
 .eco-footer a:hover {
-  color: #34d399;
+  color: var(--footer-link-hover);
 }
 
 .footer-main-grid {
@@ -5960,7 +6727,7 @@ body::-webkit-scrollbar {
 .footer-tagline {
   font-size: 0.82rem;
   line-height: 1.45;
-  color: #94a3b8;
+  color: var(--footer-text);
   margin-bottom: 0.75rem;
   max-width: 360px;
 }
@@ -5969,9 +6736,9 @@ body::-webkit-scrollbar {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #a7f3d0;
+  background: var(--footer-secondary);
+  border: 1px solid var(--footer-border);
+  color: var(--footer-link);
   padding: 0.25rem 0.65rem;
   border-radius: 6px;
   font-size: 0.72rem;
@@ -5981,7 +6748,7 @@ body::-webkit-scrollbar {
 .footer-col-heading {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--footer-heading);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 0.65rem;
@@ -5997,13 +6764,13 @@ body::-webkit-scrollbar {
 }
 
 .footer-link-list a {
-  color: #94a3b8;
+  color: var(--footer-link);
   font-size: 0.82rem;
   display: inline-block;
 }
 
 .footer-link-list a:hover {
-  color: #34d399;
+  color: var(--footer-link-hover);
   transform: translateX(3px);
 }
 
@@ -6021,34 +6788,35 @@ body::-webkit-scrollbar {
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: var(--footer-text);
   line-height: 1.4;
 }
 
 .footer-contact-icon {
-  color: #34d399;
+  color: var(--footer-link-hover);
   flex-shrink: 0;
   margin-top: 0.15rem;
 }
 
 .footer-contact-item a {
-  color: #cbd5e1;
+  color: var(--footer-link);
 }
 
 .footer-contact-item a:hover {
-  color: #34d399;
+  color: var(--footer-link-hover);
 }
 
 .footer-bottom-bar {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.65rem 0;
+  background: var(--footer-bottom);
+  border-top: 1px solid var(--footer-border);
+  padding: 0.75rem 0;
   font-size: 0.78rem;
-  color: #94a3b8;
+  color: var(--footer-text);
 }
 
 .bottom-bar-flex {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   text-align: center;
   flex-wrap: wrap;
@@ -6057,7 +6825,7 @@ body::-webkit-scrollbar {
 
 .footer-copyright {
   margin: 0;
-  color: #94a3b8;
+  color: var(--footer-text);
 }
 
 .footer-legal-row {
@@ -6124,8 +6892,8 @@ body::-webkit-scrollbar {
   }
 
   .btn-eco-join-pill {
-    padding: 0.32rem 0.85rem;
-    font-size: 0.75rem;
+    padding: 0.48rem 1.4rem;
+    font-size: 0.82rem;
   }
 }
 
@@ -6229,11 +6997,6 @@ body::-webkit-scrollbar {
   .eco-plant-visual-wrap {
     height: 260px;
     max-width: 360px;
-  }
-
-  .eco-perminu-cards-grid {
-    grid-template-columns: 1fr;
-    margin-top: -1.5rem;
   }
 
   .eco-login-card {
@@ -12436,26 +13199,27 @@ body::-webkit-scrollbar {
     transform-origin: bottom right;
   }
 
-  /* 5. Quick Actions 2x2 Grid on Mobile (like reference app screenshot) */
+  /* 5. Quick Actions 2x2 Grid on Mobile */
   .eco-perminu-cards-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 0.75rem !important;
-    margin-top: -1.25rem !important;
+    margin-top: 0 !important;
   }
 
   .eco-perminu-card {
-    padding: 1rem 0.85rem !important;
+    padding: 1.1rem 0.85rem !important;
     border-radius: 16px !important;
     flex-direction: column !important;
-    align-items: flex-start !important;
+    align-items: center !important;
+    text-align: center !important;
     gap: 0.65rem !important;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
   }
 
   .eco-pcard-icon-wrap {
-    width: 38px !important;
-    height: 38px !important;
-    border-radius: 10px !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
   }
 
   .eco-pcard-icon-wrap .eco-pcard-icon {
@@ -12466,43 +13230,21 @@ body::-webkit-scrollbar {
   .eco-pcard-title {
     font-size: 0.92rem !important;
     font-weight: 700 !important;
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
   }
 
   .eco-pcard-desc {
-    font-size: 0.74rem !important;
+    font-size: 0.76rem !important;
     line-height: 1.35 !important;
-    margin-bottom: 0.45rem !important;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .eco-pcard-link {
-    font-size: 0.74rem !important;
-    font-weight: 700 !important;
+    margin-bottom: 0 !important;
   }
 
   /* 6. Mobile Typography & Touch Padding */
   .eco-hero-buttons-overlay {
     flex-direction: row !important;
-    width: 100% !important;
-    max-width: 340px !important;
-    gap: 0.5rem !important;
-  }
-
-  .btn-hero-primary-green,
-  .btn-hero-outline-green {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    width: auto !important;
     justify-content: center !important;
-    padding: 0.48rem 0.65rem !important;
-    font-size: 0.75rem !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
   }
 
   /* Responsive Cards & Containers Across Sectional Pages */

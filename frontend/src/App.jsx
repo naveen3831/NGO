@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Components
@@ -26,10 +26,12 @@ import AwarenessSchools from './pages/awareness/AwarenessSchools';
 import AwarenessWorkshops from './pages/awareness/AwarenessWorkshops';
 import AwarenessCampaigns from './pages/awareness/AwarenessCampaigns';
 import Events from './pages/Events';
+import EventDetails from './pages/EventDetails';
 import EventsUpcoming from './pages/events/EventsUpcoming';
 import EventsVolunteerMeetings from './pages/events/EventsVolunteerMeetings';
 import EventsPastReports from './pages/events/EventsPastReports';
 import Announcements from './pages/Announcements';
+import AnnouncementDetails from './pages/AnnouncementDetails';
 import AnnouncementsNews from './pages/announcements/AnnouncementsNews';
 import AnnouncementsPress from './pages/announcements/AnnouncementsPress';
 import Gallery from './pages/Gallery';
@@ -51,6 +53,9 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminGallery from './pages/admin/AdminGallery';
+import AdminContacts from './pages/admin/AdminContacts';
+import AdminDonations from './pages/admin/AdminDonations';
 
 // Member Pages
 import MemberLayout from './pages/member/MemberLayout';
@@ -89,10 +94,23 @@ const PublicLayout = () => {
   );
 };
 
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (!hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [pathname, hash]);
+
+  return null;
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <Routes>
           {/* Public Website Routes */}
           <Route element={<PublicLayout />}>
@@ -114,9 +132,11 @@ function App() {
             <Route path="/events/upcoming" element={<EventsUpcoming />} />
             <Route path="/events/volunteer-meetings" element={<EventsVolunteerMeetings />} />
             <Route path="/events/past-reports" element={<EventsPastReports />} />
+            <Route path="/events/:id" element={<EventDetails />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/announcements/news" element={<AnnouncementsNews />} />
             <Route path="/announcements/press" element={<AnnouncementsPress />} />
+            <Route path="/announcements/:id" element={<AnnouncementDetails />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/register" element={<Register />} />
@@ -142,6 +162,9 @@ function App() {
             <Route path="events" element={<AdminEvents />} />
             <Route path="meetings" element={<AdminMeetings />} />
             <Route path="announcements" element={<AdminAnnouncements />} />
+            <Route path="gallery" element={<AdminGallery />} />
+            <Route path="donations" element={<AdminDonations />} />
+            <Route path="contacts" element={<AdminContacts />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="website" element={<AdminWebsite />} />
             <Route path="reports" element={<AdminReports />} />

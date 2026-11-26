@@ -628,7 +628,8 @@ const ActivityPlantation = () => {
           {/* Adopt a Tree Callout */}
           <div style={{
             marginTop: '3rem',
-            background: 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
+            background: 'var(--footer-secondary, #006B3C)',
+            borderBottom: '1px solid var(--footer-border, #38845C)',
             borderRadius: '16px',
             padding: '2rem 2.25rem',
             color: '#ffffff',

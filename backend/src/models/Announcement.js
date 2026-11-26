@@ -23,7 +23,7 @@ const announcementSchema = new mongoose.Schema(
     },
     visibility: {
       type: String,
-      enum: ['Public', 'Members Only', 'All'],
+      enum: ['Public', 'Members Only', 'Volunteers Only', 'All'],
       default: 'All',
     },
     isPublished: {

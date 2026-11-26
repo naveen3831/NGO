@@ -764,7 +764,7 @@ const AboutMission = () => {
       </section>
 
       {/* 6. CALL TO ACTION BANNER */}
-      <section style={{ padding: '4.5rem 1.5rem', background: '#064e3b', color: '#ffffff' }}>
+      <section style={{ padding: '4.5rem 1.5rem', background: 'var(--footer-secondary, #006B3C)', color: 'var(--footer-heading, #FFFFFF)', borderBottom: '1px solid var(--footer-border, #38845C)' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
           
           <span style={{

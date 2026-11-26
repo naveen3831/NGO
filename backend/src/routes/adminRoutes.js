@@ -16,6 +16,7 @@ import {
   updateEvent,
   deleteEvent,
   getMemberEvents,
+  reviewVolunteerRequest,
 } from '../controllers/eventController.js';
 import {
   getAllMeetings,
@@ -48,6 +49,17 @@ import {
   updateWebsiteContent,
 } from '../controllers/websiteController.js';
 import { updateAdminSettings } from '../controllers/authController.js';
+import {
+  getAllContactMessages,
+  updateContactMessageStatus,
+  deleteContactMessage,
+  getPublicGallery,
+  createGalleryItem,
+  deleteGalleryItem,
+  getAllDonations,
+  createDonation,
+  deleteDonation,
+} from '../controllers/communityController.js';
 
 const router = express.Router();
 
@@ -79,6 +91,7 @@ router.route('/memberships/:id').patch(updateMembershipById).delete(deleteMember
 // Events CRUD
 router.route('/events').get(getMemberEvents).post(createEvent);
 router.route('/events/:id').patch(updateEvent).delete(deleteEvent);
+router.patch('/events/:id/volunteers/:requestId', reviewVolunteerRequest);
 
 // Meetings CRUD
 router.route('/meetings').get(getAllMeetings).post(createMeeting);
@@ -98,5 +111,18 @@ router.route('/audit-logs').get(getAuditLogs).post(createAuditLog);
 router.get('/rbac/overview', getRbacOverview);
 router.post('/rbac/assign', assignUserAccess);
 router.patch('/rbac/users/:id/status', updateUserStatus);
+
+// Contact Messages Management
+router.get('/contacts', getAllContactMessages);
+router.patch('/contacts/:id', updateContactMessageStatus);
+router.delete('/contacts/:id', deleteContactMessage);
+
+// Gallery Management
+router.route('/gallery').get(getPublicGallery).post(createGalleryItem);
+router.delete('/gallery/:id', deleteGalleryItem);
+
+// Donations Management
+router.route('/donations').get(getAllDonations).post(createDonation);
+router.delete('/donations/:id', deleteDonation);
 
 export default router;
