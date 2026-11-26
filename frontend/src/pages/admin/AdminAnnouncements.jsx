@@ -23,6 +23,7 @@ import {
   FileText,
   Send,
   ArrowLeft,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 const AdminAnnouncements = () => {
@@ -45,6 +46,7 @@ const AdminAnnouncements = () => {
     category: 'General Update',
     priority: 'Normal',
     visibility: 'All',
+    imageUrl: '',
   });
 
   const [editFormData, setEditFormData] = useState({
@@ -53,7 +55,26 @@ const AdminAnnouncements = () => {
     category: 'General Update',
     priority: 'Normal',
     visibility: 'All',
+    imageUrl: '',
   });
+
+  const handleImageFileChange = (e, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setFeedback({ type: 'error', text: 'Please select an image smaller than 5 MB.' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (isEdit) {
+        setEditFormData((prev) => ({ ...prev, imageUrl: reader.result }));
+      } else {
+        setFormData((prev) => ({ ...prev, imageUrl: reader.result }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const fetchAnnouncements = async () => {
     setLoading(true);
@@ -89,6 +110,7 @@ const AdminAnnouncements = () => {
         category: 'General Update',
         priority: 'Normal',
         visibility: 'All',
+        imageUrl: '',
       });
       fetchAnnouncements();
     } catch (err) {
@@ -112,6 +134,7 @@ const AdminAnnouncements = () => {
       category: item.category || 'General Update',
       priority: item.priority || 'Normal',
       visibility: item.visibility || 'All',
+      imageUrl: item.imageUrl || '',
     });
   };
 
@@ -699,6 +722,46 @@ const AdminAnnouncements = () => {
               </div>
 
               <div className="ref-form-field">
+                <label className="ref-form-label">Announcement Image (Optional)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageFileChange(e, true)}
+                      className="ref-form-input"
+                      style={{ flex: '1 1 220px', padding: '0.45rem 0.65rem' }}
+                    />
+                    <input
+                      type="url"
+                      placeholder="Or paste image URL (https://...)"
+                      value={editFormData.imageUrl?.startsWith('data:') ? '' : editFormData.imageUrl || ''}
+                      onChange={(e) => setEditFormData({ ...editFormData, imageUrl: e.target.value })}
+                      className="ref-form-input"
+                      style={{ flex: '1 1 240px' }}
+                    />
+                  </div>
+                  {editFormData.imageUrl && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <img
+                        src={editFormData.imageUrl}
+                        alt="Announcement preview"
+                        style={{ width: '120px', height: '72px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditFormData({ ...editFormData, imageUrl: '' })}
+                        className="eco-cms-btn-secondary"
+                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="ref-form-field">
                 <label className="ref-form-label">Announcement Details & Content *</label>
                 <textarea
                   rows={6}
@@ -858,6 +921,46 @@ const AdminAnnouncements = () => {
                   <option value="Public">Public Only</option>
                   <option value="Members Only">Members Only</option>
                 </select>
+              </div>
+
+              <div className="ref-form-field">
+                <label className="ref-form-label">Announcement Image (Optional)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageFileChange(e, false)}
+                      className="ref-form-input"
+                      style={{ flex: '1 1 220px', padding: '0.45rem 0.65rem' }}
+                    />
+                    <input
+                      type="url"
+                      placeholder="Or paste image URL (https://...)"
+                      value={formData.imageUrl?.startsWith('data:') ? '' : formData.imageUrl || ''}
+                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                      className="ref-form-input"
+                      style={{ flex: '1 1 240px' }}
+                    />
+                  </div>
+                  {formData.imageUrl && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                      <img
+                        src={formData.imageUrl}
+                        alt="Announcement preview"
+                        style={{ width: '120px', height: '72px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, imageUrl: '' })}
+                        className="eco-cms-btn-secondary"
+                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="ref-form-field">

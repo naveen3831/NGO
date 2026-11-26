@@ -65,9 +65,10 @@ const Footer = () => {
             <ul className="footer-link-list">
               <li><Link to="/">Home</Link></li>
               <li><Link to="/about">About Our NGO</Link></li>
-              <li><Link to="/activities">Cleanliness Activities</Link></li>
+              <li><Link to="/initiatives">Our Initiatives</Link></li>
+              <li><Link to="/initiatives?tab=activities">Cleanliness Activities</Link></li>
               <li><Link to="/awareness">Awareness Programs</Link></li>
-              <li><Link to="/gallery">Photo Gallery</Link></li>
+              <li><Link to="/initiatives?tab=gallery">Photo Gallery</Link></li>
             </ul>
           </div>
 
@@ -77,7 +78,7 @@ const Footer = () => {
             <ul className="footer-link-list">
               <li><Link to="/register">Volunteer Registration</Link></li>
               <li><Link to="/login">Member Portal Login</Link></li>
-              <li><Link to="/events">Upcoming Cleanups & Drives</Link></li>
+              <li><Link to="/initiatives?tab=events">Upcoming Cleanups &amp; Drives</Link></li>
               <li><Link to="/announcements">News & Updates</Link></li>
               <li><Link to="/contact">Contact & Help Desk</Link></li>
             </ul>

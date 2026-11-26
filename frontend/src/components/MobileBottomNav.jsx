@@ -1,118 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   Home,
-  Brush,
   Sprout,
-  Waves,
-  Users,
-  BookOpen,
   Calendar,
-  Clock,
-  Megaphone,
-  FileText,
-  Info,
-  Target,
-  Star,
-  ChevronUp,
+  Bell,
+  User,
   X,
-  ArrowRight,
   Compass,
-  Phone
+  BookOpen,
+  Image as ImageIcon,
+  Megaphone,
+  CreditCard,
+  Clock,
+  ArrowRight,
 } from 'lucide-react';
 
-const mobileNavSections = [
+const getMobileNavSections = (isMember, isAdmin) => [
   {
     id: 'home',
     label: 'Home',
     path: '/',
     icon: Home,
-    hasSubmenu: false
-  },
-  {
-    id: 'activities',
-    label: 'Activities',
-    fullTitle: 'Our Activities',
-    path: '/activities',
-    icon: Compass,
-    hasSubmenu: true,
-    children: [
-      { label: 'Cleanliness Drives', path: '/activities/cleanliness', icon: Brush, desc: 'Weekend ghat & riverbank sanitation' },
-      { label: 'Tree Plantation', path: '/activities/plantation', icon: Sprout, desc: 'Native riparian afforestation drives' },
-      { label: 'River Conservation', path: '/activities/conservation', icon: Waves, desc: 'Water testing & outfall net defense' },
-      { label: 'Community Programs', path: '/activities/community', icon: Users, desc: 'Civic assemblies & eco-stewardship' },
-    ]
-  },
-  {
-    id: 'awareness',
-    label: 'Awareness',
-    fullTitle: 'Awareness Programs',
-    path: '/awareness',
-    icon: BookOpen,
-    hasSubmenu: true,
-    children: [
-      { label: 'School & College Drives', path: '/awareness/schools', icon: BookOpen, desc: 'Eco-clubs & student youth modules' },
-      { label: 'Public Workshops', path: '/awareness/workshops', icon: Users, desc: 'Devotee & citizen training sessions' },
-      { label: 'Youth Campaigns', path: '/awareness/campaigns', icon: Megaphone, desc: 'Basin-wide environmental rallies' },
-    ]
+    hasSubmenu: false,
   },
   {
     id: 'events',
     label: 'Events',
-    fullTitle: 'Drives & Events',
-    path: '/events',
+    path: '/initiatives?tab=events',
     icon: Calendar,
-    hasSubmenu: true,
-    children: [
-      { label: 'Upcoming Drives & Events', path: '/events/upcoming', icon: Calendar, desc: 'Register for scheduled weekend drives' },
-      { label: 'Volunteer Meetings', path: '/events/volunteer-meetings', icon: Users, desc: 'Monthly chapter strategy assemblies' },
-      { label: 'Past Reports & Audits', path: '/events/past-reports', icon: Clock, desc: 'Public records of diverted debris' },
-    ]
+    hasSubmenu: false,
   },
   {
-    id: 'announcements',
+    id: 'updates',
     label: 'Updates',
-    fullTitle: 'Announcements',
     path: '/announcements',
-    icon: Megaphone,
-    hasSubmenu: true,
-    children: [
-      { label: 'Latest News & Stories', path: '/announcements/news', icon: Megaphone, desc: 'Field dispatches & ground reporting' },
-      { label: 'Press Releases & Statements', path: '/announcements/press', icon: FileText, desc: 'Official communiqués & white papers' },
-    ]
+    icon: Bell,
+    hasSubmenu: false,
   },
   {
-    id: 'about',
-    label: 'About Us',
-    fullTitle: 'About Us',
-    path: '/about',
-    icon: Info,
-    hasSubmenu: true,
-    children: [
-      { label: 'About Our NGO', path: '/about/ngo', icon: Info, desc: 'History, leadership & legal registration' },
-      { label: 'Mission & Vision', path: '/about/mission', icon: Target, desc: 'Core charter for Godavari conservation' },
-      { label: 'Our Objectives', path: '/about/objectives', icon: Star, desc: 'Five operational targets & metrics' },
-      { label: 'Contact Us', path: '/contact', icon: Phone, desc: 'Helplines, secretariat desk & inquiry form' },
-    ]
-  }
+    id: 'profile',
+    label: 'Profile',
+    path: isAdmin ? '/admin' : isMember ? '/member/profile' : '/login',
+    icon: User,
+    hasSubmenu: false,
+  },
 ];
 
 const MobileBottomNav = () => {
+  const { user, isAdmin, isMember } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [activePopup, setActivePopup] = useState(null);
 
+  const mobileNavSections = getMobileNavSections(Boolean(user && isMember), Boolean(user && isAdmin));
+
   // Close popup whenever route changes
   useEffect(() => {
     setActivePopup(null);
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   const isSectionActive = (section) => {
-    if (section.path === '/') {
+    if (section.id === 'home') {
       return location.pathname === '/';
     }
-    if (section.id === 'about' && location.pathname === '/contact') {
-      return true;
+    if (section.id === 'events') {
+      return (
+        (location.pathname === '/initiatives' && location.search.includes('tab=events')) ||
+        location.pathname.startsWith('/events')
+      );
+    }
+    if (section.id === 'initiatives') {
+      return (
+        (location.pathname.startsWith('/initiatives') && !location.search.includes('tab=events')) ||
+        location.pathname.startsWith('/activities') ||
+        location.pathname.startsWith('/awareness') ||
+        location.pathname.startsWith('/gallery')
+      );
+    }
+    if (section.id === 'updates') {
+      return location.pathname.startsWith('/announcements');
+    }
+    if (section.id === 'profile') {
+      return (
+        location.pathname.startsWith('/member') ||
+        location.pathname.startsWith('/admin') ||
+        location.pathname === '/login'
+      );
     }
     return location.pathname.startsWith(section.path);
   };

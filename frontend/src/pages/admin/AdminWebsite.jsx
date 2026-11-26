@@ -29,6 +29,7 @@ import {
 
 const defaultWebsiteData = {
   orgName: 'Godhavari Nadhi Paryavarana Parishubratha',
+  logoUrl: '',
   tagline: 'Dedicated to the cleanliness, ecological revival, and purity of the sacred River Godavari',
   mission: 'To restore and protect the sacred Godavari River through sustained community cleanliness drives, riverbed desiltation, plastic pollution prevention, and widespread environmental awareness.',
   vision: 'A pristine, free-flowing, and vibrant River Godavari cherished and guarded by every riverbank community for generations to come.',
@@ -78,6 +79,7 @@ const AdminWebsite = () => {
         if (res.data) {
           setFormData({
             orgName: res.data.orgName || defaultWebsiteData.orgName,
+            logoUrl: res.data.logoUrl || '',
             tagline: res.data.tagline || defaultWebsiteData.tagline,
             mission: res.data.mission || defaultWebsiteData.mission,
             vision: res.data.vision || defaultWebsiteData.vision,
@@ -161,6 +163,10 @@ const AdminWebsite = () => {
 
     try {
       await api.patch('/admin/website', formData);
+      try {
+        localStorage.setItem('ngo_custom_logo', formData.logoUrl || '');
+        window.dispatchEvent(new Event('ngo-logo-updated'));
+      } catch {}
       setFeedback({
         type: 'success',
         message: 'Organization content & live statistics successfully saved and published!',
@@ -347,6 +353,73 @@ const AdminWebsite = () => {
             </div>
 
             <div className="cms-section-body">
+              {/* Organization Logo Upload / URL */}
+              <div className="cms-field" style={{ marginBottom: '1.25rem', paddingBottom: '1.25rem', borderBottom: '1px solid #f1f5f9' }}>
+                <label className="cms-label">
+                  <Sparkles size={14} className="text-emerald-700" />
+                  <span>Organization Logo</span>
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div
+                    style={{
+                      width: '56px',
+                      height: '56px',
+                      borderRadius: '12px',
+                      border: '1px solid #d1fae5',
+                      background: '#f8fafc',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {formData.logoUrl ? (
+                      <img src={formData.logoUrl} alt="Organization Logo Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    ) : (
+                      <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#047857', textAlign: 'center' }}>Default SVG</span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', flex: 1, alignItems: 'center' }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (file.size > 5 * 1024 * 1024) {
+                          setFeedback({ type: 'danger', message: 'Please select a logo image smaller than 5 MB.' });
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onloadend = () => setFormData((prev) => ({ ...prev, logoUrl: reader.result }));
+                        reader.readAsDataURL(file);
+                      }}
+                      className="cms-input"
+                      style={{ flex: '1 1 200px', padding: '0.45rem 0.65rem' }}
+                    />
+                    <input
+                      type="url"
+                      placeholder="Or paste logo image URL (https://...)"
+                      value={formData.logoUrl?.startsWith('data:') ? '' : formData.logoUrl || ''}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, logoUrl: e.target.value }))}
+                      className="cms-input"
+                      style={{ flex: '1 1 220px' }}
+                    />
+                    {formData.logoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, logoUrl: '' }))}
+                        className="eco-cms-btn-secondary"
+                        style={{ padding: '0.45rem 0.85rem', fontSize: '0.78rem' }}
+                      >
+                        Reset to Default
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* 2-Column: Official Name & Tagline */}
               <div className="ref-form-grid-2">
                 <div className="cms-field">

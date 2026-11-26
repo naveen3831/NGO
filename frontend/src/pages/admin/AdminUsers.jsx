@@ -284,25 +284,13 @@ export const MODULE_PERMISSIONS = [
   { id: 'notifications_send', label: 'Dispatch Push Alerts & SMS', category: 'Notifications', desc: 'Send emergency push broadcasts to members.' },
   { id: 'reports_export', label: 'View & Export Analytical Reports', category: 'Reports', desc: 'Download river cleanliness and finance spreadsheets.' },
   { id: 'website_cms', label: 'Update Website CMS & Live Counters', category: 'Website Content', desc: 'Configure hero banners, metrics, and contacts.' },
-  { id: 'rbac_manage', label: 'Manage Roles & Access Control', category: 'Access Control', desc: 'Super Admin authority to assign roles and revoke access.' },
+  { id: 'rbac_manage', label: 'Manage Roles & Access Control', category: 'Access Control', desc: 'Admin authority to assign roles and revoke access.' },
 ];
 
 const getDefaultPermissionsForRole = (role) => {
   switch (role) {
-    case ROLES.SUPER_ADMIN:
-      return MODULE_PERMISSIONS.map((p) => p.id);
     case ROLES.ADMIN:
-      return [
-        'members_view',
-        'members_manage',
-        'events_view',
-        'events_manage',
-        'announcements_view',
-        'announcements_manage',
-        'notifications_send',
-        'reports_export',
-        'website_cms',
-      ];
+      return MODULE_PERMISSIONS.map((p) => p.id);
     case ROLES.STAFF_COORDINATOR:
       return ['events_view', 'events_manage', 'announcements_view', 'announcements_manage', 'notifications_send', 'members_view'];
     case ROLES.GENERAL_VOLUNTEER:
@@ -318,14 +306,14 @@ const initialDefaultUsers = [
     name: 'Dr. K. V. Subba Rao',
     email: 'admin@gmail.com',
     phone: '+91 944 012 3456',
-    role: ROLES.SUPER_ADMIN,
+    role: ROLES.ADMIN,
     designation: 'President & Executive Trustee',
     permissions: MODULE_PERMISSIONS.map((p) => p.id),
-    assignedBy: { name: 'Root Genesis', email: 'system@godhavari.org', role: ROLES.SUPER_ADMIN },
+    assignedBy: { name: 'Root Genesis', email: 'system@godhavari.org', role: ROLES.ADMIN },
     accessGrantedDate: '2026-01-01T09:00:00Z',
     accessExpiryDate: null,
     accountStatus: 'Active',
-    accessReason: 'Chief NGO Executive & Founding Trustee (Root Administrator)',
+    accessReason: 'Chief NGO Executive & Founding Trustee (Administrator)',
   },
   {
     _id: 'usr-02',
@@ -336,7 +324,7 @@ const initialDefaultUsers = [
     role: ROLES.ADMIN,
     designation: 'Riverfront Operations Lead',
     permissions: ['members_view', 'members_manage', 'events_view', 'events_manage', 'announcements_view', 'announcements_manage', 'website_cms', 'reports_export'],
-    assignedBy: { name: 'Dr. K. V. Subba Rao', email: 'admin@gmail.com', role: ROLES.SUPER_ADMIN },
+    assignedBy: { name: 'Dr. K. V. Subba Rao', email: 'admin@gmail.com', role: ROLES.ADMIN },
     accessGrantedDate: '2026-02-15T10:30:00Z',
     accessExpiryDate: null,
     accountStatus: 'Active',
@@ -475,12 +463,12 @@ const AdminUsers = () => {
     });
   }, [capabilities, matrixSearch, matrixCategoryFilter]);
 
-  // Authority Simulator: allows testing the UI as Super Admin, Admin, Staff Coordinator, or General Volunteer
-  const [simulatedRole, setSimulatedRole] = useState(ROLES.SUPER_ADMIN);
+  // Authority Simulator: allows testing the UI as Admin, Staff Coordinator, or General Volunteer
+  const [simulatedRole, setSimulatedRole] = useState(ROLES.ADMIN);
 
   // Dynamic Authority Calculation based on logged-in or simulated role
   const effectiveRole = simulatedRole;
-  const isSuperAdmin = effectiveRole === ROLES.SUPER_ADMIN;
+  const isSuperAdmin = false;
   const isAdmin = effectiveRole === ROLES.ADMIN;
 
   // Modals & Panels
@@ -567,26 +555,10 @@ const AdminUsers = () => {
 
   // Toggle Capability Permission on Matrix table
   const handleToggleCapability = (capId, roleKey) => {
-    if (!isSuperAdmin && !isAdmin) {
+    if (!isAdmin) {
       setFeedback({
         type: 'warning',
-        message: 'Security Notice: Only Super Admin and Admin can modify operational permissions.',
-      });
-      return;
-    }
-
-    if (roleKey === 'super' && !isSuperAdmin) {
-      setFeedback({
-        type: 'danger',
-        message: 'Security Block: Only Super Admin can modify root operational permissions.',
-      });
-      return;
-    }
-
-    if (isAdmin && (roleKey === 'super' || roleKey === 'admin')) {
-      setFeedback({
-        type: 'danger',
-        message: 'Authority Limit: Administrators cannot alter Super Admin or Admin role capabilities.',
+        message: 'Security Notice: Only Admin can modify operational permissions.',
       });
       return;
     }
@@ -596,9 +568,7 @@ const AdminUsers = () => {
         if (item.id === capId) {
           const newVal = !item[roleKey];
           const roleLabel =
-            roleKey === 'super'
-              ? 'Super Admin'
-              : roleKey === 'admin'
+            roleKey === 'admin'
               ? 'Admin'
               : roleKey === 'staff'
               ? 'Staff Coordinator'
@@ -716,40 +686,26 @@ const AdminUsers = () => {
 
   // Available Roles for Assigning depending dynamically on logged-in user's authority
   const assignableRoles = useMemo(() => {
-    if (isSuperAdmin) {
+    if (isAdmin) {
       return [
-        { role: ROLES.SUPER_ADMIN, desc: 'Full application & system root control', badgeClass: 'ref-tier-life' },
         { role: ROLES.ADMIN, desc: 'Administrative operations & staff management', badgeClass: 'ref-tier-annual' },
         { role: ROLES.STAFF_COORDINATOR, desc: 'Event coordination & volunteer dispatch', badgeClass: 'ref-tier-volunteer' },
         { role: ROLES.GENERAL_VOLUNTEER, desc: 'Assigned community cleanup activities', badgeClass: 'ref-tier-annual' },
       ];
     }
-    if (isAdmin) {
-      return [
-        { role: ROLES.STAFF_COORDINATOR, desc: 'Event coordination & volunteer dispatch', badgeClass: 'ref-tier-volunteer' },
-        { role: ROLES.GENERAL_VOLUNTEER, desc: 'Assigned community cleanup activities', badgeClass: 'ref-tier-annual' },
-      ];
-    }
     return [];
-  }, [isSuperAdmin, isAdmin]);
+  }, [isAdmin]);
 
   const handleOpenAssignModal = (targetUser = null) => {
-    if (!isSuperAdmin && !isAdmin) {
+    if (!isAdmin) {
       setFeedback({
         type: 'warning',
-        message: 'Security Notice: Only Super Admin and Admin can assign or modify roles.',
+        message: 'Security Notice: Only Admin can assign or modify roles.',
       });
       return;
     }
 
     if (targetUser) {
-      if (isAdmin && targetUser.role === ROLES.SUPER_ADMIN) {
-        setFeedback({
-          type: 'danger',
-          message: 'Permission Denied: Administrators cannot modify Super Admin accounts.',
-        });
-        return;
-      }
 
       setSelectedUserForAssign(targetUser);
       setAssignForm({
@@ -990,14 +946,13 @@ const AdminUsers = () => {
               onChange={(e) => setSimulatedRole(e.target.value)}
               className="rbac-sim-select"
             >
-              <option value={ROLES.SUPER_ADMIN}>👑 Super Admin</option>
               <option value={ROLES.ADMIN}>🛡️ Admin</option>
               <option value={ROLES.STAFF_COORDINATOR}>📋 Staff Coordinator</option>
               <option value={ROLES.GENERAL_VOLUNTEER}>🌱 General Volunteer</option>
             </select>
           </div>
 
-          {(isSuperAdmin || isAdmin) ? (
+          {isAdmin ? (
             <button
               type="button"
               onClick={() => handleOpenAssignModal(null)}
@@ -1013,7 +968,7 @@ const AdminUsers = () => {
               disabled
               className="ref-btn-enroll"
               style={{ opacity: 0.5, cursor: 'not-allowed' }}
-              title="Only Super Admin and Admin can assign roles"
+              title="Only Admin can assign roles"
             >
               <Lock size={15} />
               <span>Assign Access (Restricted)</span>
@@ -1046,8 +1001,8 @@ const AdminUsers = () => {
         </div>
       )}
 
-      {/* 3. 7-Card Professional KPI Metric Strip - 1 Single Row, Zero Orphan Wrap */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '0.55rem', width: '100%' }}>
+      {/* 3. 6-Card Professional KPI Metric Strip - 1 Single Row, Zero Orphan Wrap */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: '0.55rem', width: '100%' }}>
         <div className="ref-kpi-card" style={{ padding: '0.7rem 0.65rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.35rem', minWidth: 0, borderRadius: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <div className="ref-kpi-icon-bubble ref-bubble-blue" style={{ width: '32px', height: '32px', minWidth: '32px' }}>
@@ -1057,18 +1012,6 @@ const AdminUsers = () => {
           </div>
           <span className="ref-kpi-label" style={{ fontSize: '0.71rem', fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0, letterSpacing: '-0.01em' }}>
             Total Users
-          </span>
-        </div>
-
-        <div className="ref-kpi-card" style={{ padding: '0.7rem 0.65rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.35rem', minWidth: 0, borderRadius: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            <div className="ref-kpi-icon-bubble ref-bubble-purple" style={{ width: '32px', height: '32px', minWidth: '32px' }}>
-              <Crown size={16} className="text-purple-600" />
-            </div>
-            <span className="ref-kpi-value" style={{ fontSize: '1.25rem', fontWeight: 800, color: '#6d28d9' }}>{kpis.superAdminCount}</span>
-          </div>
-          <span className="ref-kpi-label" style={{ fontSize: '0.71rem', fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0, letterSpacing: '-0.01em' }}>
-            Super Admins
           </span>
         </div>
 
@@ -1239,16 +1182,7 @@ const AdminUsers = () => {
                         <span>OPERATIONAL CAPABILITY</span>
                       </div>
                     </th>
-                    <th style={{ width: '15%', textAlign: 'center', backgroundColor: '#fdfbff', padding: '0.75rem 0.4rem', borderLeft: '1px solid #e2e8f0' }}>
-                      <div className="matrix-role-th">
-                        <span className="matrix-role-pill" style={{ backgroundColor: '#faf5ff', color: '#6d28d9', border: '1px solid #ddd6fe' }}>
-                          <Crown size={12} fill="#9333ea" />
-                          <span>Super Admin</span>
-                        </span>
-                        <span className="matrix-role-sub" style={{ color: '#7e22ce' }}>Root Authority</span>
-                      </div>
-                    </th>
-                    <th style={{ width: '15%', textAlign: 'center', backgroundColor: '#f8fbff', padding: '0.75rem 0.4rem', borderLeft: '1px solid #e2e8f0' }}>
+                    <th style={{ width: '20%', textAlign: 'center', backgroundColor: '#f8fbff', padding: '0.75rem 0.4rem', borderLeft: '1px solid #e2e8f0' }}>
                       <div className="matrix-role-th">
                         <span className="matrix-role-pill" style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>
                           <ShieldCheck size={12} />
@@ -1280,7 +1214,7 @@ const AdminUsers = () => {
                 <tbody>
                   {filteredCapabilities.length === 0 ? (
                     <tr>
-                      <td colSpan={5} style={{ textAlign: 'center', padding: '3.5rem', color: '#64748b' }}>
+                      <td colSpan={4} style={{ textAlign: 'center', padding: '3.5rem', color: '#64748b' }}>
                         <Sliders size={28} style={{ margin: '0 auto 0.5rem', opacity: 0.4 }} />
                         <p style={{ margin: 0, fontWeight: 600, color: '#334155' }}>No capabilities match &ldquo;{matrixSearch}&rdquo;</p>
                         <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>Try adjusting your search keyword or selected category filter.</p>
@@ -1329,26 +1263,15 @@ const AdminUsers = () => {
                             </div>
                           </td>
 
-                          {/* 1. SUPER ADMIN (Root Immunity) */}
-                          <td style={{ textAlign: 'center', borderLeft: '1px solid #f1f5f9' }}>
-                            <div
-                              className="matrix-status-pill allowed root-badge"
-                              title="Super Admin root capability (Immunity: Always Granted)"
-                            >
-                              <Check size={12} strokeWidth={3} />
-                              <span>Allowed</span>
-                            </div>
-                          </td>
-
                           {/* 2. ADMIN */}
                           <td style={{ textAlign: 'center', borderLeft: '1px solid #f1f5f9' }}>
                             <button
                               type="button"
                               onClick={() => handleToggleCapability(row.id, 'admin')}
-                              disabled={!isSuperAdmin}
-                              className={`matrix-status-pill ${row.admin ? 'allowed' : 'restricted'} ${isSuperAdmin ? 'interactive' : ''}`}
+                              disabled={!isAdmin}
+                              className={`matrix-status-pill ${row.admin ? 'allowed' : 'restricted'} ${isAdmin ? 'interactive' : ''}`}
                               title={
-                                isSuperAdmin
+                                isAdmin
                                   ? (row.admin ? 'Admin: Granted. Click to revoke.' : 'Admin: Restricted. Click to grant.')
                                   : (row.admin ? 'Granted to Administrator' : 'Restricted for Administrator')
                               }
@@ -1441,10 +1364,6 @@ const AdminUsers = () => {
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#94a3b8' }}></span>
                   <span>No Access (Restricted)</span>
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <Crown size={12} className="text-purple-600" />
-                  <span>Super Admin Root Immutable</span>
-                </span>
               </div>
             </div>
           </div>
@@ -1486,7 +1405,6 @@ const AdminUsers = () => {
                   className="ref-select-input"
                 >
                   <option value="All">All Roles</option>
-                  <option value={ROLES.SUPER_ADMIN}>Super Admin</option>
                   <option value={ROLES.ADMIN}>Admin</option>
                   <option value={ROLES.STAFF_COORDINATOR}>Staff Coordinator</option>
                   <option value={ROLES.GENERAL_VOLUNTEER}>General Volunteer</option>
@@ -1871,7 +1789,7 @@ const AdminUsers = () => {
                     {selectedUserForAssign ? `Edit Access: ${selectedUserForAssign.name}` : 'Assign Role & Access Permissions'}
                   </h3>
                   <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-                    Authority: {effectiveRole} ({isSuperAdmin ? 'Full 4-tier delegation' : 'Staff/Volunteer delegation only'})
+                    Authority: {effectiveRole} ({isAdmin ? 'Full role delegation' : 'View only'})
                   </p>
                 </div>
               </div>
@@ -1943,7 +1861,7 @@ const AdminUsers = () => {
                       <span className="required-star">*</span>
                     </label>
                     <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                      {isAdmin ? 'Admins can delegate Staff & Volunteer roles' : 'Super Admins can delegate all roles'}
+                      Admins can delegate Admin, Staff &amp; Volunteer roles
                     </span>
                   </div>
 
@@ -2182,7 +2100,7 @@ const AdminUsers = () => {
                 <div>
                   <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Granted By</span>
                   <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', fontWeight: 600, color: '#1e293b' }}>
-                    {viewingUser.assignedBy?.name || 'Dr. K. V. Subba Rao'} ({viewingUser.assignedBy?.role || 'Super Admin'})
+                    {viewingUser.assignedBy?.name || 'Dr. K. V. Subba Rao'} ({viewingUser.assignedBy?.role || 'Admin'})
                   </p>
                 </div>
 

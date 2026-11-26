@@ -21,7 +21,7 @@ const membershipSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Active', 'Pending Approval', 'Expired', 'Suspended'],
+      enum: ['Active', 'Pending', 'Pending Approval', 'Approved', 'Rejected', 'Expired', 'Suspended'],
       default: 'Active',
     },
     validFrom: {
@@ -50,6 +50,20 @@ const membershipSchema = new mongoose.Schema(
     },
     remarks: {
       type: String,
+    },
+    requestedTier: {
+      type: String,
+      enum: ['Life Member', 'Annual Member', 'Volunteer Member', 'Patron', 'Student Member', null],
+      default: null,
+    },
+    tierRequestStatus: {
+      type: String,
+      enum: ['None', 'Pending', 'Approved', 'Rejected'],
+      default: 'None',
+    },
+    tierRequestDate: {
+      type: Date,
+      default: null,
     },
   },
   {

@@ -77,7 +77,7 @@ export const getAllAnnouncements = async (req, res, next) => {
 // @access  Private (Admin)
 export const createAnnouncement = async (req, res, next) => {
   try {
-    const { title, content, category, priority, visibility, expiresAt } = req.body;
+    const { title, content, category, priority, visibility, expiresAt, imageUrl } = req.body;
 
     const announcement = await Announcement.create({
       title,
@@ -86,6 +86,7 @@ export const createAnnouncement = async (req, res, next) => {
       priority: priority || 'Normal',
       visibility: visibility || 'All',
       expiresAt: expiresAt ? new Date(expiresAt) : null,
+      imageUrl: imageUrl || '',
       createdBy: req.user._id,
     });
 

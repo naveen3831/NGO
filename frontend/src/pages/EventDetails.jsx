@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import API from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import HeroBanner from '../components/HeroBanner';
 import eventsScheduleCleanImg from '../assets/events-schedule-clean.jpg';
 import eventsSchedulePlantImg from '../assets/events-schedule-plant.jpg';
@@ -100,9 +101,77 @@ const sampleEventsById = {
 
 const EventDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [joined, setJoined] = useState(false);
+  const [joinMsg, setJoinMsg] = useState('');
+  const [joinError, setJoinError] = useState('');
+  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [submittingJoin, setSubmittingJoin] = useState(false);
+  const [guestForm, setGuestForm] = useState({ name: '', email: '', phone: '' });
+
+  const handleJoinClick = async () => {
+    setJoinError('');
+    if (!user) {
+      setShowGuestForm(true);
+      return;
+    }
+    setSubmittingJoin(true);
+    try {
+      const res = await API.post(`/member/events/${id}/enroll`, {
+        title: event?.title,
+        description: event?.description,
+        eventType: event?.eventType,
+        date: event?.date,
+        time: event?.time,
+        location: event?.location,
+      });
+      setJoined(true);
+      setJoinMsg(res.data?.message || 'Your join request has been sent to the Admin Dashboard for approval!');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Unable to submit join request.';
+      if (msg.toLowerCase().includes('already')) {
+        setJoined(true);
+        setJoinMsg(msg);
+      } else {
+        setJoinError(msg);
+      }
+    } finally {
+      setSubmittingJoin(false);
+    }
+  };
+
+  const handleGuestJoinSubmit = async (e) => {
+    e.preventDefault();
+    setJoinError('');
+    setSubmittingJoin(true);
+    try {
+      const res = await API.post(`/public/events/${id}/join`, {
+        ...guestForm,
+        title: event?.title,
+        description: event?.description,
+        eventType: event?.eventType,
+        date: event?.date,
+        time: event?.time,
+        location: event?.location,
+      });
+      setJoined(true);
+      setShowGuestForm(false);
+      setJoinMsg(res.data?.message || 'Your join request has been sent to the Admin Dashboard for approval!');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Unable to submit join request.';
+      if (msg.toLowerCase().includes('already')) {
+        setJoined(true);
+        setShowGuestForm(false);
+        setJoinMsg(msg);
+      } else {
+        setJoinError(msg);
+      }
+    } finally {
+      setSubmittingJoin(false);
+    }
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -307,6 +376,12 @@ const EventDetails = () => {
                 </div>
 
                 <div style={{ marginTop: '1.5rem' }}>
+                  {joinError && (
+                    <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '0.65rem 0.9rem', borderRadius: '8px', fontSize: '0.84rem', fontWeight: 600, marginBottom: '0.75rem' }}>
+                      {joinError}
+                    </div>
+                  )}
+
                   {joined ? (
                     <div
                       style={{
@@ -320,18 +395,65 @@ const EventDetails = () => {
                         fontWeight: 600,
                       }}
                     >
-                      <CheckCircle2 size={18} />
-                      <span>You have registered interest! Complete your member profile to get your pass.</span>
+                      <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+                      <span>{joinMsg || 'Your join request has been sent to the Admin Dashboard for approval!'}</span>
                     </div>
+                  ) : showGuestForm ? (
+                    <form onSubmit={handleGuestJoinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', background: '#ffffff', padding: '1rem', borderRadius: '12px', border: '1px solid #d1fae5' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#064e3b' }}>
+                        Enter details to send join request to Admin:
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Full Name *"
+                        value={guestForm.name}
+                        onChange={(e) => setGuestForm({ ...guestForm, name: e.target.value })}
+                        style={{ padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.86rem' }}
+                      />
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email Address *"
+                        value={guestForm.email}
+                        onChange={(e) => setGuestForm({ ...guestForm, email: e.target.value })}
+                        style={{ padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.86rem' }}
+                      />
+                      <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={guestForm.phone}
+                        onChange={(e) => setGuestForm({ ...guestForm, phone: e.target.value })}
+                        style={{ padding: '0.55rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.86rem' }}
+                      />
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          type="submit"
+                          disabled={submittingJoin}
+                          className="btn-hero-join-mission"
+                          style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}
+                        >
+                          {submittingJoin ? 'Sending...' : 'Submit Request'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowGuestForm(false)}
+                          style={{ padding: '0 0.9rem', borderRadius: '9999px', border: '1px solid #cbd5e1', background: '#f8fafc', cursor: 'pointer', fontSize: '0.82rem' }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setJoined(true)}
+                      onClick={handleJoinClick}
+                      disabled={submittingJoin}
                       className="btn-hero-join-mission"
                       style={{ width: '100%', justifyContent: 'center', border: 'none', cursor: 'pointer' }}
                     >
                       <Sparkles size={16} />
-                      <span>Join This Event</span>
+                      <span>{submittingJoin ? 'Sending Request...' : 'Join This Event'}</span>
                     </button>
                   )}
 

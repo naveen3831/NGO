@@ -95,18 +95,6 @@ const Home = () => {
     fetchHomeData();
   }, []);
 
-  const handleNewsletterSubmit = async (e) => {
-    e.preventDefault();
-    setNewsletterMsg('');
-    try {
-      const res = await API.post('/public/newsletter', { email: newsletterEmail });
-      setNewsletterMsg(res.data?.message || 'Subscribed successfully!');
-      setNewsletterEmail('');
-    } catch (err) {
-      setNewsletterMsg(err.response?.data?.message || 'Could not subscribe. Please try again.');
-    }
-  };
-
   const handleDonationSubmit = async (e) => {
     e.preventDefault();
     setDonationStatus('');
@@ -145,9 +133,12 @@ const Home = () => {
                 </p>
 
                 <div className="eco-hero-buttons-overlay">
-                  <Link to="/register" className="btn-hero-join-mission">
-                    <span>Join Our Mission</span>
-                    <ArrowRight size={16} className="btn-hero-arrow" />
+                  <Link to="/announcements" className="btn-hero-join-mission">
+                    <span>Announcements</span>
+                  </Link>
+                  <Link to="/register" className="btn-hero-join-ngo">
+                    <span>Join in NGO</span>
+                    <ArrowRight size={14} className="btn-hero-arrow" />
                   </Link>
                 </div>
               </div>
@@ -221,32 +212,19 @@ const Home = () => {
       </section>
 
       {/* 3. IMPACT STATISTICS STRIP (CONSISTENT WITH PLATFORM STANDARDS) */}
-      <section style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '2.5rem 1.5rem', marginBottom: '3.5rem' }}>
+      <section className="eco-home-stats-section">
         <div style={{ maxWidth: '1180px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+          <div className="eco-home-stats-grid">
             {[
               { val: '28.4+', label: 'Tons Diverted', sub: 'Non-biodegradable waste audited' },
               { val: '35+', label: 'Educational Campuses', sub: 'Schools & degree colleges engaged' },
               { val: '12,000+', label: 'Citizens Pledged', sub: 'Nadi Prathijna oath signed' },
               { val: '100%', label: 'Community Service', sub: 'Free public action across all ghats' }
             ].map((stat, idx) => (
-              <div key={idx} style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                borderLeft: '4px solid #059669',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-              }}>
-                <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#047857', lineHeight: 1.1, marginBottom: '0.25rem' }}>
-                  {stat.val}
-                </div>
-                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.2rem' }}>
-                  {stat.label}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                  {stat.sub}
-                </div>
+              <div key={idx} className="eco-home-stat-card">
+                <div className="eco-home-stat-val">{stat.val}</div>
+                <div className="eco-home-stat-label">{stat.label}</div>
+                <div className="eco-home-stat-sub">{stat.sub}</div>
               </div>
             ))}
           </div>
@@ -311,12 +289,12 @@ const Home = () => {
       </section>
 
       {/* 4B. ABOUT OUR NGO & THREE MISSION HIGHLIGHTS */}
-      <section style={{ padding: '1rem 1.5rem 4rem', maxWidth: '1180px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem', alignItems: 'center', marginBottom: '3.5rem', background: '#F7FBF7', padding: '2rem', borderRadius: '20px', border: '1px solid #d1fae5' }}>
+      <section className="eco-home-about-section" style={{ padding: '1rem 1.5rem 4rem', maxWidth: '1180px', margin: '0 auto' }}>
+        <div className="eco-home-about-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '2.5rem', alignItems: 'center', marginBottom: '3.5rem', background: '#F7FBF7', padding: '2rem', borderRadius: '20px', border: '1px solid #d1fae5' }}>
           <div style={{ borderRadius: '16px', overflow: 'hidden' }}>
             <img src={heroPlantImg} alt="About Godhavari Nadhi Paryavarana Parishubratha" style={{ width: '100%', height: '260px', objectFit: 'cover', display: 'block' }} />
           </div>
-          <div>
+          <div className="eco-home-about-body">
             <span className="clean-badge">ABOUT OUR NGO</span>
             <h2 style={{ color: '#064e3b', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', margin: '0.5rem 0 0.75rem' }}>
               Protecting River Godavari for Generations
@@ -352,8 +330,8 @@ const Home = () => {
         </div>
 
         {/* Gallery Preview */}
-        <div style={{ marginBottom: '4rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ marginBottom: '3rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
               <span className="clean-badge">OUR GALLERY</span>
               <h2 style={{ color: '#064e3b', margin: '0.35rem 0 0' }}>Moments from the Riverfront</h2>
@@ -362,38 +340,38 @@ const Home = () => {
               View All →
             </Link>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+          <div className="eco-home-gallery-preview-grid">
             {[
               { img: galleryCleanKotilingalaImg, title: 'Kotilingala Ghat Cleanup' },
               { img: galleryPlantBundImg, title: 'Bund Road Plantation' },
               { img: galleryAwareSchoolImg, title: 'Youth River Workshops' },
               { img: galleryConserveDowleswaramImg, title: 'Dowleswaram Survey' },
             ].map((g, i) => (
-              <Link key={i} to="/gallery" style={{ textDecoration: 'none', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e2e8f0', background: '#fff' }}>
-                <img src={g.img} alt={g.title} style={{ width: '100%', height: '165px', objectFit: 'cover', display: 'block' }} />
-                <div style={{ padding: '0.75rem 1rem', fontWeight: 700, color: '#064e3b', fontSize: '0.92rem' }}>{g.title}</div>
+              <Link key={i} to="/gallery" className="eco-home-gallery-preview-card">
+                <img src={g.img} alt={g.title} className="eco-home-gallery-preview-img" />
+                <div className="eco-home-gallery-preview-title">{g.title}</div>
               </Link>
             ))}
           </div>
         </div>
 
         {/* Community Testimonials */}
-        <div style={{ background: '#F7FBF7', borderRadius: '20px', padding: '2.5rem 2rem', border: '1px solid #d1fae5' }}>
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        <div className="eco-home-testimonials-box">
+          <div className="eco-home-testimonials-header">
             <span className="clean-badge">COMMUNITY VOICES</span>
-            <h2 style={{ color: '#064e3b', marginTop: '0.4rem' }}>What Our Volunteers Say</h2>
+            <h2 className="eco-home-testimonials-heading">What Our Volunteers Say</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+          <div className="eco-home-testimonials-grid">
             {[
               { quote: 'Every Sunday morning at Kotilingala Ghat brings citizens together with real purpose. Seeing the riverbanks spotless is deeply rewarding.', author: 'Smt. P. Lakshmi Devi', role: 'Community Volunteer' },
               { quote: 'Our college students learned practical water testing and waste segregation through the Godhavari youth program.', author: 'Dr. K. V. Subba Rao', role: 'Educator & Mentor' },
               { quote: 'Switching to leaf bowls and biodegradable offerings has transformed our temple surroundings.', author: 'Sri M. Ramu Naidu', role: 'Ghat Coordinator' },
             ].map((t, idx) => (
-              <div key={idx} style={{ background: '#ffffff', borderRadius: '14px', padding: '1.35rem', border: '1px solid #e2e8f0' }}>
+              <div key={idx} className="eco-home-testimonial-card">
                 <Quote size={20} color="#008C4A" style={{ marginBottom: '0.5rem' }} />
-                <p style={{ color: '#334155', fontSize: '0.9rem', lineHeight: 1.65, marginBottom: '0.85rem' }}>"{t.quote}"</p>
-                <div style={{ fontWeight: 700, color: '#064e3b', fontSize: '0.9rem' }}>{t.author}</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{t.role}</div>
+                <p className="eco-home-testimonial-quote">"{t.quote}"</p>
+                <div className="eco-home-testimonial-author">{t.author}</div>
+                <div className="eco-home-testimonial-role">{t.role}</div>
               </div>
             ))}
           </div>
@@ -409,8 +387,8 @@ const Home = () => {
               {events.length > 0 && (
                 <div className="eco-preview-col">
                   <div className="eco-preview-header">
-                    <div className="d-flex align-items-center gap-2">
-                      <Calendar size={20} className="text-emerald-700" />
+                    <div className="eco-preview-heading-group">
+                      <Calendar size={20} color="#006B3C" style={{ flexShrink: 0 }} />
                       <h3 className="eco-preview-title">Upcoming Drives &amp; Events</h3>
                     </div>
                     <Link to="/events" className="eco-preview-all">
@@ -434,14 +412,17 @@ const Home = () => {
                         <div className="eco-preview-item-info">
                           <h4 className="p-item-name">{evt.title}</h4>
                           <p className="p-item-meta">
-                            <Clock size={13} />
-                            <span>{evt.time || '07:00 AM - 10:00 AM'}</span>
-                            <span className="mx-1">•</span>
-                            <MapPin size={13} />
-                            <span>
-                              {typeof evt.location === 'object' && evt.location !== null
-                                ? evt.location.venue || evt.location.riverGhat || evt.location.city || 'Godhavari Ghat'
-                                : evt.location || 'Godhavari Ghat'}
+                            <span className="p-meta-chunk">
+                              <Clock size={13} />
+                              <span>{evt.time || '07:00 AM - 10:00 AM'}</span>
+                            </span>
+                            <span className="p-meta-chunk">
+                              <MapPin size={13} />
+                              <span>
+                                {typeof evt.location === 'object' && evt.location !== null
+                                  ? evt.location.venue || evt.location.riverGhat || evt.location.city || 'Godhavari Ghat'
+                                  : evt.location || 'Godhavari Ghat'}
+                              </span>
                             </span>
                           </p>
                         </div>
@@ -455,8 +436,8 @@ const Home = () => {
               {announcements.length > 0 && (
                 <div className="eco-preview-col">
                   <div className="eco-preview-header">
-                    <div className="d-flex align-items-center gap-2">
-                      <Megaphone size={20} className="text-emerald-700" />
+                    <div className="eco-preview-heading-group">
+                      <Megaphone size={20} color="#006B3C" style={{ flexShrink: 0 }} />
                       <h3 className="eco-preview-title">Latest Announcements</h3>
                     </div>
                     <Link to="/announcements" className="eco-preview-all">
@@ -527,27 +508,6 @@ const Home = () => {
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => { setDonateOpen(true); setDonationStatus(''); }}
-              style={{
-                background: '#ffffff',
-                color: '#064e3b',
-                padding: '0.85rem 2rem',
-                borderRadius: '10px',
-                fontWeight: 700,
-                fontSize: '0.98rem',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-              }}
-            >
-              <HeartHandshake size={17} />
-              <span>Donate Now</span>
-            </button>
             <Link
               to="/register"
               style={{
@@ -583,30 +543,6 @@ const Home = () => {
               Contact Our Coordinators
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* 7. NEWSLETTER SUBSCRIPTION */}
-      <section style={{ background: '#F7FBF7', padding: '3rem 1.5rem', borderTop: '1px solid #d1fae5' }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
-          <h3 style={{ color: '#064e3b', fontSize: '1.45rem', marginBottom: '0.4rem' }}>Subscribe to River Conservation Updates</h3>
-          <p style={{ color: '#475569', fontSize: '0.92rem', marginBottom: '1.25rem' }}>
-            Receive monthly ghat cleanup schedules, plantation milestones, and environmental circulars.
-          </p>
-          <form onSubmit={handleNewsletterSubmit} style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <input
-              type="email"
-              required
-              placeholder="Enter your email address"
-              value={newsletterEmail}
-              onChange={(e) => setNewsletterEmail(e.target.value)}
-              style={{ flex: '1 1 260px', maxWidth: '380px', padding: '0.7rem 1rem', borderRadius: '9999px', border: '1px solid #cbd5e1' }}
-            />
-            <button type="submit" className="btn-hero-join-mission" style={{ border: 'none', cursor: 'pointer' }}>
-              Subscribe
-            </button>
-          </form>
-          {newsletterMsg && <p style={{ marginTop: '0.75rem', color: '#006B3C', fontWeight: 600 }}>{newsletterMsg}</p>}
         </div>
       </section>
 

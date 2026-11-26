@@ -6,6 +6,7 @@ import {
   getMemberById,
   updateMemberById,
   updateMembershipStatus,
+  reviewMembershipTierRequest,
   deleteMemberById,
   getAllMemberships,
   updateMembershipById,
@@ -83,6 +84,7 @@ router
   .patch(updateMemberById)
   .delete(deleteMemberById);
 router.patch('/members/:id/membership', updateMembershipStatus);
+router.patch('/members/:id/tier-request', reviewMembershipTierRequest);
 
 // Memberships Management
 router.route('/memberships').get(getAllMemberships);

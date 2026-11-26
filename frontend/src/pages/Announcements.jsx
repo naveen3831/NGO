@@ -54,6 +54,7 @@ const Announcements = () => {
               ((item.content || item.message || '').length > 85 ? '...' : ''),
             image:
               item.image ||
+              item.imageUrl ||
               [announceStreamNewsImg, eventsScheduleCleanImg, heroPlantImg][idx % 3],
           }));
           setAnnouncements([...enriched, ...curatedAnnouncements]);
