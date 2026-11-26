@@ -40,7 +40,7 @@ const Login = () => {
       if (isAdmin) {
         navigate('/admin', { replace: true });
       } else if (isMember) {
-        navigate('/member', { replace: true });
+        navigate('/', { replace: true });
       }
     }
   }, [user, isAdmin, isMember, navigate]);
@@ -84,7 +84,7 @@ const Login = () => {
         if (memberData.role === 'admin') {
           navigate('/admin', { replace: true });
         } else {
-          navigate('/member', { replace: true });
+          navigate('/', { replace: true });
         }
         return;
       } catch (memberErr) {

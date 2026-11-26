@@ -24,6 +24,7 @@ import {
   MapPin,
   Phone,
   Mail,
+  Image as ImageIcon,
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -63,57 +64,34 @@ const Navbar = () => {
     {
       label: 'Home',
       path: '/',
-      isHome: true,
-    },
-    {
-      label: 'Our Activities',
-      path: '/activities',
-      hasDropdown: true,
-      children: [
-        { label: 'Cleanliness Drives', path: '/activities/cleanliness', icon: Brush },
-        { label: 'Tree Plantation', path: '/activities/plantation', icon: Sprout },
-        { label: 'River Conservation', path: '/activities/conservation', icon: Waves },
-        { label: 'Community Programs', path: '/activities/community', icon: Users },
-      ],
-    },
-    {
-      label: 'Awareness Programs',
-      path: '/awareness',
-      hasDropdown: true,
-      children: [
-        { label: 'School & College Drives', path: '/awareness/schools', icon: BookOpen },
-        { label: 'Public Workshops', path: '/awareness/workshops', icon: Users },
-        { label: 'Youth Campaigns', path: '/awareness/campaigns', icon: Megaphone },
-      ],
-    },
-    {
-      label: 'Drives & Events',
-      path: '/events',
-      hasDropdown: true,
-      children: [
-        { label: 'Upcoming Drives & Events', path: '/events/upcoming', icon: Calendar },
-        { label: 'Volunteer Drives & Meetings', path: '/events/volunteer-meetings', icon: Users },
-        { label: 'Past Drives & Reports', path: '/events/past-reports', icon: Clock },
-      ],
-    },
-    {
-      label: 'Announcements',
-      path: '/announcements',
-      hasDropdown: true,
-      children: [
-        { label: 'Latest News', path: '/announcements/news', icon: Megaphone },
-        { label: 'Press Releases', path: '/announcements/press', icon: FileText },
-      ],
+      icon: Home,
     },
     {
       label: 'About Us',
       path: '/about',
-      hasDropdown: true,
-      children: [
-        { label: 'About Our NGO', path: '/about/ngo', icon: Info },
-        { label: 'Our Mission & Vision', path: '/about/mission', icon: Target },
-        { label: 'Our Objectives', path: '/about/objectives', icon: Star },
-      ],
+    },
+    {
+      label: 'Activities',
+      path: '/activities',
+    },
+    {
+      label: 'Events',
+      path: '/events',
+      icon: Calendar,
+    },
+    {
+      label: 'Gallery',
+      path: '/gallery',
+      icon: ImageIcon,
+    },
+    {
+      label: 'Announcements',
+      path: '/announcements',
+      icon: Megaphone,
+    },
+    {
+      label: 'Contact Us',
+      path: '/contact',
     },
   ];
 
@@ -125,34 +103,21 @@ const Navbar = () => {
   return (
     <header className="eco-header">
       <div className="eco-nav-container">
-        {/* Brand Logo with Vertical Divider */}
+        {/* Brand Logo */}
         <div className="eco-brand-wrap">
           <Link to="/" className="eco-brand-link" onClick={() => setMobileMenuOpen(false)}>
-            <Logo variant="dark" size={32} />
+            <Logo variant="dark" size={44} />
           </Link>
-          <span className="eco-nav-divider"></span>
         </div>
 
-        {/* Desktop Navigation Links with Dropdowns */}
+        {/* Desktop Navigation Links */}
         <nav className="eco-desktop-nav">
           {navMenuItems.map((item) => {
-            if (item.isHome) {
-              const active = location.pathname === '/';
-              return (
-                <Link
-                  key={item.label}
-                  to="/"
-                  className={`eco-nav-home-pill ${active ? 'active' : ''}`}
-                >
-                  <Home size={13} />
-                  <span>Home</span>
-                </Link>
-              );
-            }
+            const ItemIcon = item.icon;
+            const active = isCurrentActive(item);
 
             if (item.hasDropdown) {
               const isOpen = activeDropdown === item.label;
-              const active = isCurrentActive(item);
 
               return (
                 <div
@@ -163,13 +128,10 @@ const Navbar = () => {
                 >
                   <Link
                     to={item.path}
-                    className={`eco-nav-link-with-arrow ${active ? 'active' : ''}`}
-                    onClick={(e) => {
-                      // Allow navigation or toggle
-                    }}
+                    className={`eco-nav-link ${active ? 'active' : ''}`}
                   >
+                    {ItemIcon && <ItemIcon size={14} className="eco-nav-item-icon" />}
                     <span>{item.label}</span>
-                    <ChevronDown size={11} className={`eco-nav-chevron ${isOpen ? 'rotated' : ''}`} />
                   </Link>
 
                   {/* Dropdown Card */}
@@ -195,15 +157,14 @@ const Navbar = () => {
               );
             }
 
-            // Regular Nav Item (e.g., Contact Us)
-            const active = isCurrentActive(item);
             return (
               <Link
                 key={item.label}
                 to={item.path}
                 className={`eco-nav-link ${active ? 'active' : ''}`}
               >
-                {item.label}
+                {ItemIcon && <ItemIcon size={14} className="eco-nav-item-icon" />}
+                <span>{item.label}</span>
               </Link>
             );
           })}
@@ -242,8 +203,10 @@ const Navbar = () => {
           ) : (
             <div className="eco-guest-actions">
               <Link to="/register" className="btn-eco-join-pill">
-                <Users size={14} />
                 <span>Join Us</span>
+              </Link>
+              <Link to="/login" className="btn-eco-login-outline">
+                <span>Login</span>
               </Link>
             </div>
           )}
@@ -273,7 +236,7 @@ const Navbar = () => {
             </Link>
 
             {navMenuItems
-              .filter((i) => !i.isHome)
+              .filter((i) => i.path !== '/')
               .map((item) => (
                 <div key={item.label} className="eco-mobile-nav-group">
                   <Link

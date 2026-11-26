@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import heroGodavariBannerImg from '../assets/hero-godavari-banner.jpg';
+import heroPlantImg from '../assets/hero-plant.jpg';
 import godavariCleanupImg from '../assets/godavari-cleanup.jpg';
 import godavariMissionHeroImg from '../assets/godavari-mission-hero.jpg';
 import aboutWhoWeAreImg from '../assets/about-who-we-are.jpg';
@@ -28,7 +30,9 @@ import {
   Calendar,
   MapPin,
   Clock,
-  Award
+  Award,
+  Sprout,
+  Eye
 } from 'lucide-react';
 
 const standForList = [
@@ -104,233 +108,88 @@ const AboutNGO = () => {
   return (
     <div className="clean-page-wrapper" style={{ minHeight: '100vh', background: '#ffffff', color: '#1e293b' }}>
       
-      {/* 1. PROFESSIONAL 2-COLUMN HERO (CONSISTENT WITH OTHER PLATFORM PAGES) */}
-      <section style={{
-        background: '#f8fafc',
-        borderBottom: '1px solid #e2e8f0',
-        padding: '3rem 1.5rem 2.5rem'
-      }}>
-        <div style={{ maxWidth: '1180px', margin: '0 auto' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '2.5rem',
-            alignItems: 'center'
-          }}>
-            {/* Left Column: Info & Action */}
-            <div>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                background: '#ecfdf5',
-                color: '#059669',
-                padding: '0.4rem 0.9rem',
-                borderRadius: '9999px',
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                marginBottom: '0.85rem',
-                border: '1px solid #a7f3d0'
-              }}>
-                <Sparkles size={14} />
-                <span>ORGANIZATION PROFILE • ABOUT US</span>
-              </div>
+      {/* 1. ABOUT US HERO BANNER (Matches Reference Design) */}
+      <section className="eco-hero-master-section">
+        <div className="eco-hero-canvas-wrapper">
+          <div className="eco-hero-canvas-inner eco-subpage-hero-inner">
+            <img
+              src={heroGodavariBannerImg}
+              alt="About Us - Together for a Cleaner and Greener Godavari"
+              className="eco-hero-panorama-img"
+              loading="eager"
+            />
+            <div className="eco-subpage-hero-scrim" aria-hidden="true" />
 
-              <h1 style={{
-                fontSize: 'clamp(2rem, 3.4vw, 2.75rem)',
-                fontWeight: 800,
-                color: '#0f172a',
-                lineHeight: 1.2,
-                margin: '0 0 0.75rem',
-                letterSpacing: '-0.025em'
-              }}>
-                Godhavari Nadhi Paryavarana Parishubratha
-              </h1>
-
-              <p style={{
-                fontSize: '0.96rem',
-                color: '#475569',
-                lineHeight: 1.65,
-                margin: '0 0 1.25rem',
-                maxWidth: '540px'
-              }}>
-                A dedicated grassroots environmental movement creating awareness, safeguarding ghat cleanliness, 
-                and inspiring active community stewardship across the sacred Godavari river basin.
+            <div className="eco-subpage-hero-overlay">
+              <h1 className="eco-subpage-hero-title">About Us</h1>
+              <p className="eco-subpage-hero-subtitle">
+                Together for a Cleaner and Greener Godavari
               </p>
-
-              {/* Quick Stat Badges Strip */}
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '0.6rem',
-                marginBottom: '1.5rem'
-              }}>
-                <div style={{
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  color: '#047857'
-                }}>
-                  <Users size={14} />
-                  3,200+ Active Volunteers
-                </div>
-                <div style={{
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  color: '#047857'
-                }}>
-                  <ShieldCheck size={14} />
-                  Certified River NGO
-                </div>
-                <div style={{
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  color: '#047857'
-                }}>
-                  <MapPin size={14} />
-                  Rajahmundry &amp; Basin Ghats
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <a
-                  href="#conviction"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    background: '#059669',
-                    color: '#ffffff',
-                    padding: '8px 18px',
-                    borderRadius: '8px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    fontSize: '0.88rem',
-                    boxShadow: '0 2px 6px rgba(5, 150, 105, 0.2)'
-                  }}
-                >
-                  <span>Explore Our Mission</span>
-                  <ArrowRight size={15} />
-                </a>
-
-                <Link
-                  to="/activities"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    background: '#ffffff',
-                    color: '#059669',
-                    padding: '8px 18px',
-                    borderRadius: '8px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    fontSize: '0.88rem',
-                    border: '1px solid #059669'
-                  }}
-                >
-                  View Field Activities
-                </Link>
-              </div>
             </div>
 
-            {/* Right Column: Hero Image Showcase */}
-            <div>
-              <div style={{
-                position: 'relative',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 10px 25px -6px rgba(0, 0, 0, 0.1)',
-                border: '1px solid #e2e8f0',
-                background: '#ffffff'
-              }}>
-                <img
-                  src={godavariMissionHeroImg}
-                  alt="Godavari River Conservation Mission in Rajahmundry"
-                  style={{
-                    width: '100%',
-                    height: '280px',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
-                />
-                
-                {/* Overlay Top Tag */}
-                <div style={{
-                  position: 'absolute',
-                  top: '10px',
-                  left: '10px',
-                  background: 'rgba(5, 150, 105, 0.95)',
-                  color: '#ffffff',
-                  padding: '3px 10px',
-                  borderRadius: '9999px',
-                  fontSize: '0.7rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  backdropFilter: 'blur(4px)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem'
-                }}>
-                  <ShieldCheck size={13} />
-                  FOUNDATIONAL MISSION
-                </div>
+            <svg
+              className="eco-hero-bottom-curve"
+              viewBox="0 0 1440 48"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M0,12 Q720,48 1440,12 L1440,48 L0,48 Z"
+                fill="#ffffff"
+              />
+            </svg>
+          </div>
+        </div>
+      </section>
 
-                {/* Bottom Caption Strip */}
-                <div style={{
-                  padding: '0.75rem 1.15rem',
-                  background: '#ffffff',
-                  borderTop: '1px solid #f1f5f9',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
-                  <div>
-                    <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>
-                      Godavari Riverfront Community Initiative
-                    </div>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                      Rajahmundry &amp; Basin Ghats Chapters
-                    </div>
-                  </div>
-                  <span style={{
-                    background: '#ecfdf5',
-                    color: '#059669',
-                    fontSize: '0.7rem',
-                    fontWeight: 700,
-                    padding: '3px 9px',
-                    borderRadius: '6px',
-                    border: '1px solid #a7f3d0'
-                  }}>
-                    COMMUNITY LED
-                  </span>
-                </div>
-              </div>
+      {/* 1B. OUR ORGANIZATION + MISSION / VISION ROW */}
+      <section className="eco-about-intro-section">
+        <div className="container">
+          <div className="eco-about-intro-grid">
+            {/* Left: Hands Holding Sapling Image */}
+            <div className="eco-about-intro-photo-wrap">
+              <img
+                src={heroPlantImg}
+                alt="Hands nurturing a young green sapling along River Godavari"
+                className="eco-about-intro-photo"
+              />
             </div>
 
+            {/* Center: Our Organization + CTA */}
+            <div className="eco-about-intro-copy">
+              <h2 className="eco-about-intro-heading">Our Organization</h2>
+              <p className="eco-about-intro-text">
+                Godhavari Nadhi Paryavarana Parishubratha is dedicated to protecting the environment
+                and preserving the Godavari River for future generations.
+              </p>
+              <a href="#conviction" className="btn-eco-about-learn">
+                <span>Learn More</span>
+                <ArrowRight size={16} className="btn-hero-arrow" />
+              </a>
+            </div>
+
+            {/* Right: Stacked Mission & Vision Mint Card */}
+            <div className="eco-about-mv-stack">
+              <Link to="/about/mission" className="eco-about-mv-row">
+                <div className="eco-about-mv-icon-wrap">
+                  <Sprout size={24} />
+                </div>
+                <div className="eco-about-mv-body">
+                  <h3 className="eco-about-mv-title">Our Mission</h3>
+                  <p className="eco-about-mv-desc">Protect the environment</p>
+                </div>
+              </Link>
+
+              <Link to="/about/objectives" className="eco-about-mv-row">
+                <div className="eco-about-mv-icon-wrap">
+                  <Eye size={24} />
+                </div>
+                <div className="eco-about-mv-body">
+                  <h3 className="eco-about-mv-title">Our Vision</h3>
+                  <p className="eco-about-mv-desc">Greener Godavari</p>
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -858,7 +717,7 @@ const AboutNGO = () => {
       </section>
 
       {/* 7. PROFESSIONAL JOIN INITIATIVE CTA */}
-      <section style={{ padding: '5rem 1.5rem', background: '#064e3b', color: '#ffffff' }}>
+      <section style={{ padding: '5rem 1.5rem', background: 'var(--footer-secondary, #006B3C)', color: 'var(--footer-heading, #FFFFFF)', borderBottom: '1px solid var(--footer-border, #38845C)' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto', textAlign: 'center' }}>
           
           <span style={{

@@ -3,7 +3,7 @@ import { protect, requireMember } from '../middlewares/authMiddleware.js';
 import { getMyMembership, updateMyProfile } from '../controllers/memberController.js';
 import { getMemberEvents, enrollInEvent } from '../controllers/eventController.js';
 import { getMemberMeetings } from '../controllers/meetingController.js';
-import { getMemberAnnouncements } from '../controllers/announcementController.js';
+import { getMemberAnnouncements, createMemberAnnouncement } from '../controllers/announcementController.js';
 import { getMyNotifications, markNotificationRead } from '../controllers/notificationController.js';
 import { getMe } from '../controllers/authController.js';
 
@@ -25,7 +25,7 @@ router.post('/events/:id/enroll', enrollInEvent);
 router.get('/meetings', getMemberMeetings);
 
 // Member announcements
-router.get('/announcements', getMemberAnnouncements);
+router.route('/announcements').get(getMemberAnnouncements).post(createMemberAnnouncement);
 
 // Member notifications
 router.get('/notifications', getMyNotifications);

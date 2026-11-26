@@ -1346,6 +1346,122 @@ const AdminEvents = () => {
         )}
       </div>
 
+      {/* 5B. Pending Volunteer Requests (Admin Approval) */}
+      {events.some((e) => (e.volunteerRequests || []).length > 0) && (
+        <div
+          className="ref-table-card"
+          style={{ marginBottom: '1.5rem', padding: '1.25rem 1.5rem', border: '1px solid #bbf7d0', background: '#f7fbf7' }}
+        >
+          <h3 style={{ color: '#064e3b', fontSize: '1.05rem', fontWeight: 750, marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Users size={18} />
+            <span>Volunteer Join Requests</span>
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            {events.flatMap((evt) =>
+              (evt.volunteerRequests || []).map((req) => (
+                <div
+                  key={req._id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem',
+                    padding: '0.75rem 1rem',
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '10px',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.92rem' }}>
+                      {req.name} {req.memberId ? `(${req.memberId})` : ''}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#475569' }}>
+                      Event: <strong>{evt.title}</strong> • {req.email}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        padding: '3px 10px',
+                        borderRadius: '999px',
+                        background:
+                          req.status === 'Confirmed'
+                            ? '#dcfce7'
+                            : req.status === 'Rejected'
+                            ? '#fee2e2'
+                            : '#fef3c7',
+                        color:
+                          req.status === 'Confirmed'
+                            ? '#064e3b'
+                            : req.status === 'Rejected'
+                            ? '#dc2626'
+                            : '#92400e',
+                      }}
+                    >
+                      {req.status}
+                    </span>
+                    {req.status !== 'Confirmed' && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const res = await API.patch(`/admin/events/${evt._id}/volunteers/${req._id}`, { status: 'Confirmed' });
+                            setEvents((prev) => prev.map((e) => (e._id === evt._id ? res.data.event : e)));
+                          } catch (err) {
+                            alert('Failed to confirm volunteer');
+                          }
+                        }}
+                        style={{
+                          background: '#006B3C',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '0.38rem 0.85rem',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Give Access (Confirm Volunteer)
+                      </button>
+                    )}
+                    {req.status === 'Pending' && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            const res = await API.patch(`/admin/events/${evt._id}/volunteers/${req._id}`, { status: 'Rejected' });
+                            setEvents((prev) => prev.map((e) => (e._id === evt._id ? res.data.event : e)));
+                          } catch (err) {
+                            alert('Failed to reject request');
+                          }
+                        }}
+                        style={{
+                          background: '#fee2e2',
+                          color: '#dc2626',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '0.38rem 0.75rem',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Decline
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 6. Events Cards List */}
       {loading ? (
         <div className="ref-table-card p-12 text-center text-muted">

@@ -7,7 +7,7 @@ const Logo = ({ variant = 'dark', showText = true, size = 42, className = '' }) 
 
   return (
     <div className={`ngo-logo-lockup ${className}`}>
-      {/* Handcrafted Vector Emblem Matching the NGO Brand Exactly */}
+      {/* Handcrafted Vector Emblem Matching the Reference Logo */}
       <svg
         width={size}
         height={size}
@@ -17,48 +17,48 @@ const Logo = ({ variant = 'dark', showText = true, size = 42, className = '' }) 
         className="ngo-logo-svg"
       >
         <g id="ngo-emblem">
-          {/* Riverbank Green Base */}
+          {/* Outer Pointed Green Arch */}
           <path
-            d="M8 82C22 75 42 76 60 81C76 85 90 82 96 79C94 88 78 92 50 92C22 92 10 88 8 82Z"
-            fill="#15803d"
+            d="M50 7C55 15 80 26 80 54C80 62 77 69 72 74L28 74C23 69 20 62 20 54C20 26 45 15 50 7Z"
+            fill="#52b748"
           />
 
-          {/* Lower River Stream (Sky Blue) */}
+          {/* White Scalloped Inner Dome Cutout */}
           <path
-            d="M5 75C20 68 40 70 58 76C75 81 88 78 95 72C93 78 78 84 55 83C35 82 18 78 5 75Z"
+            d="M50 20C53 26 57 32 61 36C65 37 68 41 68 46C72 48 73 54 71 61C69 66 64 70 50 70C36 70 31 66 29 61C27 54 28 48 32 46C32 41 35 37 39 36C43 32 47 26 50 20Z"
+            fill="#ffffff"
+          />
+
+          {/* Center Forest Green Leaf */}
+          <path
+            d="M50 31C58 40 61 49 60 57C59 63 55 66 50 67C45 66 41 63 40 57C39 49 42 40 50 31Z"
+            fill="#15803d"
+          />
+          {/* Leaf Center Vein */}
+          <path
+            d="M50 36V65"
+            stroke="#86efac"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+
+          {/* Left Sweeping Light-Blue Wave */}
+          <path
+            d="M7 66C24 61 42 66 58 75C65 79 71 80 76 79C62 84 42 82 24 75C15 71 9 68 7 66Z"
+            fill="#38bdf8"
+          />
+
+          {/* Right Sweeping Sky-Blue Wave */}
+          <path
+            d="M93 66C76 61 58 66 42 75C35 79 29 80 24 79C38 84 58 82 76 75C85 71 91 68 93 66Z"
             fill="#0ea5e9"
           />
 
-          {/* Upper River Stream (Deep Godavari Blue) */}
+          {/* Deep Ocean-Blue Lower Water Bowl */}
           <path
-            d="M8 68C24 61 46 63 64 70C79 75 90 71 96 66C93 72 79 77 58 76C40 75 22 71 8 68Z"
+            d="M19 76C33 77 45 81 50 84C55 81 67 77 81 76C74 87 63 93 50 93C37 93 26 87 19 76Z"
             fill="#0284c7"
           />
-
-          {/* Left Tree */}
-          <path
-            d="M26 38L18 52H23L16 64H36L29 52H34L26 38Z"
-            fill="#22c55e"
-          />
-          <rect x="24.5" y="64" width="3" height="7" fill="#15803d" />
-
-          {/* Center Tree (Taller, Rich Forest Green) */}
-          <path
-            d="M50 20L38 40H44L34 56H41L32 68H68L59 56H66L56 40H62L50 20Z"
-            fill="#15803d"
-          />
-          <rect x="48" y="68" width="4" height="8" fill="#0f5132" />
-
-          {/* Right Tree */}
-          <path
-            d="M74 36L66 50H71L63 63H84L77 50H82L74 36Z"
-            fill="#16a34a"
-          />
-          <rect x="72.5" y="63" width="3" height="7" fill="#15803d" />
-
-          {/* Small accent seedling / foliage */}
-          <circle cx="12" cy="62" r="3" fill="#4ade80" />
-          <circle cx="88" cy="61" r="3" fill="#4ade80" />
         </g>
       </svg>
 

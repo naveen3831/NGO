@@ -18,7 +18,7 @@ const MemberHome = () => {
   const [nextEvent, setNextEvent] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [enrolled, setEnrolled] = useState(false);
+  const [volunteerStatus, setVolunteerStatus] = useState(null);
 
   useEffect(() => {
     const fetchMemberData = async () => {
@@ -31,6 +31,7 @@ const MemberHome = () => {
         const eventsData = Array.isArray(eventsRes.data) ? eventsRes.data : Array.isArray(eventsRes.data?.events) ? eventsRes.data.events : [];
         if (eventsData.length > 0) {
           setNextEvent(eventsData[0]);
+          setVolunteerStatus(eventsData[0].myVolunteerStatus || null);
         }
         const announcementsData = Array.isArray(announcementsRes.data) ? announcementsRes.data : Array.isArray(announcementsRes.data?.announcements) ? announcementsRes.data.announcements : [];
         setAnnouncements(announcementsData.slice(0, 3));
@@ -45,12 +46,12 @@ const MemberHome = () => {
   }, []);
 
   const handleEnroll = async () => {
-    if (!nextEvent) return;
+    if (!nextEvent || volunteerStatus) return;
     try {
-      await API.post(`/member/events/${nextEvent._id}/enroll`);
-      setEnrolled(true);
+      const { data } = await API.post(`/member/events/${nextEvent._id}/enroll`);
+      setVolunteerStatus(data?.status || 'Pending');
     } catch (err) {
-      alert('You are already registered for this drive.');
+      alert(err.response?.data?.message || 'Unable to submit volunteer request.');
     }
   };
 
@@ -117,10 +118,29 @@ const MemberHome = () => {
               </span>
               <button
                 onClick={handleEnroll}
-                disabled={enrolled}
-                className={`btn btn-sm ${enrolled ? 'btn-outline' : 'btn-primary'}`}
+                disabled={!!volunteerStatus}
+                className={`btn btn-sm ${volunteerStatus ? 'btn-outline' : 'btn-primary'}`}
+                style={
+                  volunteerStatus === 'Confirmed'
+                    ? { background: '#dcfce7', color: '#064e3b', borderColor: '#86efac' }
+                    : volunteerStatus === 'Pending'
+                    ? { background: '#fef3c7', color: '#92400e', borderColor: '#fde68a' }
+                    : undefined
+                }
               >
-                {enrolled ? <><CheckCircle size={14} /> Registered</> : 'Join as Volunteer'}
+                {volunteerStatus === 'Confirmed' ? (
+                  <>
+                    <CheckCircle size={14} /> Confirmed as Volunteer
+                  </>
+                ) : volunteerStatus === 'Pending' ? (
+                  <>
+                    <Clock size={14} /> Pending Admin Approval
+                  </>
+                ) : volunteerStatus === 'Rejected' ? (
+                  'Request Declined'
+                ) : (
+                  'Join as Volunteer'
+                )}
               </button>
             </div>
           </div>

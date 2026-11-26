@@ -59,6 +59,25 @@ const eventSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    volunteerRequests: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        name: { type: String, default: '' },
+        email: { type: String, default: '' },
+        memberId: { type: String, default: '' },
+        status: {
+          type: String,
+          enum: ['Pending', 'Confirmed', 'Rejected'],
+          default: 'Pending',
+        },
+        requestedAt: { type: Date, default: Date.now },
+        reviewedAt: { type: Date },
+      },
+    ],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

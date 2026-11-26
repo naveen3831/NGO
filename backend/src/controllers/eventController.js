@@ -36,7 +36,19 @@ export const getMemberEvents = async (req, res, next) => {
       .sort({ date: 1 })
       .populate('createdBy', 'name designation');
 
-    res.json(events);
+    const userIdStr = req.user?._id ? String(req.user._id) : '';
+    const enriched = events.map((evt) => {
+      const obj = evt.toObject();
+      const match = (obj.volunteerRequests || []).find(
+        (r) => String(r.user) === userIdStr
+      );
+      return {
+        ...obj,
+        myVolunteerStatus: match ? match.status : null,
+      };
+    });
+
+    res.json(enriched);
   } catch (error) {
     next(error);
   }
@@ -131,8 +143,8 @@ export const deleteEvent = async (req, res, next) => {
   }
 };
 
-// @desc    Volunteer enrollment for an event
-// @route   POST /api/v1/events/:id/enroll
+// @desc    Volunteer enrollment request for an event (requires Admin approval)
+// @route   POST /api/v1/member/events/:id/enroll
 // @access  Private (Member)
 export const enrollInEvent = async (req, res, next) => {
   try {
@@ -141,10 +153,77 @@ export const enrollInEvent = async (req, res, next) => {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    event.enrolledVolunteersCount = (event.enrolledVolunteersCount || 0) + 1;
+    const userIdStr = String(req.user._id);
+    const existing = (event.volunteerRequests || []).find(
+      (r) => String(r.user) === userIdStr
+    );
+
+    if (existing) {
+      return res.json({
+        message:
+          existing.status === 'Confirmed'
+            ? 'You are already confirmed as a volunteer for this drive.'
+            : 'Your volunteer request is awaiting admin approval.',
+        status: existing.status,
+        event,
+      });
+    }
+
+    event.volunteerRequests.push({
+      user: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      memberId: req.user.memberId || '',
+      status: 'Pending',
+      requestedAt: new Date(),
+    });
     await event.save();
 
-    res.json({ message: 'Successfully registered for this cleanliness drive / event', event });
+    res.status(201).json({
+      message: 'Volunteer request sent to Admin for approval.',
+      status: 'Pending',
+      event,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Admin approves or rejects a volunteer request
+// @route   PATCH /api/v1/admin/events/:id/volunteers/:requestId
+// @access  Private (Admin)
+export const reviewVolunteerRequest = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!['Confirmed', 'Rejected'].includes(status)) {
+      return res.status(400).json({ message: 'Status must be Confirmed or Rejected' });
+    }
+
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    const request = event.volunteerRequests.id(req.params.requestId);
+    if (!request) {
+      return res.status(404).json({ message: 'Volunteer request not found' });
+    }
+
+    const prevStatus = request.status;
+    request.status = status;
+    request.reviewedAt = new Date();
+
+    if (prevStatus !== 'Confirmed' && status === 'Confirmed') {
+      event.enrolledVolunteersCount = (event.enrolledVolunteersCount || 0) + 1;
+    } else if (prevStatus === 'Confirmed' && status !== 'Confirmed') {
+      event.enrolledVolunteersCount = Math.max(0, (event.enrolledVolunteersCount || 0) - 1);
+    }
+
+    await event.save();
+    res.json({
+      message: status === 'Confirmed' ? 'Volunteer confirmed!' : 'Volunteer request declined.',
+      event,
+    });
   } catch (error) {
     next(error);
   }

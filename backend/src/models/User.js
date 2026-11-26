@@ -94,6 +94,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    gender: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    dateOfBirth: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    occupation: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     address: {
       street: String,
       city: { type: String, default: 'Rajahmundry' },

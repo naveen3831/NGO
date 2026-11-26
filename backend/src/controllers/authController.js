@@ -132,7 +132,7 @@ export const memberLogin = async (req, res, next) => {
 // @access  Public
 export const registerMember = async (req, res, next) => {
   try {
-    let { name, email, phone, password, address, bloodGroup, membershipType } = req.body;
+    let { name, email, phone, password, address, bloodGroup, membershipType, gender, dateOfBirth, occupation } = req.body;
 
     email = email.trim().toLowerCase();
     phone = phone.trim();
@@ -158,6 +158,9 @@ export const registerMember = async (req, res, next) => {
       password: password.trim(),
       role: 'member',
       bloodGroup: bloodGroup || 'O+',
+      gender: gender || '',
+      dateOfBirth: dateOfBirth || '',
+      occupation: occupation || '',
       address: address || { city: 'Rajahmundry', state: 'Andhra Pradesh' },
     });
 
