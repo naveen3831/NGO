@@ -1,6 +1,6 @@
 import express from 'express';
 import { getWebsiteContent } from '../controllers/websiteController.js';
-import { getPublicEvents, getEventById } from '../controllers/eventController.js';
+import { getPublicEvents, getEventById, joinEventPublic } from '../controllers/eventController.js';
 import { getPublicAnnouncements } from '../controllers/announcementController.js';
 import {
   submitContactMessage,
@@ -16,6 +16,7 @@ const router = express.Router();
 router.get('/content', getWebsiteContent);
 router.get('/events', getPublicEvents);
 router.get('/events/:id', getEventById);
+router.post('/events/:id/join', joinEventPublic);
 router.get('/announcements', getPublicAnnouncements);
 router.get('/announcements/:id', getPublicAnnouncementById);
 router.get('/gallery', getPublicGallery);

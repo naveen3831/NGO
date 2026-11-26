@@ -1,45 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../services/api';
-import { Calendar, Users, CheckCircle2, Plus, X, AlertCircle } from 'lucide-react';
-
-const volunteerFallbackNotice = {
-  _id: 'vol-only-1',
-  title: 'Volunteer Field Duty Roster: Sunday Ghat Sanitation & Gear Briefing',
-  content:
-    'Exclusive circular for active volunteers: Report at Kotilingala Ghat assembly point by 06:15 AM for safety glove distribution, zone allocation, and plastic waste weighing.',
-  category: 'Cleanliness Alert',
-  priority: 'Important',
-  visibility: 'Volunteers Only',
-  publishedAt: new Date().toISOString(),
-};
+import { Bell, AlertTriangle, Calendar } from 'lucide-react';
 
 const MemberAnnouncements = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterMode, setFilterMode] = useState('All');
-  const [acceptedDuties, setAcceptedDuties] = useState({});
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError] = useState('');
-  const [newNotice, setNewNotice] = useState({
-    title: '',
-    category: 'Cleanliness Alert',
-    priority: 'Normal',
-    content: '',
-  });
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const { data } = await API.get('/member/announcements');
-        const list = Array.isArray(data) ? data : [];
-        const hasVolunteerNotice = list.some(
-          (item) => item.visibility === 'Volunteers Only'
-        );
-        setAnnouncements(hasVolunteerNotice ? list : [volunteerFallbackNotice, ...list]);
+        const [annRes, notifRes] = await Promise.all([
+          API.get('/member/announcements'),
+          API.get('/member/notifications').catch(() => ({ data: [] })),
+        ]);
+        const annList = Array.isArray(annRes.data) ? annRes.data : [];
+        const notifList = Array.isArray(notifRes.data)
+          ? notifRes.data.map((n) => ({
+              _id: `notif-${n._id}`,
+              title: n.title,
+              content: n.message,
+              category: n.type === 'Membership Update' ? 'General Update' : 'General Update',
+              priority: n.type === 'Alert' ? 'Urgent' : 'Important',
+              publishedAt: n.createdAt,
+            }))
+          : [];
+        setAnnouncements([...notifList, ...annList]);
       } catch (err) {
         console.error('Failed to load member announcements:', err);
-        setAnnouncements([volunteerFallbackNotice]);
+        setAnnouncements([]);
       } finally {
         setLoading(false);
       }
@@ -48,51 +38,22 @@ const MemberAnnouncements = () => {
     fetchAnnouncements();
   }, []);
 
-  const isVolunteerNotice = (a) =>
-    a.visibility === 'Volunteers Only' ||
-    (a.title || '').toLowerCase().includes('volunteer') ||
-    (a.content || '').toLowerCase().includes('volunteer');
+  const categories = [
+    { label: 'All', value: 'All' },
+    { label: 'Cleanliness Alert', value: 'Cleanliness Alert' },
+    { label: 'General', value: 'General Update' },
+    { label: 'Event Notice', value: 'Event Notice' },
+  ];
 
   const displayedAnnouncements =
-    filterMode === 'Volunteers Only'
-      ? announcements.filter(isVolunteerNotice)
-      : announcements;
-
-  const toggleDutyAccept = (id) => {
-    setAcceptedDuties((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const handleCreateAnnouncement = async (e) => {
-    e.preventDefault();
-    setFormError('');
-    if (!newNotice.title.trim() || !newNotice.content.trim()) {
-      setFormError('Please enter both a title and announcement message.');
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const { data } = await API.post('/member/announcements', newNotice);
-      setAnnouncements((prev) => [data, ...prev]);
-      setNewNotice({
-        title: '',
-        category: 'Cleanliness Alert',
-        priority: 'Normal',
-        content: '',
-      });
-      setShowAddForm(false);
-      setFilterMode('Volunteers Only');
-    } catch (err) {
-      setFormError(err.response?.data?.message || 'Unable to post announcement. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    activeCategory === 'All'
+      ? announcements
+      : announcements.filter((a) => a.category === activeCategory);
 
   return (
     <div className="member-screen member-notices-screen">
       <div
-        className="screen-header"
+        className="screen-header member-notices-header"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -103,241 +64,164 @@ const MemberAnnouncements = () => {
         }}
       >
         <div>
-          <h2>Announcements &amp; Circulars</h2>
+          <h2 style={{ margin: '0 0 0.25rem' }}>Announcements &amp; Circulars</h2>
           <p className="text-muted text-sm" style={{ margin: 0 }}>
-            Official communications, riverfront regulations, and volunteer-only notices.
+            Official communications, riverfront regulations, and committee updates.
           </p>
         </div>
 
-        {/* Filter Option + Add Volunteer Announcement Button */}
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {['All', 'Volunteers Only'].map((mode) => (
+        <div className="member-notices-pills" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {categories.map((cat) => (
             <button
-              key={mode}
+              key={cat.value}
               type="button"
-              onClick={() => setFilterMode(mode)}
+              onClick={() => setActiveCategory(cat.value)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.4rem',
                 padding: '0.48rem 1.05rem',
                 borderRadius: '9999px',
-                border: filterMode === mode ? '1px solid #006B3C' : '1px solid #cbd5e1',
-                background: filterMode === mode ? '#006B3C' : '#ffffff',
-                color: filterMode === mode ? '#ffffff' : '#173D2B',
+                border: activeCategory === cat.value ? '1px solid #006B3C' : '1px solid #cbd5e1',
+                background: activeCategory === cat.value ? '#006B3C' : '#ffffff',
+                color: activeCategory === cat.value ? '#ffffff' : '#173D2B',
                 fontSize: '0.84rem',
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
             >
-              {mode === 'Volunteers Only' && <Users size={14} />}
-              <span>{mode === 'All' ? 'All Circulars' : 'Only for Volunteers'}</span>
+              {cat.label}
             </button>
           ))}
-
-          <button
-            type="button"
-            onClick={() => {
-              setShowAddForm((prev) => !prev);
-              setFormError('');
-            }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.5rem 1.15rem',
-              borderRadius: '9999px',
-              border: 'none',
-              background: '#008C4A',
-              color: '#ffffff',
-              fontSize: '0.84rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0, 140, 74, 0.25)',
-            }}
-          >
-            {showAddForm ? <X size={15} /> : <Plus size={15} />}
-            <span>{showAddForm ? 'Cancel' : 'Add Volunteer Announcement'}</span>
-          </button>
         </div>
       </div>
-
-      {/* Add Volunteer Announcement Form */}
-      {showAddForm && (
-        <div
-          className="app-card"
-          style={{
-            marginBottom: '1.5rem',
-            border: '1px solid #bbf7d0',
-            background: '#ffffff',
-          }}
-        >
-          <h3 style={{ color: '#006B3C', marginBottom: '0.85rem', fontSize: '1.1rem' }}>
-            Post New Volunteer Announcement
-          </h3>
-
-          {formError && (
-            <div
-              className="alert-banner alert-danger mb-3"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <AlertCircle size={16} />
-              <span>{formError}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleCreateAnnouncement} className="auth-form-body">
-            <div className="form-group">
-              <label>Announcement Title *</label>
-              <input
-                type="text"
-                required
-                placeholder="e.g., Sunday Morning Pushkar Ghat Cleanup Reporting Time"
-                value={newNotice.title}
-                onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
-              />
-            </div>
-
-            <div className="form-row">
-              <div className="form-group flex-1">
-                <label>Category</label>
-                <select
-                  value={newNotice.category}
-                  onChange={(e) => setNewNotice({ ...newNotice, category: e.target.value })}
-                >
-                  <option value="Cleanliness Alert">Cleanliness Alert</option>
-                  <option value="Event Notice">Event Notice</option>
-                  <option value="Meeting Circular">Meeting Circular</option>
-                  <option value="General Update">General Update</option>
-                </select>
-              </div>
-              <div className="form-group flex-1">
-                <label>Priority</label>
-                <select
-                  value={newNotice.priority}
-                  onChange={(e) => setNewNotice({ ...newNotice, priority: e.target.value })}
-                >
-                  <option value="Normal">Normal</option>
-                  <option value="Important">Important</option>
-                  <option value="Urgent">Urgent</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Message / Details *</label>
-              <textarea
-                rows="3"
-                required
-                placeholder="Share instructions, meeting point, or volunteer duty update..."
-                value={newNotice.content}
-                onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="btn btn-primary"
-              style={{ backgroundColor: '#006B3C', borderColor: '#006B3C' }}
-            >
-              {submitting ? 'Publishing...' : 'Publish Volunteer Announcement'}
-            </button>
-          </form>
-        </div>
-      )}
 
       {loading ? (
         <div className="text-center py-4">Loading updates...</div>
       ) : displayedAnnouncements.length === 0 ? (
         <div className="app-card text-center p-4">No active announcements in this category.</div>
       ) : (
-        <div className="notices-stack">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           {displayedAnnouncements.map((a) => {
-            const volOnly = isVolunteerNotice(a);
-            const accepted = !!acceptedDuties[a._id];
+            const isExpanded = expandedId === a._id;
+            const isUrgent = a.priority === 'Urgent';
+            const isImportant = a.priority === 'Important';
+            const iconBg = isUrgent ? '#fee2e2' : isImportant ? '#fef3c7' : '#e8f5e9';
+            const iconColor = isUrgent ? '#dc2626' : isImportant ? '#d97706' : '#006B3C';
+            const accentColor = isUrgent ? '#ef4444' : isImportant ? '#f59e0b' : '#006B3C';
 
             return (
-              <div key={a._id} className="app-card notice-card">
-                <div className="notice-header" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <span
-                    className={`badge ${
-                      a.priority === 'Urgent'
-                        ? 'badge-danger'
-                        : a.priority === 'Important'
-                        ? 'badge-amber'
-                        : 'badge-blue'
-                    }`}
-                  >
-                    {a.priority}
-                  </span>
-                  <span className="badge badge-outline">{a.category}</span>
-                  {volOnly && (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        background: '#E8F5E9',
-                        color: '#006B3C',
-                        border: '1px solid #86efac',
-                        borderRadius: '9999px',
-                        padding: '2px 10px',
-                        fontSize: '0.74rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      <Users size={12} />
-                      <span>Only for Volunteers</span>
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="notice-title">{a.title}</h3>
-                <p className="notice-content">{a.content}</p>
-
+              <div
+                key={a._id}
+                onClick={() => setExpandedId(isExpanded ? null : a._id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && setExpandedId(isExpanded ? null : a._id)}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderLeft: `4px solid ${accentColor}`,
+                  borderRadius: '12px',
+                  padding: '0.85rem 1rem',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.85rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
+                }}
+              >
                 <div
-                  className="notice-footer"
                   style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    background: iconBg,
+                    color: iconColor,
                     display: 'flex',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    flexWrap: 'wrap',
-                    gap: '0.75rem',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginTop: '2px',
                   }}
                 >
-                  <div className="flex items-center gap-1 text-xs text-muted">
-                    <Calendar size={12} />
-                    <span>
+                  {isUrgent ? <AlertTriangle size={17} /> : <Bell size={17} />}
+                </div>
+
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      gap: '0.5rem',
+                      marginBottom: '0.2rem',
+                    }}
+                  >
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '0.94rem',
+                        fontWeight: 700,
+                        color: '#0f172a',
+                        lineHeight: 1.35,
+                      }}
+                    >
+                      {a.title}
+                    </h3>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        color: '#64748b',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px',
+                        marginTop: '2px',
+                      }}
+                    >
+                      <Calendar size={11} />
                       {new Date(a.publishedAt || a.createdAt).toLocaleDateString('en-IN', {
-                        dateStyle: 'medium',
+                        day: 'numeric',
+                        month: 'short',
                       })}
-                      {a.createdBy?.name ? ` • Posted by ${a.createdBy.name}` : ''}
                     </span>
                   </div>
 
-                  {volOnly && (
-                    <button
-                      type="button"
-                      onClick={() => toggleDutyAccept(a._id)}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        background: accepted ? '#dcfce7' : '#006B3C',
-                        color: accepted ? '#064e3b' : '#ffffff',
-                        border: accepted ? '1px solid #86efac' : 'none',
-                        borderRadius: '9999px',
-                        padding: '0.4rem 1rem',
-                        fontSize: '0.82rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
+                  <p
+                    style={{
+                      margin: '0 0 0.45rem',
+                      fontSize: '0.83rem',
+                      color: '#475569',
+                      lineHeight: 1.45,
+                      ...(isExpanded
+                        ? {}
+                        : {
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          }),
+                    }}
+                  >
+                    {a.content}
+                  </p>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                    <span
+                      className={`badge ${
+                        isUrgent ? 'badge-danger' : isImportant ? 'badge-amber' : 'badge-blue'
+                      }`}
+                      style={{ fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}
                     >
-                      <CheckCircle2 size={14} />
-                      <span>{accepted ? 'Volunteer Duty Confirmed' : 'Confirm Volunteer Availability'}</span>
-                    </button>
-                  )}
+                      {a.priority}
+                    </span>
+                    <span
+                      className="badge badge-outline"
+                      style={{ fontSize: '0.68rem', padding: '0.15rem 0.5rem' }}
+                    >
+                      {a.category}
+                    </span>
+                  </div>
                 </div>
               </div>
             );

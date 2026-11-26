@@ -16,6 +16,7 @@ import About from './pages/About';
 import AboutNGO from './pages/AboutNGO';
 import AboutMission from './pages/AboutMission';
 import AboutObjectives from './pages/AboutObjectives';
+import Initiatives from './pages/Initiatives';
 import Activities from './pages/Activities';
 import ActivityCleanliness from './pages/activities/ActivityCleanliness';
 import ActivityPlantation from './pages/activities/ActivityPlantation';
@@ -119,7 +120,8 @@ function App() {
             <Route path="/about/ngo" element={<AboutNGO />} />
             <Route path="/about/mission" element={<AboutMission />} />
             <Route path="/about/objectives" element={<AboutObjectives />} />
-            <Route path="/activities" element={<Activities />} />
+            <Route path="/initiatives" element={<Initiatives />} />
+            <Route path="/activities" element={<Initiatives initialTab="activities" />} />
             <Route path="/activities/cleanliness" element={<ActivityCleanliness />} />
             <Route path="/activities/plantation" element={<ActivityPlantation />} />
             <Route path="/activities/conservation" element={<ActivityConservation />} />
@@ -128,7 +130,7 @@ function App() {
             <Route path="/awareness/schools" element={<AwarenessSchools />} />
             <Route path="/awareness/workshops" element={<AwarenessWorkshops />} />
             <Route path="/awareness/campaigns" element={<AwarenessCampaigns />} />
-            <Route path="/events" element={<Events />} />
+            <Route path="/events" element={<Initiatives initialTab="events" />} />
             <Route path="/events/upcoming" element={<EventsUpcoming />} />
             <Route path="/events/volunteer-meetings" element={<EventsVolunteerMeetings />} />
             <Route path="/events/past-reports" element={<EventsPastReports />} />
@@ -137,7 +139,7 @@ function App() {
             <Route path="/announcements/news" element={<AnnouncementsNews />} />
             <Route path="/announcements/press" element={<AnnouncementsPress />} />
             <Route path="/announcements/:id" element={<AnnouncementDetails />} />
-            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/gallery" element={<Initiatives initialTab="gallery" />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/register" element={<Register />} />
           </Route>

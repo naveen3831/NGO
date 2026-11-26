@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import HeroBanner from '../components/HeroBanner';
 import heroPlantImg from '../assets/hero-plant.jpg';
-import { AlertCircle, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +22,7 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [registeredUser, setRegisteredUser] = useState(null);
 
   const { registerMember } = useAuth();
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Register = () => {
 
     setSubmitting(true);
     try {
-      await registerMember({
+      const data = await registerMember({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
@@ -52,13 +53,112 @@ const Register = () => {
         occupation: formData.occupation,
         address: { street: formData.street, city: formData.city },
       });
-      navigate('/');
+      setRegisteredUser(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please check inputs.');
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (registeredUser) {
+    return (
+      <div className="clean-page-wrapper" style={{ background: '#ffffff', minHeight: '80vh' }}>
+        <HeroBanner title="Registration Confirmed" subtitle="Welcome to Godhavari Nadhi Paryavarana Parishubratha" />
+        <section className="section-padding" style={{ paddingTop: '2rem' }}>
+          <div className="container" style={{ maxWidth: '640px' }}>
+            <div
+              style={{
+                background: '#ffffff',
+                border: '1px solid #bbf7d0',
+                borderRadius: '20px',
+                padding: '2.25rem',
+                textAlign: 'center',
+                boxShadow: '0 10px 30px rgba(0, 107, 60, 0.08)',
+              }}
+            >
+              <div
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: '#e8f5e9',
+                  color: '#006B3C',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '1rem',
+                }}
+              >
+                <CheckCircle2 size={32} />
+              </div>
+              <h2 style={{ color: '#064e3b', margin: '0 0 0.5rem', fontWeight: 800 }}>
+                Thank You, {registeredUser.name}!
+              </h2>
+              <p style={{ color: '#475569', margin: '0 0 1.25rem', lineHeight: 1.6 }}>
+                Your membership application has been saved and is currently <strong>Pending</strong> administrator review. You will receive a notification once it is approved.
+              </p>
+              <div
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '14px',
+                  padding: '1rem 1.25rem',
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                  flexWrap: 'wrap',
+                  gap: '1rem',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>UNIQUE MEMBERSHIP ID</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#006B3C' }}>
+                    {registeredUser.memberId}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>MEMBERSHIP STATUS</div>
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      marginTop: '2px',
+                      background: '#fef3c7',
+                      color: '#92400e',
+                      padding: '2px 10px',
+                      borderRadius: '9999px',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {registeredUser.membership?.status || 'Pending'}
+                  </span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/member/profile')}
+                  className="btn-hero-join-mission"
+                  style={{ border: 'none', cursor: 'pointer' }}
+                >
+                  <span>Go to Member Dashboard</span>
+                  <ArrowRight size={15} />
+                </button>
+                <Link
+                  to="/"
+                  className="btn-eco-login-outline"
+                  style={{ textDecoration: 'none' }}
+                >
+                  Return to Home
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="clean-page-wrapper" style={{ background: '#ffffff' }}>

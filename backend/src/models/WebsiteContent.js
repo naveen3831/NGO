@@ -6,6 +6,10 @@ const websiteContentSchema = new mongoose.Schema(
       type: String,
       default: 'Godhavari Nadhi Paryavarana Parishubratha',
     },
+    logoUrl: {
+      type: String,
+      default: '',
+    },
     tagline: {
       type: String,
       default: 'Dedicated to the cleanliness, ecological revival, and purity of the sacred River Godavari',

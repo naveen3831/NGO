@@ -19,6 +19,8 @@ import {
   Image as ImageIcon,
   HeartHandshake,
   Mail,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -32,7 +34,7 @@ const AdminLayout = () => {
   });
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--admin-sidebar-w', sidebarOpen ? '232px' : '0px');
+    document.documentElement.style.setProperty('--admin-sidebar-w', sidebarOpen ? '232px' : '74px');
   }, [sidebarOpen]);
 
   const toggleSidebar = () => {
@@ -62,7 +64,6 @@ const AdminLayout = () => {
     { label: 'Website Content', path: '/admin/website', icon: FileText },
     { label: 'Admin Users', path: '/admin/users', icon: UserCheck },
     { label: 'Profile', path: '/admin/profile', icon: User },
-    { label: 'Settings', path: '/admin/settings', icon: Settings },
   ];
 
   const isActive = (item) => {
@@ -93,17 +94,45 @@ const AdminLayout = () => {
         <div className="eco-sidebar-brand">
           <Link
             to="/"
-            className="flex items-center gap-2.5 flex-1 min-w-0"
             title="View Public Website (Home & Navbar)"
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              flex: 1,
+              minWidth: 0,
+              textDecoration: 'none',
+              color: 'inherit',
+            }}
           >
-            <Logo variant="light" size={32} showText={false} />
-            <div className="eco-sidebar-brand-text">
+            <Logo variant="light" size={34} showText={false} />
+            <div className="eco-sidebar-brand-text" style={{ minWidth: 0 }}>
               <span className="brand-title-primary">Godhavari Nadhi</span>
               <span className="brand-title-sub">Paryavarana</span>
               <span className="brand-title-sub">Parishubratha</span>
             </div>
           </Link>
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.12)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+          </button>
         </div>
 
         {/* Navigation Items with Equal Spacing */}
@@ -118,6 +147,7 @@ const AdminLayout = () => {
                   <Link
                     key={item.label}
                     to={item.path}
+                    title={item.label}
                     className={`eco-nav-item ${active ? 'active' : ''}`}
                   >
                     <Icon size={16} className="eco-nav-icon" />
@@ -137,6 +167,7 @@ const AdminLayout = () => {
                   <Link
                     key={item.label}
                     to={item.path}
+                    title={item.label}
                     className={`eco-nav-item ${active ? 'active' : ''}`}
                   >
                     <Icon size={16} className="eco-nav-icon" />
@@ -159,7 +190,7 @@ const AdminLayout = () => {
             </div>
             <div className="admin-user-info">
               <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
-              <span className="admin-role">Super Admin</span>
+              <span className="admin-role">Administrator</span>
             </div>
           </Link>
           <button
@@ -177,15 +208,6 @@ const AdminLayout = () => {
         {/* Top Header Bar with Hamburger Menu Toggle */}
         <header className="eco-admin-topbar">
           <div className="eco-topbar-left">
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className={`eco-menu-toggle-btn ${!sidebarOpen ? 'sidebar-is-hidden' : ''}`}
-              title={sidebarOpen ? 'Hide sidebar menu' : 'Show sidebar menu'}
-              aria-label="Toggle Navigation Menu"
-            >
-              <Menu size={19} />
-            </button>
             <h1 className="eco-admin-page-heading">{getPageTitle()}</h1>
           </div>
 

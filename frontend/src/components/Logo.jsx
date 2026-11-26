@@ -1,13 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import API from '../services/api';
 
 const Logo = ({ variant = 'dark', showText = true, size = 42, className = '' }) => {
   const isLight = variant === 'light'; // Light text for dark backgrounds (like hero / left login)
   const textColor = isLight ? '#ffffff' : '#064e3b';
   const subTextColor = isLight ? '#d1fae5' : '#0f766e';
+  const [customLogo, setCustomLogo] = useState(() => {
+    try {
+      return localStorage.getItem('ngo_custom_logo') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  useEffect(() => {
+    const syncLogo = () => {
+      try {
+        setCustomLogo(localStorage.getItem('ngo_custom_logo') || '');
+      } catch {}
+    };
+    window.addEventListener('ngo-logo-updated', syncLogo);
+
+    API.get('/public/content')
+      .then((res) => {
+        const remoteLogo = res.data?.logoUrl || '';
+        setCustomLogo(remoteLogo);
+        try {
+          localStorage.setItem('ngo_custom_logo', remoteLogo);
+        } catch {}
+      })
+      .catch(() => {});
+
+    return () => window.removeEventListener('ngo-logo-updated', syncLogo);
+  }, []);
 
   return (
     <div className={`ngo-logo-lockup ${className}`}>
-      {/* Handcrafted Vector Emblem Matching the Reference Logo */}
+      {customLogo ? (
+        <img
+          src={customLogo}
+          alt="Godhavari Nadhi Logo"
+          style={{
+            width: size,
+            height: size,
+            objectFit: 'contain',
+            borderRadius: '8px',
+            flexShrink: 0,
+          }}
+        />
+      ) : (
+      /* Handcrafted Vector Emblem Matching the Reference Logo */
       <svg
         width={size}
         height={size}
@@ -61,6 +103,7 @@ const Logo = ({ variant = 'dark', showText = true, size = 42, className = '' }) 
           />
         </g>
       </svg>
+      )}
 
       {showText && (
         <div className="ngo-logo-text">

@@ -143,12 +143,35 @@ export const deleteEvent = async (req, res, next) => {
   }
 };
 
+// Helper: find event by ObjectId or create/find by title for curated sample events
+const resolveOrCreateEvent = async (id, body = {}, fallbackUserId = null) => {
+  if (/^[0-9a-fA-F]{24}$/.test(id)) {
+    const found = await Event.findById(id);
+    if (found) return found;
+  }
+  const title = body.title || 'River Cleaning Drive';
+  let existing = await Event.findOne({ title });
+  if (!existing) {
+    existing = await Event.create({
+      title,
+      description: body.description || 'Community river conservation and cleanliness drive.',
+      eventType: body.eventType || 'Cleanliness Drive',
+      date: body.date ? new Date(body.date) : new Date(Date.now() + 86400000 * 3),
+      time: body.time || '06:30 AM – 09:00 AM',
+      location: body.location || { venue: 'Kotilingala Ghat, Rajahmundry' },
+      isPublic: true,
+      createdBy: fallbackUserId || undefined,
+    });
+  }
+  return existing;
+};
+
 // @desc    Volunteer enrollment request for an event (requires Admin approval)
 // @route   POST /api/v1/member/events/:id/enroll
 // @access  Private (Member)
 export const enrollInEvent = async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await resolveOrCreateEvent(req.params.id, req.body, req.user._id);
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
@@ -222,6 +245,44 @@ export const reviewVolunteerRequest = async (req, res, next) => {
     await event.save();
     res.json({
       message: status === 'Confirmed' ? 'Volunteer confirmed!' : 'Volunteer request declined.',
+      event,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Public visitor joins an event (sends request to Admin Dashboard)
+// @route   POST /api/v1/public/events/:id/join
+// @access  Public
+export const joinEventPublic = async (req, res, next) => {
+  try {
+    const { name, email, phone } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Please provide your name and email address' });
+    }
+
+    const event = await resolveOrCreateEvent(req.params.id, req.body);
+    const cleanEmail = email.trim().toLowerCase();
+
+    const existing = (event.volunteerRequests || []).find(
+      (r) => (r.email || '').toLowerCase() === cleanEmail
+    );
+    if (existing) {
+      return res.status(400).json({ message: `You have already requested to join this event (Status: ${existing.status})` });
+    }
+
+    event.volunteerRequests.push({
+      name: name.trim(),
+      email: cleanEmail,
+      phone: (phone || '').trim(),
+      status: 'Pending',
+      requestedAt: new Date(),
+    });
+    await event.save();
+
+    res.status(201).json({
+      message: 'Your join request has been sent to the Admin Dashboard for approval!',
       event,
     });
   } catch (error) {

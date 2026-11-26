@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Membership from '../models/Membership.js';
+import Notification from '../models/Notification.js';
 import generateToken from '../utils/generateToken.js';
 
 // @desc    Admin login
@@ -172,11 +173,20 @@ export const registerMember = async (req, res, next) => {
       user: user._id,
       membershipNumber: `MEM-${memberId}`,
       membershipType: membershipType || 'Annual Member',
-      status: 'Active',
+      status: 'Pending',
       validFrom: new Date(),
       validTo: validUntil,
       feePaid: membershipType === 'Life Member' ? 5000 : 500,
       paymentStatus: 'Paid',
+    });
+
+    await Notification.create({
+      title: 'Membership Application Received',
+      message: `Your membership application (${memberId}) has been submitted and is currently Pending admin review.`,
+      type: 'Membership Update',
+      targetAudience: 'Specific Member',
+      recipient: user._id,
+      sentBy: user._id,
     });
 
     res.status(201).json({

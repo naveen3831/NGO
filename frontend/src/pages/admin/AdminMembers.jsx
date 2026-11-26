@@ -321,6 +321,79 @@ const AdminMembers = () => {
     }
   };
 
+  const handleApplicationDecision = async (memberId, newStatus, memberName) => {
+    try {
+      await API.patch(`/admin/members/${memberId}/membership`, { status: newStatus });
+      setFeedback({
+        type: 'success',
+        message: `Membership application for "${memberName}" marked as ${newStatus}. Applicant notified.`,
+      });
+      recordAdminAction({
+        action: `Updated membership application for "${memberName}" to ${newStatus}`,
+        category: 'Membership',
+        adminName: currentUser?.name || 'Dr. K. V. Subba Rao',
+      });
+      fetchMembers();
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to update application status',
+      });
+    }
+  };
+
+  // Update Membership Tier directly or review Volunteer request
+  const handleTierChange = async (memberId, newTier, memberName) => {
+    try {
+      await API.patch(`/admin/members/${memberId}/membership`, {
+        membershipType: newTier,
+      });
+      setFeedback({
+        type: 'success',
+        message: `Updated membership tier for "${memberName}" to ${newTier}.`,
+      });
+      recordAdminAction({
+        action: `Changed membership tier for "${memberName}" to ${newTier}`,
+        category: 'Membership',
+        adminName: currentUser?.name || 'Dr. K. V. Subba Rao',
+      });
+      fetchMembers();
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to update membership tier',
+      });
+    }
+  };
+
+  const handleReviewTierRequest = async (memberId, action, requestedTier, memberName) => {
+    try {
+      const res = await API.patch(`/admin/members/${memberId}/tier-request`, {
+        action,
+        membershipType: requestedTier || 'Volunteer Member',
+      });
+      setFeedback({
+        type: 'success',
+        message:
+          res.data?.message ||
+          (action === 'approve'
+            ? `Granted ${requestedTier || 'Volunteer Member'} access to "${memberName}".`
+            : `Declined tier request for "${memberName}".`),
+      });
+      recordAdminAction({
+        action: `${action === 'approve' ? 'Approved' : 'Declined'} ${requestedTier || 'Volunteer Member'} request for "${memberName}"`,
+        category: 'Membership',
+        adminName: currentUser?.name || 'Dr. K. V. Subba Rao',
+      });
+      fetchMembers();
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to review tier request',
+      });
+    }
+  };
+
   // Helper for Member Initials
   const getInitials = (name) => {
     if (!name) return 'M';
@@ -759,6 +832,164 @@ const AdminMembers = () => {
         </div>
       )}
 
+      {/* Pending Membership Applications */}
+      {members.some((m) => m.membership?.status === 'Pending' || m.membership?.status === 'Pending Approval') && (
+        <div
+          style={{
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: '14px',
+            padding: '1rem 1.25rem',
+            marginBottom: '1rem',
+          }}
+        >
+          <div style={{ fontWeight: 700, color: '#1e3a8a', fontSize: '0.9rem', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <ShieldCheck size={16} />
+            <span>Pending Membership Applications</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            {members
+              .filter((m) => m.membership?.status === 'Pending' || m.membership?.status === 'Pending Approval')
+              .map((m) => (
+                <div
+                  key={m._id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.75rem',
+                    flexWrap: 'wrap',
+                    background: '#ffffff',
+                    border: '1px solid #dbeafe',
+                    borderRadius: '10px',
+                    padding: '0.6rem 0.9rem',
+                  }}
+                >
+                  <div style={{ fontSize: '0.84rem', color: '#1e293b' }}>
+                    <strong>{m.name}</strong> ({m.memberId || m.email}) &bull;{' '}
+                    <span style={{ fontWeight: 600 }}>{m.membership?.membershipType || 'Annual Member'}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleApplicationDecision(m._id, 'Approved', m.name)}
+                      style={{
+                        background: '#059669',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.8rem',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleApplicationDecision(m._id, 'Rejected', m.name)}
+                      style={{
+                        background: '#fee2e2',
+                        color: '#b91c1c',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.38rem 0.75rem',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Pending Volunteer / Tier Upgrade Requests */}
+      {members.some((m) => m.membership?.tierRequestStatus === 'Pending') && (
+        <div
+          style={{
+            background: '#fffbeb',
+            border: '1px solid #fcd34d',
+            borderRadius: '14px',
+            padding: '1rem 1.25rem',
+            marginBottom: '1rem',
+          }}
+        >
+          <div style={{ fontWeight: 700, color: '#92400e', fontSize: '0.9rem', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles size={16} />
+            <span>Pending Volunteer &amp; Membership Tier Requests</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            {members
+              .filter((m) => m.membership?.tierRequestStatus === 'Pending')
+              .map((m) => {
+                const reqTier = m.membership?.requestedTier || 'Volunteer Member';
+                return (
+                  <div
+                    key={m._id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '0.75rem',
+                      flexWrap: 'wrap',
+                      background: '#ffffff',
+                      border: '1px solid #fde68a',
+                      borderRadius: '10px',
+                      padding: '0.6rem 0.9rem',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.84rem', color: '#1e293b' }}>
+                      <strong>{m.name}</strong> ({m.memberId || m.email}) requested upgrade from{' '}
+                      <span style={{ fontWeight: 600 }}>{m.membership?.membershipType || 'Annual Member'}</span> to{' '}
+                      <span style={{ fontWeight: 700, color: '#047857' }}>{reqTier}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewTierRequest(m._id, 'approve', reqTier, m.name)}
+                        style={{
+                          background: '#059669',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '0.38rem 0.8rem',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Grant {reqTier}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleReviewTierRequest(m._id, 'reject', reqTier, m.name)}
+                        style={{
+                          background: '#fee2e2',
+                          color: '#b91c1c',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '0.38rem 0.75rem',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* 3. 4-Card Pastel KPI Metric Strip */}
       <div className="ref-kpi-grid">
         {/* Card 1: Total Enrolled */}
@@ -997,14 +1228,54 @@ const AdminMembers = () => {
 
                           {/* 4. Membership Tier */}
                           <td style={{ textAlign: 'center' }}>
-                            <span className={`ref-tier-badge ${getTierBadgeClass(tier)}`}>
-                              {tier === 'Life Member' ? (
-                                <Star size={12} fill="#9333ea" />
-                              ) : (
-                                <User size={12} />
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
+                              <select
+                                value={tier}
+                                onChange={(e) => handleTierChange(m._id, e.target.value, m.name)}
+                                className={`ref-tier-badge ${getTierBadgeClass(tier)}`}
+                                style={{
+                                  cursor: 'pointer',
+                                  border: '1px solid rgba(0,0,0,0.08)',
+                                  fontWeight: 700,
+                                  fontSize: '0.74rem',
+                                  padding: '0.25rem 0.5rem',
+                                  borderRadius: '9999px',
+                                }}
+                                title="Change membership tier"
+                              >
+                                <option value="Annual Member">Annual Member</option>
+                                <option value="Life Member">Life Member</option>
+                                <option value="Volunteer Member">Volunteer Member</option>
+                                <option value="Patron">Patron</option>
+                                <option value="Student Member">Student Member</option>
+                              </select>
+                              {m.membership?.tierRequestStatus === 'Pending' && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleReviewTierRequest(
+                                      m._id,
+                                      'approve',
+                                      m.membership?.requestedTier || 'Volunteer Member',
+                                      m.name
+                                    )
+                                  }
+                                  style={{
+                                    background: '#fef3c7',
+                                    color: '#92400e',
+                                    border: '1px solid #fcd34d',
+                                    borderRadius: '9999px',
+                                    fontSize: '0.68rem',
+                                    fontWeight: 700,
+                                    padding: '0.15rem 0.5rem',
+                                    cursor: 'pointer',
+                                  }}
+                                  title="Click to grant requested tier access"
+                                >
+                                  Approve {m.membership?.requestedTier || 'Volunteer'}
+                                </button>
                               )}
-                              <span>{tier}</span>
-                            </span>
+                            </div>
                           </td>
 
                           {/* 5. Status (Interactive Toggle) */}

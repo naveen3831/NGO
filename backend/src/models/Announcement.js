@@ -40,6 +40,10 @@ const announcementSchema = new mongoose.Schema(
     attachmentUrl: {
       type: String,
     },
+    imageUrl: {
+      type: String,
+      default: '',
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

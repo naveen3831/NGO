@@ -64,10 +64,11 @@ const eventSchema = new mongoose.Schema(
         user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User',
-          required: true,
+          required: false,
         },
         name: { type: String, default: '' },
         email: { type: String, default: '' },
+        phone: { type: String, default: '' },
         memberId: { type: String, default: '' },
         status: {
           type: String,
@@ -81,7 +82,7 @@ const eventSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
   },
   {

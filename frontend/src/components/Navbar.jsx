@@ -25,6 +25,10 @@ import {
   Phone,
   Mail,
   Image as ImageIcon,
+  Key,
+  Compass,
+  Bell,
+  ArrowRight,
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -71,18 +75,9 @@ const Navbar = () => {
       path: '/about',
     },
     {
-      label: 'Activities',
-      path: '/activities',
-    },
-    {
-      label: 'Events',
-      path: '/events',
-      icon: Calendar,
-    },
-    {
-      label: 'Gallery',
-      path: '/gallery',
-      icon: ImageIcon,
+      label: 'Initiatives',
+      path: '/initiatives',
+      icon: Compass,
     },
     {
       label: 'Announcements',
@@ -97,6 +92,14 @@ const Navbar = () => {
 
   const isCurrentActive = (item) => {
     if (item.path === '/') return location.pathname === '/';
+    if (item.path === '/initiatives') {
+      return (
+        location.pathname.startsWith('/initiatives') ||
+        location.pathname.startsWith('/activities') ||
+        location.pathname.startsWith('/events') ||
+        location.pathname.startsWith('/gallery')
+      );
+    }
     return location.pathname.startsWith(item.path);
   };
 
@@ -187,133 +190,119 @@ const Navbar = () => {
               </button>
             </div>
           ) : user && isMember ? (
-            <div className="eco-user-actions">
-              <Link to="/member" className="btn-eco-join-pill" title="Member Portal">
-                <User size={14} />
-                <span>Member Portal</span>
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="btn-eco-logout"
-                title="Sign Out"
+            <>
+              <div
+                className="eco-nav-dropdown-wrapper eco-desktop-profile-dropdown"
+                onMouseEnter={() => handleMouseEnter('__profile__')}
+                onMouseLeave={handleMouseLeave}
               >
-                <LogOut size={13} />
+              <button
+                type="button"
+                onClick={() => setActiveDropdown((prev) => (prev === '__profile__' ? null : '__profile__'))}
+                aria-label="Member Profile Menu"
+                title={user?.name || 'My Profile'}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  backgroundColor: '#006B3C',
+                  color: '#ffffff',
+                  border: '2px solid #bbf7d0',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0, 107, 60, 0.25)',
+                }}
+              >
+                <User size={19} />
               </button>
-            </div>
+
+              <div
+                className={`eco-nav-dropdown-menu ${activeDropdown === '__profile__' ? 'visible' : ''}`}
+                style={{ left: 'auto', right: 0, minWidth: '220px' }}
+              >
+                <div style={{ padding: '0.6rem 0.9rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.25rem' }}>
+                  <div style={{ fontWeight: 700, color: '#064e3b', fontSize: '0.9rem' }}>
+                    {user?.name || 'Member'}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    {user?.memberId || 'Volunteer Member'}
+                  </div>
+                </div>
+
+                <Link
+                  to="/member/profile"
+                  className="eco-dropdown-item"
+                  onClick={() => setActiveDropdown(null)}
+                >
+                  <span className="eco-drop-icon-wrap"><User size={13} /></span>
+                  <span className="eco-drop-item-text">My Profile</span>
+                </Link>
+
+                <Link
+                  to="/member/announcements"
+                  className="eco-dropdown-item"
+                  onClick={() => setActiveDropdown(null)}
+                >
+                  <span className="eco-drop-icon-wrap"><Megaphone size={13} /></span>
+                  <span className="eco-drop-item-text">Announcements</span>
+                </Link>
+
+                <Link
+                  to="/member/meetings"
+                  className="eco-dropdown-item"
+                  onClick={() => setActiveDropdown(null)}
+                >
+                  <span className="eco-drop-icon-wrap"><Clock size={13} /></span>
+                  <span className="eco-drop-item-text">Meetings</span>
+                </Link>
+
+                <Link
+                  to="/member/profile#password"
+                  className="eco-dropdown-item"
+                  onClick={() => setActiveDropdown(null)}
+                >
+                  <span className="eco-drop-icon-wrap"><Key size={13} /></span>
+                  <span className="eco-drop-item-text">Forgot Password</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveDropdown(null);
+                    handleLogout();
+                  }}
+                  className="eco-dropdown-item"
+                  style={{ width: '100%', background: 'none', border: 'none', borderTop: '1px solid #f1f5f9', marginTop: '0.25rem', paddingTop: '0.6rem', color: '#dc2626', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <span className="eco-drop-icon-wrap" style={{ background: '#fee2e2', color: '#dc2626' }}><LogOut size={13} /></span>
+                  <span className="eco-drop-item-text" style={{ color: '#dc2626' }}>Log Out</span>
+                </button>
+              </div>
+              </div>
+              <Link
+                to="/member/announcements"
+                aria-label="Notifications"
+                title="Notifications"
+                className="eco-mobile-notif-btn"
+              >
+                <Bell size={19} />
+              </Link>
+            </>
           ) : (
             <div className="eco-guest-actions">
-              <Link to="/register" className="btn-eco-join-pill">
-                <span>Join Us</span>
-              </Link>
               <Link to="/login" className="btn-eco-login-outline">
                 <span>Login</span>
               </Link>
+              <Link to="/register" className="btn-eco-join-pill">
+                <span>Join Us</span>
+                <ArrowRight size={14} />
+              </Link>
             </div>
           )}
-
-          {/* Mobile Menu Button */}
-          <button
-            className="eco-mobile-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
         </div>
       </div>
-
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="eco-mobile-drawer">
-          <div className="container eco-mobile-inner">
-            <Link
-              to="/"
-              className={`eco-mobile-link ${location.pathname === '/' ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Home size={16} />
-              <span>Home</span>
-            </Link>
-
-            {navMenuItems
-              .filter((i) => i.path !== '/')
-              .map((item) => (
-                <div key={item.label} className="eco-mobile-nav-group">
-                  <Link
-                    to={item.path}
-                    className={`eco-mobile-link ${isCurrentActive(item) ? 'active' : ''}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <span>{item.label}</span>
-                  </Link>
-
-                  {item.hasDropdown && (
-                    <div className="eco-mobile-sub-list">
-                      {item.children.map((sub) => (
-                        <Link
-                          key={sub.label}
-                          to={sub.path}
-                          className="eco-mobile-sub-link"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {sub.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-            <div className="eco-mobile-action-wrap">
-              {user && isAdmin ? (
-                <Link
-                  to="/admin"
-                  className="btn-eco-join-pill btn-block text-center"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Shield size={16} />
-                  <span>Admin Dashboard</span>
-                </Link>
-              ) : user && isMember ? (
-                <>
-                  <Link
-                    to="/member"
-                    className="btn-eco-join-pill btn-block text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <User size={16} />
-                    <span>Open Member Portal</span>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="btn-eco-logout-block mt-2"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <div className="d-flex flex-column gap-2">
-                  <Link
-                    to="/register"
-                    className="btn-eco-join-pill btn-block text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Users size={16} />
-                    <span>Join Us</span>
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="btn-eco-login-outline btn-block text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Member Login
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

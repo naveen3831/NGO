@@ -1,6 +1,6 @@
 import express from 'express';
 import { protect, requireMember } from '../middlewares/authMiddleware.js';
-import { getMyMembership, updateMyProfile } from '../controllers/memberController.js';
+import { getMyMembership, updateMyProfile, requestMembershipTier } from '../controllers/memberController.js';
 import { getMemberEvents, enrollInEvent } from '../controllers/eventController.js';
 import { getMemberMeetings } from '../controllers/meetingController.js';
 import { getMemberAnnouncements, createMemberAnnouncement } from '../controllers/announcementController.js';
@@ -16,6 +16,7 @@ router.use(protect, requireMember);
 router.get('/me', getMe);
 router.patch('/profile', updateMyProfile);
 router.get('/membership', getMyMembership);
+router.post('/membership/request-tier', requestMembershipTier);
 
 // Member events & cleanliness drives
 router.get('/events', getMemberEvents);

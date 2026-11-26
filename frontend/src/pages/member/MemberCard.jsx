@@ -1,9 +1,11 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Droplet, ShieldCheck, QrCode, Download, Printer } from 'lucide-react';
+import { Droplet, ShieldCheck, QrCode, Download, Printer, ArrowLeft } from 'lucide-react';
 
 const MemberCard = () => {
   const { user, membership } = useAuth();
+  const navigate = useNavigate();
   const cardRef = useRef();
 
   const handlePrint = () => {
@@ -12,6 +14,29 @@ const MemberCard = () => {
 
   return (
     <div className="member-screen member-card-screen">
+      <div style={{ marginBottom: '1rem' }}>
+        <button
+          type="button"
+          onClick={() => navigate('/member/profile')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            background: '#ffffff',
+            color: '#006B3C',
+            border: '1px solid #bbf7d0',
+            borderRadius: '9999px',
+            padding: '0.45rem 1.05rem',
+            fontSize: '0.86rem',
+            fontWeight: 650,
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(0, 107, 60, 0.06)',
+          }}
+        >
+          <ArrowLeft size={15} />
+          <span>Back</span>
+        </button>
+      </div>
       <div className="screen-header text-center">
         <h2>Digital Membership Identity Card</h2>
         <p className="text-muted text-sm">

@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import Membership from '../models/Membership.js';
+import Notification from '../models/Notification.js';
 
 // @desc    Get all members with search, filter, and pagination
 // @route   GET /api/v1/admin/members
@@ -241,6 +242,18 @@ export const updateMembershipStatus = async (req, res, next) => {
     if (paymentStatus) membership.paymentStatus = paymentStatus;
 
     const updatedMembership = await membership.save();
+
+    if (status) {
+      await Notification.create({
+        title: `Membership Status: ${status}`,
+        message: `Your membership (${membership.membershipNumber}) status has been updated to ${status} by the administrator.`,
+        type: 'Membership Update',
+        targetAudience: 'Specific Member',
+        recipient: membership.user,
+        sentBy: req.user._id,
+      });
+    }
+
     res.json(updatedMembership);
   } catch (error) {
     next(error);
@@ -372,9 +385,89 @@ export const updateMyProfile = async (req, res, next) => {
     if (phone) user.phone = phone;
     if (bloodGroup) user.bloodGroup = bloodGroup;
     if (address) user.address = { ...user.address, ...address };
+    if (req.body.password && req.body.password.trim().length >= 6) {
+      user.password = req.body.password.trim();
+    }
 
     const updatedUser = await user.save();
     res.json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Member requests a membership tier upgrade (e.g., Volunteer Member)
+// @route   POST /api/v1/member/membership/request-tier
+// @access  Private (Member)
+export const requestMembershipTier = async (req, res, next) => {
+  try {
+    const requestedTier = req.body.requestedTier || 'Volunteer Member';
+    let membership = await Membership.findOne({ user: req.user._id });
+
+    if (!membership) {
+      membership = new Membership({
+        user: req.user._id,
+        membershipNumber: `MEM-${req.user.memberId || req.user._id.toString().slice(-6).toUpperCase()}`,
+        membershipType: 'Annual Member',
+        status: 'Active',
+      });
+    }
+
+    membership.requestedTier = requestedTier;
+    membership.tierRequestStatus = 'Pending';
+    membership.tierRequestDate = new Date();
+    await membership.save();
+
+    res.json({
+      message: `${requestedTier} request submitted for admin approval.`,
+      membership,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Admin approves or rejects a member's tier/volunteer request
+// @route   PATCH /api/v1/admin/members/:id/tier-request
+// @access  Private (Admin)
+export const reviewMembershipTierRequest = async (req, res, next) => {
+  try {
+    const { action = 'approve', membershipType } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Member not found' });
+    }
+
+    let membership = await Membership.findOne({ user: user._id });
+    if (!membership) {
+      membership = new Membership({
+        user: user._id,
+        membershipNumber: `MEM-${user.memberId || user._id.toString().slice(-6).toUpperCase()}`,
+        approvedBy: req.user._id,
+      });
+    }
+
+    if (action === 'approve') {
+      const targetTier = membershipType || membership.requestedTier || 'Volunteer Member';
+      membership.membershipType = targetTier;
+      membership.tierRequestStatus = 'Approved';
+      membership.requestedTier = null;
+      membership.approvedBy = req.user._id;
+      if (targetTier === 'Volunteer Member' && (!user.designation || user.designation === 'General Member')) {
+        user.designation = 'Volunteer Member';
+        await user.save();
+      }
+    } else {
+      membership.tierRequestStatus = 'Rejected';
+      membership.requestedTier = null;
+    }
+
+    const updatedMembership = await membership.save();
+    res.json({
+      message: action === 'approve' ? `Access granted as ${updatedMembership.membershipType}` : 'Tier request declined',
+      membership: updatedMembership,
+      user,
+    });
   } catch (error) {
     next(error);
   }
