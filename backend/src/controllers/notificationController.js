@@ -1,4 +1,5 @@
 import Notification from '../models/Notification.js';
+import { addAdminClient } from '../utils/realtimeHub.js';
 
 // @desc    Get notifications for logged in member
 // @route   GET /api/v1/member/notifications
@@ -83,6 +84,80 @@ export const getAllNotifications = async (req, res, next) => {
       .populate('sentBy', 'name designation')
       .populate('recipient', 'name memberId email');
     res.json(notifications);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Real-time SSE stream for Admin notifications & live updates
+// @route   GET /api/v1/admin/notifications/stream
+// @access  Private (Admin)
+export const streamAdminNotifications = (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  res.write('event: connected\ndata: {"ok":true}\n\n');
+
+  const cleanup = addAdminClient(res);
+  req.on('close', () => {
+    cleanup();
+  });
+};
+
+// @desc    Get admin inbox notifications (new volunteer/member registrations)
+// @route   GET /api/v1/admin/notifications/admin-inbox
+// @access  Private (Admin)
+export const getAdminInboxNotifications = async (req, res, next) => {
+  try {
+    const notifications = await Notification.find({ targetAudience: 'Admins' })
+      .sort({ createdAt: -1 })
+      .limit(30)
+      .populate('recipient', 'name memberId email phone role');
+
+    const mapped = notifications.map((n) => ({
+      ...n.toObject(),
+      isRead: n.readBy.some((uid) => uid.toString() === req.user._id.toString()),
+    }));
+
+    const unreadCount = mapped.filter((n) => !n.isRead).length;
+    res.json({ notifications: mapped, unreadCount });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark a single admin notification as read
+// @route   PATCH /api/v1/admin/notifications/:id/read
+// @access  Private (Admin)
+export const markAdminNotificationRead = async (req, res, next) => {
+  try {
+    const notification = await Notification.findById(req.params.id);
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    if (!notification.readBy.some((uid) => uid.toString() === req.user._id.toString())) {
+      notification.readBy.push(req.user._id);
+      await notification.save();
+    }
+    res.json({ message: 'Marked as read', notificationId: notification._id });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark all admin notifications as read
+// @route   PATCH /api/v1/admin/notifications/read-all
+// @access  Private (Admin)
+export const markAllAdminNotificationsRead = async (req, res, next) => {
+  try {
+    await Notification.updateMany(
+      { targetAudience: 'Admins', readBy: { $ne: req.user._id } },
+      { $addToSet: { readBy: req.user._id } }
+    );
+    res.json({ message: 'All admin notifications marked as read' });
   } catch (error) {
     next(error);
   }

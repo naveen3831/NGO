@@ -49,7 +49,7 @@ const eventSchema = new mongoose.Schema(
     },
     bannerImage: {
       type: String,
-      default: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800',
+      default: '',
     },
     targetVolunteers: {
       type: Number,

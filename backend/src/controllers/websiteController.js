@@ -8,6 +8,8 @@ import Membership from '../models/Membership.js';
 import GalleryItem from '../models/GalleryItem.js';
 import ContactMessage from '../models/ContactMessage.js';
 import Donation from '../models/Donation.js';
+import { sendBrandingUpdatedEmail } from '../utils/emailService.js';
+import { resolveCloudinaryImage } from '../utils/cloudinaryService.js';
 
 // @desc    Get public website content and stats
 // @route   GET /api/v1/public/content
@@ -107,9 +109,30 @@ export const updateWebsiteContent = async (req, res, next) => {
       content = new WebsiteContent();
     }
 
-    Object.assign(content, req.body);
+    const prevOrgName = content.orgName;
+    const prevLogoUrl = content.logoUrl;
+
+    const nextPayload = { ...req.body };
+    if (nextPayload.logoUrl !== undefined) {
+      nextPayload.logoUrl = nextPayload.logoUrl
+        ? await resolveCloudinaryImage(nextPayload.logoUrl, 'branding')
+        : '';
+    }
+
+    Object.assign(content, nextPayload);
     content.lastUpdatedBy = req.user._id;
     const updated = await content.save();
+
+    const brandingChanged =
+      (req.body.orgName !== undefined && updated.orgName !== prevOrgName) ||
+      (req.body.logoUrl !== undefined && updated.logoUrl !== prevLogoUrl);
+
+    if (brandingChanged && process.env.SMTP_USER) {
+      await sendBrandingUpdatedEmail({
+        to: process.env.SMTP_USER,
+        updatedByName: req.user?.name,
+      });
+    }
 
     res.json(updated);
   } catch (error) {

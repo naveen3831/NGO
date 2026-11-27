@@ -12,21 +12,26 @@ const router = express.Router();
 // Enforce member/authenticated protection
 router.use(protect, requireMember);
 
-// Member profile & membership
+const rejectReadOnlyMutation = (req, res) =>
+  res.status(403).json({
+    message: 'Read-only access: Member and volunteer dashboards cannot modify records.',
+  });
+
+// Member profile & membership (Read-Only)
 router.get('/me', getMe);
-router.patch('/profile', updateMyProfile);
+router.patch('/profile', rejectReadOnlyMutation);
 router.get('/membership', getMyMembership);
-router.post('/membership/request-tier', requestMembershipTier);
+router.post('/membership/request-tier', rejectReadOnlyMutation);
 
-// Member events & cleanliness drives
+// Member events & cleanliness drives (Read-Only)
 router.get('/events', getMemberEvents);
-router.post('/events/:id/enroll', enrollInEvent);
+router.post('/events/:id/enroll', rejectReadOnlyMutation);
 
-// Member meetings
+// Member meetings (Read-Only)
 router.get('/meetings', getMemberMeetings);
 
-// Member announcements
-router.route('/announcements').get(getMemberAnnouncements).post(createMemberAnnouncement);
+// Member announcements (Read-Only)
+router.route('/announcements').get(getMemberAnnouncements).post(rejectReadOnlyMutation);
 
 // Member notifications
 router.get('/notifications', getMyNotifications);

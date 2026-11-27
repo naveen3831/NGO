@@ -1411,8 +1411,9 @@ const AdminEvents = () => {
                           try {
                             const res = await API.patch(`/admin/events/${evt._id}/volunteers/${req._id}`, { status: 'Confirmed' });
                             setEvents((prev) => prev.map((e) => (e._id === evt._id ? res.data.event : e)));
+                            setFeedback({ type: 'success', text: `Volunteer "${req.name}" confirmed!` });
                           } catch (err) {
-                            alert('Failed to confirm volunteer');
+                            setFeedback({ type: 'error', text: 'Failed to confirm volunteer.' });
                           }
                         }}
                         style={{
@@ -1436,8 +1437,9 @@ const AdminEvents = () => {
                           try {
                             const res = await API.patch(`/admin/events/${evt._id}/volunteers/${req._id}`, { status: 'Rejected' });
                             setEvents((prev) => prev.map((e) => (e._id === evt._id ? res.data.event : e)));
+                            setFeedback({ type: 'success', text: `Request from "${req.name}" declined.` });
                           } catch (err) {
-                            alert('Failed to reject request');
+                            setFeedback({ type: 'error', text: 'Failed to reject request.' });
                           }
                         }}
                         style={{

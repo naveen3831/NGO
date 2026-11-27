@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { recordAdminAction } from '../../services/auditService';
+import { uploadImageToCloud } from '../../utils/imageUtils';
 import {
   Building2,
   Target,
@@ -51,6 +52,7 @@ const defaultWebsiteData = {
 
 const AdminWebsite = () => {
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [activeTab, setActiveTab] = useState('branding'); // 'branding' | 'metrics' | 'contact' | 'all'
   const [feedback, setFeedback] = useState({ type: '', message: '' });
 
@@ -162,11 +164,12 @@ const AdminWebsite = () => {
     setFeedback({ type: '', message: '' });
 
     try {
-      await api.patch('/admin/website', formData);
-      try {
-        localStorage.setItem('ngo_custom_logo', formData.logoUrl || '');
-        window.dispatchEvent(new Event('ngo-logo-updated'));
-      } catch {}
+      const { data: saved } = await api.patch('/admin/website', formData);
+      const persistedLogo = saved?.logoUrl !== undefined ? saved.logoUrl : formData.logoUrl || '';
+      setFormData((prev) => ({ ...prev, logoUrl: persistedLogo }));
+      window.dispatchEvent(
+        new CustomEvent('ngo-logo-updated', { detail: { logoUrl: persistedLogo } })
+      );
       setFeedback({
         type: 'success',
         message: 'Organization content & live statistics successfully saved and published!',
@@ -384,20 +387,37 @@ const AdminWebsite = () => {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => {
+                      disabled={uploadingLogo}
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
+                        e.target.value = '';
                         if (!file) return;
-                        if (file.size > 5 * 1024 * 1024) {
-                          setFeedback({ type: 'danger', message: 'Please select a logo image smaller than 5 MB.' });
-                          return;
+                        setUploadingLogo(true);
+                        setFeedback({ type: '', message: '' });
+                        try {
+                          const uploaded = await uploadImageToCloud(file, 'branding', '/admin/upload');
+                          setFormData((prev) => ({ ...prev, logoUrl: uploaded.url }));
+                          setFeedback({
+                            type: 'success',
+                            message: 'Logo uploaded to Cloudinary. Click Save & Publish to store it in MongoDB.',
+                          });
+                        } catch (err) {
+                          setFeedback({
+                            type: 'danger',
+                            message: err.response?.data?.message || err.message || 'Failed to upload logo to Cloudinary.',
+                          });
+                        } finally {
+                          setUploadingLogo(false);
                         }
-                        const reader = new FileReader();
-                        reader.onloadend = () => setFormData((prev) => ({ ...prev, logoUrl: reader.result }));
-                        reader.readAsDataURL(file);
                       }}
                       className="cms-input"
                       style={{ flex: '1 1 200px', padding: '0.45rem 0.65rem' }}
                     />
+                    {uploadingLogo && (
+                      <span style={{ fontSize: '0.78rem', color: '#047857', fontWeight: 600 }}>
+                        Uploading to Cloudinary...
+                      </span>
+                    )}
                     <input
                       type="url"
                       placeholder="Or paste logo image URL (https://...)"

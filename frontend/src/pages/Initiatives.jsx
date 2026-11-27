@@ -319,7 +319,8 @@ const Initiatives = ({ initialTab = 'all' }) => {
   const eventTabs = ['Upcoming', 'Past Events', 'Meetings'];
   const filteredEvents = events.filter((evt) => evt.bucket === activeEventTab);
 
-  const galleryItems = [...remoteGalleryItems, ...defaultGalleryItems];
+  const galleryItems =
+    remoteGalleryItems.length > 0 ? remoteGalleryItems : defaultGalleryItems;
   const galleryCategories = ['All', 'River Cleaning', 'Plantation', 'Awareness', 'Events'];
   const filteredGallery =
     activeGalleryFilter === 'All'

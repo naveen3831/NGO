@@ -5,33 +5,35 @@ const Logo = ({ variant = 'dark', showText = true, size = 42, className = '' }) 
   const isLight = variant === 'light'; // Light text for dark backgrounds (like hero / left login)
   const textColor = isLight ? '#ffffff' : '#064e3b';
   const subTextColor = isLight ? '#d1fae5' : '#0f766e';
-  const [customLogo, setCustomLogo] = useState(() => {
-    try {
-      return localStorage.getItem('ngo_custom_logo') || '';
-    } catch {
-      return '';
-    }
-  });
+  const [customLogo, setCustomLogo] = useState('');
 
   useEffect(() => {
-    const syncLogo = () => {
-      try {
-        setCustomLogo(localStorage.getItem('ngo_custom_logo') || '');
-      } catch {}
+    let active = true;
+
+    const fetchRemoteLogo = () => {
+      API.get('/public/content')
+        .then((res) => {
+          if (!active) return;
+          setCustomLogo(res.data?.logoUrl || '');
+        })
+        .catch(() => {});
     };
+
+    const syncLogo = (event) => {
+      if (event?.detail?.logoUrl !== undefined) {
+        setCustomLogo(event.detail.logoUrl || '');
+      } else {
+        fetchRemoteLogo();
+      }
+    };
+
     window.addEventListener('ngo-logo-updated', syncLogo);
+    fetchRemoteLogo();
 
-    API.get('/public/content')
-      .then((res) => {
-        const remoteLogo = res.data?.logoUrl || '';
-        setCustomLogo(remoteLogo);
-        try {
-          localStorage.setItem('ngo_custom_logo', remoteLogo);
-        } catch {}
-      })
-      .catch(() => {});
-
-    return () => window.removeEventListener('ngo-logo-updated', syncLogo);
+    return () => {
+      active = false;
+      window.removeEventListener('ngo-logo-updated', syncLogo);
+    };
   }, []);
 
   return (

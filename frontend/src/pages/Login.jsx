@@ -17,6 +17,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import Logo from '../components/Logo';
+import AccountSuspendedScreen from '../components/AccountSuspendedScreen';
 
 const Login = () => {
   const [identifier, setIdentifier] = useState('');
@@ -25,6 +26,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [suspendedLogin, setSuspendedLogin] = useState(null);
 
   // Forgot Password Modal State
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
@@ -32,23 +34,24 @@ const Login = () => {
   const [resetStatus, setResetStatus] = useState(null); // 'sending' | 'sent' | 'error'
   const [resetMessage, setResetMessage] = useState('');
 
-  const { user, isAdmin, isMember, memberLogin, adminLogin } = useAuth();
+  const { user, isAdmin, isMember, isSuspended, suspendedReason, logout, memberLogin, adminLogin } = useAuth();
   const navigate = useNavigate();
 
-  // If already authenticated, redirect to appropriate console
+  // If already authenticated (and not suspended), redirect to appropriate console
   useEffect(() => {
-    if (user) {
+    if (user && !isSuspended) {
       if (isAdmin) {
         navigate('/admin', { replace: true });
       } else if (isMember) {
-        navigate('/member/profile', { replace: true });
+        navigate('/member', { replace: true });
       }
     }
-  }, [user, isAdmin, isMember, navigate]);
+  }, [user, isAdmin, isMember, isSuspended, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuspendedLogin(null);
     setLoading(true);
 
     const cleanIdentifier = identifier.trim();
@@ -69,6 +72,14 @@ const Login = () => {
           navigate('/admin', { replace: true });
           return;
         } catch (adminFirstErr) {
+          if (
+            adminFirstErr.response?.status === 403 &&
+            (adminFirstErr.response?.data?.code === 'ACCOUNT_SUSPENDED' ||
+              adminFirstErr.response?.data?.suspended)
+          ) {
+            setSuspendedLogin({ reason: adminFirstErr.response?.data?.reason || '' });
+            return;
+          }
           if (adminFirstErr.response?.status === 401) {
             setError(
               adminFirstErr.response?.data?.message ||
@@ -85,16 +96,40 @@ const Login = () => {
         if (memberData.role === 'admin') {
           navigate('/admin', { replace: true });
         } else {
-          navigate('/member/profile', { replace: true });
+          navigate('/member', { replace: true });
         }
         return;
       } catch (memberErr) {
+        if (
+          memberErr.response?.status === 403 &&
+          (memberErr.response?.data?.code === 'ACCOUNT_SUSPENDED' ||
+            memberErr.response?.data?.suspended)
+        ) {
+          setSuspendedLogin({ reason: memberErr.response?.data?.reason || '' });
+          return;
+        }
+        if (memberErr.response?.status === 403) {
+          setError(
+            memberErr.response?.data?.message ||
+              'Access denied. Please contact the administrator.'
+          );
+          return;
+        }
+
         // 3. Fallback: attempt admin authentication
         try {
           await adminLogin(targetIdentifier, cleanPassword);
           navigate('/admin', { replace: true });
           return;
         } catch (adminErr) {
+          if (
+            adminErr.response?.status === 403 &&
+            (adminErr.response?.data?.code === 'ACCOUNT_SUSPENDED' ||
+              adminErr.response?.data?.suspended)
+          ) {
+            setSuspendedLogin({ reason: adminErr.response?.data?.reason || '' });
+            return;
+          }
           setError(
             adminErr.response?.data?.message ||
               memberErr.response?.data?.message ||
@@ -127,6 +162,28 @@ const Login = () => {
       );
     }, 800);
   };
+
+  if (user && isSuspended) {
+    return (
+      <AccountSuspendedScreen
+        reason={suspendedReason}
+        onLogout={() => {
+          logout();
+          setSuspendedLogin(null);
+        }}
+      />
+    );
+  }
+
+  if (suspendedLogin) {
+    return (
+      <AccountSuspendedScreen
+        mode="login"
+        reason={suspendedLogin.reason}
+        onBackToLogin={() => setSuspendedLogin(null)}
+      />
+    );
+  }
 
   return (
     <div className="eco-split-login-page">
@@ -201,14 +258,10 @@ const Login = () => {
       {/* RIGHT SIDE: Centered Clean Professional Card */}
       <div className="eco-login-form-panel">
         <div className="eco-login-card">
-          <button
-            type="button"
-            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
-            className="eco-mobile-login-back"
-          >
+          <Link to="/" className="eco-login-back-home">
             <ArrowLeft size={15} />
-            <span>Back</span>
-          </button>
+            <span>Back to Home</span>
+          </Link>
 
           {/* Card Organization Brand Lockup */}
           <div className="eco-card-logo-center">

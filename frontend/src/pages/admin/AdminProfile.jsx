@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import UserAvatar, { PortraitUploadField } from '../../components/UserAvatar';
+import { hasCustomPortrait } from '../../components/OfficialIdCard';
 import {
   User,
   Mail,
@@ -19,6 +21,7 @@ import {
   Check,
   Waves,
   Sparkles,
+  ArrowLeft,
 } from 'lucide-react';
 
 const AdminProfile = () => {
@@ -32,6 +35,7 @@ const AdminProfile = () => {
     designation: user?.designation || 'President & Chief Coordinator',
     officeLocation: user?.officeLocation || 'Godavari Bund Road, Near Kotilingala Ghat, Rajahmundry, Andhra Pradesh',
     bio: user?.bio || 'Dedicated environmentalist leading the cleanup and revival of the sacred River Godavari since 2018. Coordinating community riverfront cleanliness drives, plastic waste interception, and ecological reforestation.',
+    avatar: user?.avatar || '',
   });
 
   const [saving, setSaving] = useState(false);
@@ -46,6 +50,7 @@ const AdminProfile = () => {
     designation: '',
     officeLocation: '',
     bio: '',
+    avatar: '',
   });
 
   // Password Change Form State
@@ -71,6 +76,7 @@ const AdminProfile = () => {
             designation: u.designation || prev.designation,
             officeLocation: u.officeLocation || prev.officeLocation,
             bio: u.bio || prev.bio,
+            avatar: u.avatar !== undefined ? u.avatar : prev.avatar,
           }));
         }
       } catch (err) {
@@ -96,6 +102,7 @@ const AdminProfile = () => {
       designation: formData.designation,
       officeLocation: formData.officeLocation,
       bio: formData.bio,
+      avatar: hasCustomPortrait(formData.avatar) ? formData.avatar : '',
     });
     setShowEditModal(true);
   };
@@ -114,13 +121,16 @@ const AdminProfile = () => {
         designation: editFormData.designation.trim(),
         officeLocation: editFormData.officeLocation.trim(),
         bio: editFormData.bio.trim(),
+        avatar: editFormData.avatar,
       };
 
-      await api.patch('/admin/settings', payload);
+      const { data } = await api.patch('/admin/settings', payload);
+      const savedUser = data?.user || {};
 
       setFormData((prev) => ({
         ...prev,
         ...payload,
+        ...(savedUser.avatar !== undefined ? { avatar: savedUser.avatar } : {}),
       }));
 
       if (refreshProfile) {
@@ -202,6 +212,216 @@ const AdminProfile = () => {
       setPasswordSaving(false);
     }
   };
+
+  if (showEditModal) {
+    return (
+      <div className="ref-members-page">
+        {/* Top Back Navigation Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <button
+            type="button"
+            onClick={() => setShowEditModal(false)}
+            className="ref-btn-enroll"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              backgroundColor: '#ffffff',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              padding: '0.55rem 1.15rem',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+            }}
+          >
+            <ArrowLeft size={16} />
+            <span>Return to Admin Profile</span>
+          </button>
+
+          <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
+            Administrator Profile &bull; Edit Identity &amp; Photo
+          </span>
+        </div>
+
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+          }}
+        >
+          <div style={{ padding: '1.4rem 1.75rem', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#ecfdf5', color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <User size={20} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
+                Edit Administrator Profile
+              </h3>
+              <p style={{ margin: '0.15rem 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                Update identity, profile photo, contact details, and organization role
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleEditSubmit}>
+            <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+              <PortraitUploadField
+                value={editFormData.avatar}
+                name={editFormData.name}
+                fallback="A"
+                label="Administrator Profile Photo"
+                onChange={(avatar) => setEditFormData((prev) => ({ ...prev, avatar }))}
+                onError={(message) => setFeedback({ type: 'danger', message })}
+              />
+
+              <div className="ref-form-grid-2">
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <User size={14} className="text-emerald-700" />
+                    <span>Full Legal Name</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <div className="cms-input-group">
+                    <User size={16} className="cms-input-icon" />
+                    <input
+                      type="text"
+                      required
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      placeholder="Enter full legal name..."
+                      className="cms-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <Briefcase size={14} className="text-emerald-700" />
+                    <span>Role / Designation</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <div className="cms-input-group">
+                    <Briefcase size={16} className="cms-input-icon" />
+                    <input
+                      type="text"
+                      required
+                      value={editFormData.designation}
+                      onChange={(e) => setEditFormData({ ...editFormData, designation: e.target.value })}
+                      placeholder="e.g. President & Chief Coordinator"
+                      className="cms-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="ref-form-grid-2">
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <Mail size={14} className="text-emerald-700" />
+                    <span>Official Email Address</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <div className="cms-input-group">
+                    <Mail size={16} className="cms-input-icon" />
+                    <input
+                      type="email"
+                      required
+                      value={editFormData.email}
+                      onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                      placeholder="Enter official email..."
+                      className="cms-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <Phone size={14} className="text-emerald-700" />
+                    <span>Primary Mobile Phone</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <div className="cms-input-group">
+                    <Phone size={16} className="cms-input-icon" />
+                    <input
+                      type="tel"
+                      required
+                      value={editFormData.phone}
+                      onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                      placeholder="Enter mobile phone..."
+                      className="cms-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cms-field">
+                <label className="cms-label">
+                  <MapPin size={14} className="text-emerald-700" />
+                  <span>Head Secretariat Physical Address</span>
+                </label>
+                <div className="cms-input-group">
+                  <MapPin size={16} className="cms-input-icon" />
+                  <input
+                    type="text"
+                    value={editFormData.officeLocation}
+                    onChange={(e) => setEditFormData({ ...editFormData, officeLocation: e.target.value })}
+                    placeholder="Enter secretariat office address..."
+                    className="cms-input"
+                  />
+                </div>
+              </div>
+
+              <div className="cms-field">
+                <label className="cms-label">
+                  <FileText size={14} className="text-emerald-700" />
+                  <span>Bio &amp; Environmental Mission</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={editFormData.bio}
+                  onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
+                  placeholder="Enter brief biographical summary..."
+                  className="cms-textarea"
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: '1.15rem 1.75rem',
+                borderTop: '1px solid #f1f5f9',
+                background: '#f8fafc',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '0.75rem',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setShowEditModal(false)}
+                className="ref-modal-btn-cancel"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="ref-modal-btn-save"
+              >
+                <Check size={15} />
+                <span>{saving ? 'Saving...' : 'Save & Update Profile'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ref-members-page">
@@ -319,7 +539,12 @@ const AdminProfile = () => {
           
           <div className="ref-profile-sidebar-avatar-wrap">
             <div className="ref-profile-sidebar-avatar">
-              {getInitials(formData.name)}
+              <UserAvatar
+                src={formData.avatar}
+                name={formData.name}
+                fallback="A"
+                style={{ width: '100%', height: '100%', borderRadius: 'inherit' }}
+              />
               <span className="ref-profile-online-badge" title="Active Account"></span>
             </div>
             <span className="eco-tier-pill eco-tier-patron" style={{ fontSize: '0.72rem' }}>
@@ -619,176 +844,6 @@ const AdminProfile = () => {
         </div>
       </div>
 
-      {/* =========================================================================
-          MODAL: EDIT PROFILE (Full-Screen Right-Side Drawer with Visible Sidebar)
-          ========================================================================= */}
-      {showEditModal && (
-        <div className="rbac-modal-backdrop" onClick={() => setShowEditModal(false)}>
-          <div className="rbac-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="rbac-modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ecfdf5', color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <User size={20} />
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
-                    Edit Administrator Profile
-                  </h3>
-                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-                    Update identity, contact details, and organization role
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowEditModal(false)}
-                className="ref-alert-dismiss"
-                style={{ fontSize: '1.3rem' }}
-                title="Close modal"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-              <div className="rbac-modal-body">
-                {/* 2-Column: Legal Name & Designation */}
-                <div className="ref-form-grid-2">
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <User size={14} className="text-emerald-700" />
-                      <span>Full Legal Name</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <div className="cms-input-group">
-                      <User size={16} className="cms-input-icon" />
-                      <input
-                        type="text"
-                        required
-                        value={editFormData.name}
-                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                        placeholder="Enter full legal name..."
-                        className="cms-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <Briefcase size={14} className="text-emerald-700" />
-                      <span>Role / Designation</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <div className="cms-input-group">
-                      <Briefcase size={16} className="cms-input-icon" />
-                      <input
-                        type="text"
-                        required
-                        value={editFormData.designation}
-                        onChange={(e) => setEditFormData({ ...editFormData, designation: e.target.value })}
-                        placeholder="e.g. President & Chief Coordinator"
-                        className="cms-input"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2-Column: Email & Phone */}
-                <div className="ref-form-grid-2">
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <Mail size={14} className="text-emerald-700" />
-                      <span>Official Email Address</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <div className="cms-input-group">
-                      <Mail size={16} className="cms-input-icon" />
-                      <input
-                        type="email"
-                        required
-                        value={editFormData.email}
-                        onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                        placeholder="Enter official email..."
-                        className="cms-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <Phone size={14} className="text-emerald-700" />
-                      <span>Primary Mobile Phone</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <div className="cms-input-group">
-                      <Phone size={16} className="cms-input-icon" />
-                      <input
-                        type="tel"
-                        required
-                        value={editFormData.phone}
-                        onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                        placeholder="Enter mobile phone..."
-                        className="cms-input"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 1-Column: Secretariat Physical Address */}
-                <div className="cms-field">
-                  <label className="cms-label">
-                    <MapPin size={14} className="text-emerald-700" />
-                    <span>Head Secretariat Physical Address</span>
-                  </label>
-                  <div className="cms-input-group">
-                    <MapPin size={16} className="cms-input-icon" />
-                    <input
-                      type="text"
-                      value={editFormData.officeLocation}
-                      onChange={(e) => setEditFormData({ ...editFormData, officeLocation: e.target.value })}
-                      placeholder="Enter secretariat office address..."
-                      className="cms-input"
-                    />
-                  </div>
-                </div>
-
-                {/* 1-Column: Bio & Environmental Mission */}
-                <div className="cms-field">
-                  <label className="cms-label">
-                    <FileText size={14} className="text-emerald-700" />
-                    <span>Bio & Environmental Mission</span>
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={editFormData.bio}
-                    onChange={(e) => setEditFormData({ ...editFormData, bio: e.target.value })}
-                    placeholder="Enter brief biographical summary..."
-                    className="cms-textarea"
-                  />
-                </div>
-              </div>
-
-              <div className="rbac-modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="ref-modal-btn-cancel"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="ref-modal-btn-save"
-                >
-                  <Check size={15} />
-                  <span>{saving ? 'Saving...' : 'Save & Update Profile'}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

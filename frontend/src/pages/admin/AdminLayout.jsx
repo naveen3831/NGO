@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import API from '../../services/api';
 import Logo from '../../components/Logo';
+import UserAvatar from '../../components/UserAvatar';
 import {
   Home,
   FileText,
@@ -9,8 +11,6 @@ import {
   Calendar,
   Megaphone,
   Bell,
-  BarChart2,
-  UserCheck,
   Key,
   Settings,
   User,
@@ -32,6 +32,70 @@ const AdminLayout = () => {
     const saved = localStorage.getItem('ngo_admin_sidebar');
     return saved !== null ? saved === 'true' : true;
   });
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchAdminInbox = async () => {
+    try {
+      const { data } = await API.get('/admin/notifications/admin-inbox');
+      setUnreadCount(data.unreadCount || 0);
+    } catch {
+      // Ignore transient polling errors
+    }
+  };
+
+  useEffect(() => {
+    fetchAdminInbox();
+
+    const token = localStorage.getItem('token');
+    const baseUrl = (API.defaults.baseURL || '/api/v1').replace(/\/+$/, '');
+    let eventSource = null;
+
+    if (token) {
+      eventSource = new EventSource(
+        `${baseUrl}/admin/notifications/stream?token=${encodeURIComponent(token)}`
+      );
+
+      eventSource.addEventListener('new_registration', (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.notification) {
+            setUnreadCount((prev) => prev + 1);
+          }
+          window.dispatchEvent(
+            new CustomEvent('ngo-admin-realtime', {
+              detail: { type: 'new_registration', ...payload },
+            })
+          );
+        } catch {
+          // Ignore malformed SSE payload
+        }
+      });
+
+      eventSource.addEventListener('member_updated', (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          window.dispatchEvent(
+            new CustomEvent('ngo-admin-realtime', {
+              detail: { type: 'member_updated', ...payload },
+            })
+          );
+        } catch {
+          // Ignore malformed SSE payload
+        }
+      });
+    }
+
+    const syncUnread = () => fetchAdminInbox();
+    window.addEventListener('ngo-admin-notifications-sync', syncUnread);
+    const pollInterval = setInterval(fetchAdminInbox, 15000);
+
+    return () => {
+      if (eventSource) eventSource.close();
+      window.removeEventListener('ngo-admin-notifications-sync', syncUnread);
+      clearInterval(pollInterval);
+    };
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--admin-sidebar-w', sidebarOpen ? '232px' : '74px');
@@ -59,9 +123,7 @@ const AdminLayout = () => {
     { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
     { label: 'Contact Messages', path: '/admin/contacts', icon: Mail },
     { label: 'Notifications', path: '/admin/notifications', icon: Bell },
-    { label: 'Reports', path: '/admin/reports', icon: BarChart2 },
     { label: 'Website Content', path: '/admin/website', icon: FileText },
-    { label: 'Admin Users', path: '/admin/users', icon: UserCheck },
     { label: 'Profile', path: '/admin/profile', icon: User },
   ];
 
@@ -184,9 +246,12 @@ const AdminLayout = () => {
             className="admin-user-card"
             title="View Admin Profile"
           >
-            <div className="admin-avatar">
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'D'}
-            </div>
+            <UserAvatar
+              src={user?.avatar}
+              name={user?.name}
+              fallback="D"
+              className="admin-avatar"
+            />
             <div className="admin-user-info">
               <span className="admin-name">{user?.name || 'Dr. K. V. Subba Rao'}</span>
               <span className="admin-role">Administrator</span>
@@ -211,11 +276,39 @@ const AdminLayout = () => {
           </div>
 
           <div className="eco-admin-topbar-actions">
-            {/* Bell Notification with Red Badge Dot */}
-            <button className="eco-topbar-bell-btn" title="Notifications">
+            {/* Full-Page Notifications Navigation */}
+            <Link
+              to="/admin/notifications"
+              className="eco-topbar-bell-btn"
+              title="View Full-Page Notifications Center"
+              aria-label="Notifications"
+              style={{ position: 'relative' }}
+            >
               <Bell size={20} />
-              <span className="bell-red-badge"></span>
-            </button>
+              {unreadCount > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    minWidth: '18px',
+                    height: '18px',
+                    padding: '0 4px',
+                    borderRadius: '9999px',
+                    background: '#dc2626',
+                    color: '#ffffff',
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid #ffffff',
+                  }}
+                >
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </Link>
           </div>
         </header>
 

@@ -1,13 +1,16 @@
 import User from '../models/User.js';
 import Membership from '../models/Membership.js';
 import Notification from '../models/Notification.js';
+import { sendApprovalEmail, sendRejectionEmail } from '../utils/emailService.js';
+import { broadcastAdminEvent } from '../utils/realtimeHub.js';
+import { resolveCloudinaryImage } from '../utils/cloudinaryService.js';
 
 // @desc    Get all members with search, filter, and pagination
 // @route   GET /api/v1/admin/members
 // @access  Private (Admin)
 export const getAllMembers = async (req, res, next) => {
   try {
-    const { keyword, status, role, page = 1, limit = 50 } = req.query;
+    const { keyword, status, role, page = 1, limit = 500 } = req.query;
 
     const query = {};
 
@@ -79,6 +82,7 @@ export const createMemberByAdmin = async (req, res, next) => {
       feePaid,
       paymentStatus = 'Paid',
       bloodGroup,
+      avatar = '',
       address,
       password = 'password123',
     } = req.body;
@@ -94,6 +98,11 @@ export const createMemberByAdmin = async (req, res, next) => {
     const count = await User.countDocuments();
     const memberId = `GNPP-2026-${String(count + 101).padStart(4, '0')}`;
 
+    const resolvedAvatar =
+      typeof avatar === 'string' && avatar.trim()
+        ? await resolveCloudinaryImage(avatar.trim(), 'avatars')
+        : '';
+
     const user = await User.create({
       memberId,
       name,
@@ -103,6 +112,7 @@ export const createMemberByAdmin = async (req, res, next) => {
       role,
       designation,
       bloodGroup: bloodGroup || 'O+',
+      avatar: resolvedAvatar,
       address: address || { city: 'Rajahmundry', state: 'Andhra Pradesh' },
     });
 
@@ -170,6 +180,7 @@ export const updateMemberById = async (req, res, next) => {
       role,
       designation,
       bloodGroup,
+      avatar,
       isActive,
       address,
       membershipType,
@@ -185,8 +196,22 @@ export const updateMemberById = async (req, res, next) => {
     if (role) user.role = role;
     if (designation !== undefined) user.designation = designation;
     if (bloodGroup) user.bloodGroup = bloodGroup;
+    if (avatar !== undefined) {
+      user.avatar =
+        typeof avatar === 'string' && avatar.trim()
+          ? await resolveCloudinaryImage(avatar.trim(), 'avatars')
+          : '';
+    }
     if (typeof isActive === 'boolean') user.isActive = isActive;
     if (address) user.address = address;
+
+    if (status === 'Active' || status === 'Approved') {
+      user.accountStatus = 'Active';
+      user.isActive = true;
+    } else if (status === 'Suspended' || status === 'Rejected') {
+      user.accountStatus = 'Inactive';
+      user.isActive = false;
+    }
 
     const updatedUser = await user.save();
     let membership = await Membership.findOne({ user: user._id });
@@ -222,7 +247,7 @@ export const updateMemberById = async (req, res, next) => {
 // @access  Private (Admin)
 export const updateMembershipStatus = async (req, res, next) => {
   try {
-    const { status, membershipType, validTo, feePaid, paymentStatus } = req.body;
+    const { status, membershipType, validTo, feePaid, paymentStatus, reason } = req.body;
 
     let membership = await Membership.findOne({ user: req.params.id });
 
@@ -235,7 +260,24 @@ export const updateMembershipStatus = async (req, res, next) => {
       });
     }
 
-    if (status) membership.status = status;
+    if (status) {
+      membership.status = status;
+      if (status === 'Active' || status === 'Approved') {
+        membership.approvedBy = req.user._id;
+        await User.findByIdAndUpdate(req.params.id, {
+          accountStatus: 'Active',
+          isActive: true,
+        });
+      } else if (status === 'Rejected' || status === 'Suspended') {
+        if (reason) {
+          membership.remarks = reason.trim();
+        }
+        await User.findByIdAndUpdate(req.params.id, {
+          accountStatus: 'Inactive',
+          isActive: false,
+        });
+      }
+    }
     if (membershipType) membership.membershipType = membershipType;
     if (validTo) membership.validTo = new Date(validTo);
     if (feePaid !== undefined) membership.feePaid = feePaid;
@@ -244,13 +286,44 @@ export const updateMembershipStatus = async (req, res, next) => {
     const updatedMembership = await membership.save();
 
     if (status) {
+      const rejectionNote =
+        status === 'Rejected' && reason?.trim()
+          ? ` Reason: ${reason.trim()}`
+          : '';
       await Notification.create({
         title: `Membership Status: ${status}`,
-        message: `Your membership (${membership.membershipNumber}) status has been updated to ${status} by the administrator.`,
+        message: `Your membership (${membership.membershipNumber}) status has been updated to ${status} by the administrator.${rejectionNote}`,
         type: 'Membership Update',
         targetAudience: 'Specific Member',
         recipient: membership.user,
         sentBy: req.user._id,
+      });
+
+      const targetUser = await User.findById(membership.user).lean();
+      if (targetUser?.email) {
+        if (status === 'Active' || status === 'Approved') {
+          await sendApprovalEmail({
+            to: targetUser.email,
+            name: targetUser.name,
+            memberId: targetUser.memberId || updatedMembership.membershipNumber,
+            membershipType: updatedMembership.membershipType,
+            validTo: updatedMembership.validTo,
+          });
+        } else if (status === 'Rejected') {
+          await sendRejectionEmail({
+            to: targetUser.email,
+            name: targetUser.name,
+            memberId: targetUser.memberId || updatedMembership.membershipNumber,
+            membershipType: updatedMembership.membershipType,
+            reason,
+          });
+        }
+      }
+
+      broadcastAdminEvent('member_updated', {
+        memberId: req.params.id,
+        status: updatedMembership.status,
+        membershipType: updatedMembership.membershipType,
       });
     }
 
@@ -327,7 +400,21 @@ export const updateMembershipById = async (req, res, next) => {
 
     const { status, membershipType, validTo, feePaid, paymentStatus, remarks } = req.body;
 
-    if (status) membership.status = status;
+    if (status) {
+      membership.status = status;
+      if (status === 'Active' || status === 'Approved') {
+        membership.approvedBy = req.user._id;
+        await User.findByIdAndUpdate(membership.user, {
+          accountStatus: 'Active',
+          isActive: true,
+        });
+      } else if (status === 'Rejected' || status === 'Suspended') {
+        await User.findByIdAndUpdate(membership.user, {
+          accountStatus: 'Inactive',
+          isActive: false,
+        });
+      }
+    }
     if (membershipType) membership.membershipType = membershipType;
     if (validTo) membership.validTo = new Date(validTo);
     if (feePaid !== undefined) membership.feePaid = feePaid;

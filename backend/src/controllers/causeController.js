@@ -1,4 +1,5 @@
 import Cause from '../models/Cause.js';
+import { resolveCloudinaryImage } from '../utils/cloudinaryService.js';
 
 // @desc    Get all causes
 // @route   GET /api/causes
@@ -34,13 +35,16 @@ export const getCauseById = async (req, res, next) => {
 export const createCause = async (req, res, next) => {
   try {
     const { title, description, targetAmount, category, imageUrl } = req.body;
+    const resolvedImageUrl = imageUrl
+      ? await resolveCloudinaryImage(imageUrl, 'causes')
+      : '';
 
     const cause = new Cause({
       title,
       description,
       targetAmount,
       category,
-      imageUrl,
+      imageUrl: resolvedImageUrl,
       createdBy: req.user._id,
     });
 

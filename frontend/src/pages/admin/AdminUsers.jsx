@@ -54,6 +54,7 @@ import {
   LifeBuoy,
   Minus,
   Compass,
+  ArrowLeft,
 } from 'lucide-react';
 
 // Capability Metadata Helper: maps category and name to domain colors and icon
@@ -435,8 +436,13 @@ const AdminUsers = () => {
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('All');
   const [selectedExpiryFilter, setSelectedExpiryFilter] = useState('All');
 
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
   const handleResetMatrixDefaults = () => {
-    if (!window.confirm('Reset Operational Capabilities Matrix back to official system recommended defaults?')) return;
+    setShowResetConfirm(true);
+  };
+
+  const handleConfirmResetMatrix = () => {
     setCapabilities(defaultRbacCapabilities);
     setMatrixCategoryFilter('All');
     setMatrixSearch('');
@@ -445,6 +451,7 @@ const AdminUsers = () => {
     } catch (e) {}
     recordAdminAction('Reset Operational Capabilities Matrix to system defaults', 'Security');
     setFeedback({ type: 'success', message: 'Operational Capabilities Matrix reset to recommended defaults.' });
+    setShowResetConfirm(false);
   };
 
   const filteredCapabilities = useMemo(() => {
@@ -455,7 +462,7 @@ const AdminUsers = () => {
 
       if (!matrixSearch.trim()) return true;
       const q = matrixSearch.toLowerCase();
-      return (
+  return (
         c.name.toLowerCase().includes(q) ||
         (c.desc && c.desc.toLowerCase().includes(q)) ||
         (c.category && c.category.toLowerCase().includes(q))
@@ -543,7 +550,7 @@ const AdminUsers = () => {
       }
     };
     window.addEventListener(AUDIT_EVENT_NAME, handleAuditEvent);
-    return () => window.removeEventListener(AUDIT_EVENT_NAME, handleAuditEvent);
+  return () => window.removeEventListener(AUDIT_EVENT_NAME, handleAuditEvent);
   }, []);
 
   const persistUsers = (newUsers) => {
@@ -601,7 +608,7 @@ const AdminUsers = () => {
     if (!name) return 'U';
     const parts = name.trim().split(' ');
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
   // Helper for Role Badge Classes
@@ -922,6 +929,481 @@ const AdminUsers = () => {
     }
   };
 
+  const renderUsersBackBar = (label, onBack) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+      <button
+        type="button"
+        onClick={onBack}
+        className="ref-btn-enroll"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.45rem',
+          backgroundColor: '#ffffff',
+          color: '#334155',
+          border: '1px solid #cbd5e1',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          padding: '0.55rem 1.15rem',
+          cursor: 'pointer',
+          fontWeight: 600,
+          fontSize: '0.85rem',
+        }}
+      >
+        <ArrowLeft size={16} />
+        <span>Return to Admin Users</span>
+      </button>
+      <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>{label}</span>
+    </div>
+  );
+
+  if (showResetConfirm) {
+    return (
+      <div className="ref-members-page">
+        {renderUsersBackBar('RBAC Governance • Reset Capabilities Matrix', () => setShowResetConfirm(false))}
+        <div style={{ background: '#ffffff', border: '1px solid #fde68a', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '1.4rem 1.75rem', borderBottom: '1px solid #fef3c7', background: '#fffbeb', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <AlertTriangle size={20} className="text-amber-600" />
+            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#92400e' }}>
+              Reset Operational Capabilities Matrix
+            </h3>
+          </div>
+          <div style={{ padding: '1.75rem' }}>
+            <p style={{ margin: '0 0 1.25rem', fontSize: '0.92rem', color: '#334155', lineHeight: 1.55 }}>
+              Are you sure you want to reset the Operational Capabilities Matrix back to the official system recommended defaults?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button type="button" onClick={() => setShowResetConfirm(false)} className="ref-btn-refresh">Cancel</button>
+              <button type="button" onClick={handleConfirmResetMatrix} className="ref-btn-enroll">Confirm Reset to Defaults</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (confirmRevokeModal.open) {
+    return (
+      <div className="ref-members-page">
+        {renderUsersBackBar(`RBAC Governance • Revoke ${confirmRevokeModal.user?.name || 'User'}`, () => setConfirmRevokeModal({ open: false, user: null }))}
+        <div style={{ background: '#ffffff', border: '1px solid #fecaca', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '1.4rem 1.75rem', borderBottom: '1px solid #fee2e2', background: '#fef2f2', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AlertTriangle size={20} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#991b1b' }}>
+                Confirm Access Revocation
+              </h3>
+              <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#b91c1c' }}>
+                Irreversible administrative governance action
+              </p>
+            </div>
+          </div>
+          <div style={{ padding: '1.75rem' }}>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: '#1e293b', lineHeight: 1.55 }}>
+              Are you sure you want to permanently revoke administrative permissions for:
+            </p>
+            <div style={{ background: '#f8fafc', padding: '0.9rem 1rem', borderRadius: '10px', border: '1px solid #e2e8f0', margin: '1rem 0' }}>
+              <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>{confirmRevokeModal.user?.name}</p>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                {confirmRevokeModal.user?.email} | Current Role: <strong>{confirmRevokeModal.user?.role}</strong>
+              </p>
+            </div>
+            <p style={{ margin: '0 0 1.5rem', fontSize: '0.82rem', color: '#64748b', lineHeight: 1.5 }}>
+              This user's administrative privileges will be terminated immediately. Their account role will be downgraded to <strong>General Volunteer</strong> and marked Inactive.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setConfirmRevokeModal({ open: false, user: null })}
+                className="ref-btn-refresh"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRevoke}
+                className="ref-btn-delete-confirm"
+              >
+                <Trash2 size={14} />
+                <span>Yes, Revoke Access</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (viewingUser) {
+    return (
+      <div className="ref-members-page">
+        {renderUsersBackBar(`User Details & Permissions • ${viewingUser.name}`, () => setViewingUser(null))}
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '1.4rem 1.75rem', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Crown size={20} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
+                  {viewingUser.name}
+                </h3>
+                <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                  Member ID: {viewingUser.memberId || 'GNPP-2026'} | {viewingUser.email}
+                </p>
+              </div>
+            </div>
+            {(isSuperAdmin || (isAdmin && viewingUser.role !== ROLES.SUPER_ADMIN)) && (
+              <button
+                type="button"
+                onClick={() => {
+                  const target = viewingUser;
+                  setViewingUser(null);
+                  handleOpenAssignModal(target);
+                }}
+                className="ref-btn-enroll"
+              >
+                <Edit2 size={14} />
+                <span>Edit Access</span>
+              </button>
+            )}
+          </div>
+
+          <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.9rem', background: '#f8fafc', padding: '1.15rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Assigned Role</span>
+                <div style={{ marginTop: '0.3rem' }}>
+                  <span className={`ref-tier-badge ${getRoleBadgeClass(viewingUser.role)}`}>
+                    {viewingUser.role}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Account Status</span>
+                <div style={{ marginTop: '0.3rem' }}>
+                  <span className={`ref-status-badge ${viewingUser.accountStatus === 'Active' ? 'active' : 'suspended'}`}>
+                    <span className="ref-status-dot-inner"></span>
+                    <span>{viewingUser.accountStatus || 'Active'}</span>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Granted By</span>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.84rem', fontWeight: 600, color: '#1e293b' }}>
+                  {viewingUser.assignedBy?.name || 'Dr. K. V. Subba Rao'} ({viewingUser.assignedBy?.role || 'Admin'})
+                </p>
+              </div>
+              <div>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Access Expiry</span>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.84rem', fontWeight: 600, color: viewingUser.accessExpiryDate ? '#b45309' : '#047857' }}>
+                  {viewingUser.accessExpiryDate ? new Date(viewingUser.accessExpiryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Permanent (No Expiry)'}
+                </p>
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Access Justification</span>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.84rem', color: '#334155', lineHeight: 1.5 }}>
+                  "{viewingUser.accessReason || 'Standard administrative operational access'}"
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h4 style={{ margin: '0 0 0.7rem', fontSize: '0.92rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <Key size={15} className="text-emerald-600" />
+                <span>Module Permissions Audit ({viewingUser.permissions?.length || 0} of {MODULE_PERMISSIONS.length} active)</span>
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.5rem' }}>
+                {MODULE_PERMISSIONS.map((perm) => {
+                  const hasPerm = viewingUser.permissions?.includes(perm.id);
+                  return (
+                    <div
+                      key={perm.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                        padding: '0.5rem 0.7rem',
+                        borderRadius: '8px',
+                        border: '1px solid',
+                        borderColor: hasPerm ? '#bbf7d0' : '#f1f5f9',
+                        backgroundColor: hasPerm ? '#f0fdf4' : '#fafafa',
+                        color: hasPerm ? '#065f46' : '#94a3b8',
+                        fontSize: '0.78rem',
+                        fontWeight: hasPerm ? 600 : 400,
+                      }}
+                    >
+                      {hasPerm ? <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0" /> : <X size={14} className="text-slate-300 flex-shrink-0" />}
+                      <span>{perm.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showAssignModal) {
+    return (
+      <div className="ref-members-page">
+        {renderUsersBackBar(
+          selectedUserForAssign ? `RBAC Governance • Edit ${selectedUserForAssign.name}` : 'RBAC Governance • Assign Role & Permissions',
+          () => setShowAssignModal(false)
+        )}
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '1.4rem 1.75rem', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eff6ff', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Key size={20} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#0f172a' }}>
+                {selectedUserForAssign ? `Edit Access: ${selectedUserForAssign.name}` : 'Assign Role & Access Permissions'}
+              </h3>
+              <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                Authority: {effectiveRole} ({isAdmin ? 'Full role delegation' : 'View only'})
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmitAssign}>
+            <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div className="rbac-user-inputs-grid">
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <Users size={13} className="text-blue-700" />
+                    <span>Full Name</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={assignForm.name}
+                    onChange={(e) => setAssignForm({ ...assignForm, name: e.target.value })}
+                    placeholder="e.g. Srikanth Varma"
+                    className="cms-input"
+                  />
+                </div>
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <Mail size={13} className="text-blue-700" />
+                    <span>Email Address</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={assignForm.email}
+                    onChange={(e) => setAssignForm({ ...assignForm, email: e.target.value })}
+                    placeholder="e.g. srikanth@godhavari.org"
+                    className="cms-input"
+                  />
+                </div>
+                <div className="cms-field">
+                  <label className="cms-label">
+                    <Phone size={13} className="text-blue-700" />
+                    <span>Phone Number</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={assignForm.phone}
+                    onChange={(e) => setAssignForm({ ...assignForm, phone: e.target.value })}
+                    placeholder="e.g. +91 944 123 4567"
+                    className="cms-input"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <label className="cms-label" style={{ margin: 0 }}>
+                    <Crown size={13} className="text-purple-700" />
+                    <span>Select Role</span>
+                    <span className="required-star">*</span>
+                  </label>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                    Admins can delegate Admin, Staff &amp; Volunteer roles
+                  </span>
+                </div>
+                <div className="rbac-role-card-grid">
+                  {assignableRoles.map((item) => {
+                    const isSelected = assignForm.role === item.role;
+                    return (
+                      <div
+                        key={item.role}
+                        onClick={() => handleRoleSelectionInModal(item.role)}
+                        className={`rbac-role-radio-card ${isSelected ? 'active' : ''}`}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span className={`ref-tier-badge ${item.badgeClass}`} style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}>
+                            {item.role}
+                          </span>
+                          <input
+                            type="radio"
+                            name="roleSelection"
+                            checked={isSelected}
+                            onChange={() => handleRoleSelectionInModal(item.role)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                        </div>
+                        <span style={{ fontSize: '0.7rem', color: '#64748b', lineHeight: 1.3, marginTop: '0.2rem' }}>
+                          {item.desc}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <label className="cms-label" style={{ margin: 0 }}>
+                    <Key size={13} className="text-emerald-700" />
+                    <span>Assigned Module Permissions ({assignForm.permissions.length} selected)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAssignForm((prev) => ({
+                        ...prev,
+                        permissions: getDefaultPermissionsForRole(prev.role),
+                      }))
+                    }
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#059669',
+                      fontSize: '0.74rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                    }}
+                  >
+                    <RefreshCw size={11} />
+                    <span>Reset to Role Defaults</span>
+                  </button>
+                </div>
+                <div className="rbac-perm-grid">
+                  {MODULE_PERMISSIONS.map((perm) => {
+                    const isChecked = assignForm.permissions.includes(perm.id);
+                    const isRbacModule = perm.id === 'rbac_manage';
+                    const isDisabled = isRbacModule && !isSuperAdmin;
+                    return (
+                      <div
+                        key={perm.id}
+                        onClick={() => !isDisabled && handleTogglePermission(perm.id)}
+                        className={`rbac-perm-item ${isChecked ? 'selected' : ''}`}
+                        style={{ opacity: isDisabled ? 0.4 : 1, cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          disabled={isDisabled}
+                          onChange={() => !isDisabled && handleTogglePermission(perm.id)}
+                          style={{ marginTop: '0.15rem', cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: isChecked ? '#065f46' : '#1e293b' }}>
+                            {perm.label}
+                          </span>
+                          <span style={{ fontSize: '0.68rem', color: '#64748b', lineHeight: 1.25 }}>
+                            {perm.desc}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <Calendar size={14} className="text-blue-600" />
+                    <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#1e293b' }}>Access Validity &amp; Duration</span>
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.78rem', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={assignForm.isPermanent}
+                      onChange={(e) => setAssignForm({ ...assignForm, isPermanent: e.target.checked })}
+                    />
+                    <span>Permanent Access (No Expiry)</span>
+                  </label>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
+                  <div className="cms-field">
+                    <label className="cms-label"><span>Access Start Date</span></label>
+                    <input
+                      type="date"
+                      value={assignForm.startDate}
+                      onChange={(e) => setAssignForm({ ...assignForm, startDate: e.target.value })}
+                      className="cms-input"
+                    />
+                  </div>
+                  <div className="cms-field">
+                    <label className="cms-label">
+                      <span>Access Expiry Date</span>
+                      {!assignForm.isPermanent && <span className="required-star">*</span>}
+                    </label>
+                    <input
+                      type="date"
+                      disabled={assignForm.isPermanent}
+                      required={!assignForm.isPermanent}
+                      value={assignForm.expiryDate}
+                      onChange={(e) => setAssignForm({ ...assignForm, expiryDate: e.target.value })}
+                      className="cms-input"
+                      style={{ opacity: assignForm.isPermanent ? 0.5 : 1 }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="cms-field">
+                <label className="cms-label">
+                  <Info size={13} className="text-slate-600" />
+                  <span>Operational Justification / Reason for Access</span>
+                  <span className="required-star">*</span>
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  value={assignForm.reason}
+                  onChange={(e) => setAssignForm({ ...assignForm, reason: e.target.value })}
+                  placeholder="e.g. Authorized to oversee weekend river cleanup drives and manage volunteer circulars."
+                  className="cms-textarea"
+                />
+              </div>
+            </div>
+
+            <div style={{ padding: '1.15rem 1.75rem', borderTop: '1px solid #f1f5f9', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowAssignModal(false)}
+                className="ref-btn-refresh"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="ref-btn-enroll"
+              >
+                <Save size={14} />
+                <span>{submitting ? 'Assigning...' : 'Assign Access'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="ref-members-page" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
       {/* 1. Header Row - Explicitly "Admin Users" as Requested */}
@@ -1224,7 +1706,7 @@ const AdminUsers = () => {
                     filteredCapabilities.map((row) => {
                       const meta = getCapabilityMeta(row);
 
-                      return (
+  return (
                         <tr key={row.id}>
                           {/* Capability Icon Box, Title, Category Badge, and Subtitle */}
                           <td style={{ paddingLeft: '1.25rem', paddingRight: '1rem' }}>
@@ -1487,7 +1969,7 @@ const AdminUsers = () => {
                       const canRevokeThisUser =
                         (isSuperAdmin && user.email !== 'admin@gmail.com') || (isAdmin && (user.role === ROLES.STAFF_COORDINATOR || user.role === ROLES.GENERAL_VOLUNTEER));
 
-                      return (
+  return (
                         <tr key={user._id}>
                           <td style={{ paddingLeft: '1.15rem' }}>
                             <div
@@ -1773,490 +2255,6 @@ const AdminUsers = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL: Assign / Edit Access Interface
-          ========================================================================= */}
-      {showAssignModal && (
-        <div className="rbac-modal-backdrop" onClick={() => setShowAssignModal(false)}>
-          <div className="rbac-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="rbac-modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#eff6ff', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Key size={18} />
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
-                    {selectedUserForAssign ? `Edit Access: ${selectedUserForAssign.name}` : 'Assign Role & Access Permissions'}
-                  </h3>
-                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-                    Authority: {effectiveRole} ({isAdmin ? 'Full role delegation' : 'View only'})
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowAssignModal(false)}
-                className="ref-alert-dismiss"
-                style={{ fontSize: '1.3rem' }}
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmitAssign}>
-              <div className="rbac-modal-body">
-                <div className="rbac-user-inputs-grid">
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <Users size={13} className="text-blue-700" />
-                      <span>Full Name</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={assignForm.name}
-                      onChange={(e) => setAssignForm({ ...assignForm, name: e.target.value })}
-                      placeholder="e.g. Srikanth Varma"
-                      className="cms-input"
-                    />
-                  </div>
-
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <Mail size={13} className="text-blue-700" />
-                      <span>Email Address</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={assignForm.email}
-                      onChange={(e) => setAssignForm({ ...assignForm, email: e.target.value })}
-                      placeholder="e.g. srikanth@godhavari.org"
-                      className="cms-input"
-                    />
-                  </div>
-
-                  <div className="cms-field">
-                    <label className="cms-label">
-                      <Phone size={13} className="text-blue-700" />
-                      <span>Phone Number</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={assignForm.phone}
-                      onChange={(e) => setAssignForm({ ...assignForm, phone: e.target.value })}
-                      placeholder="e.g. +91 944 123 4567"
-                      className="cms-input"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-                    <label className="cms-label" style={{ margin: 0 }}>
-                      <Crown size={13} className="text-purple-700" />
-                      <span>Select Role</span>
-                      <span className="required-star">*</span>
-                    </label>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                      Admins can delegate Admin, Staff &amp; Volunteer roles
-                    </span>
-                  </div>
-
-                  <div className="rbac-role-card-grid">
-                    {assignableRoles.map((item) => {
-                      const isSelected = assignForm.role === item.role;
-                      return (
-                        <div
-                          key={item.role}
-                          onClick={() => handleRoleSelectionInModal(item.role)}
-                          className={`rbac-role-radio-card ${isSelected ? 'active' : ''}`}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span className={`ref-tier-badge ${item.badgeClass}`} style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}>
-                              {item.role}
-                            </span>
-                            <input
-                              type="radio"
-                              name="roleSelection"
-                              checked={isSelected}
-                              onChange={() => handleRoleSelectionInModal(item.role)}
-                              style={{ cursor: 'pointer' }}
-                            />
-                          </div>
-                          <span style={{ fontSize: '0.7rem', color: '#64748b', lineHeight: 1.3, marginTop: '0.2rem' }}>
-                            {item.desc}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-                    <label className="cms-label" style={{ margin: 0 }}>
-                      <Key size={13} className="text-emerald-700" />
-                      <span>Assigned Module Permissions ({assignForm.permissions.length} selected)</span>
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setAssignForm((prev) => ({
-                          ...prev,
-                          permissions: getDefaultPermissionsForRole(prev.role),
-                        }))
-                      }
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#059669',
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                      }}
-                    >
-                      <RefreshCw size={11} />
-                      <span>Reset to Role Defaults</span>
-                    </button>
-                  </div>
-
-                  <div className="rbac-perm-grid">
-                    {MODULE_PERMISSIONS.map((perm) => {
-                      const isChecked = assignForm.permissions.includes(perm.id);
-                      const isRbacModule = perm.id === 'rbac_manage';
-                      const isDisabled = isRbacModule && !isSuperAdmin;
-
-                      return (
-                        <div
-                          key={perm.id}
-                          onClick={() => !isDisabled && handleTogglePermission(perm.id)}
-                          className={`rbac-perm-item ${isChecked ? 'selected' : ''}`}
-                          style={{ opacity: isDisabled ? 0.4 : 1, cursor: isDisabled ? 'not-allowed' : 'pointer' }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            disabled={isDisabled}
-                            onChange={() => !isDisabled && handleTogglePermission(perm.id)}
-                            style={{ marginTop: '0.15rem', cursor: isDisabled ? 'not-allowed' : 'pointer' }}
-                          />
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: isChecked ? '#065f46' : '#1e293b' }}>
-                              {perm.label}
-                            </span>
-                            <span style={{ fontSize: '0.68rem', color: '#64748b', lineHeight: 1.25 }}>
-                              {perm.desc}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.9rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                      <Calendar size={14} className="text-blue-600" />
-                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1e293b' }}>Access Validity & Duration</span>
-                    </div>
-
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={assignForm.isPermanent}
-                        onChange={(e) => setAssignForm({ ...assignForm, isPermanent: e.target.checked })}
-                      />
-                      <span>Permanent Access (No Expiry)</span>
-                    </label>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
-                    <div className="cms-field">
-                      <label className="cms-label">
-                        <span>Access Start Date</span>
-                      </label>
-                      <input
-                        type="date"
-                        value={assignForm.startDate}
-                        onChange={(e) => setAssignForm({ ...assignForm, startDate: e.target.value })}
-                        className="cms-input"
-                      />
-                    </div>
-
-                    <div className="cms-field">
-                      <label className="cms-label">
-                        <span>Access Expiry Date</span>
-                        {!assignForm.isPermanent && <span className="required-star">*</span>}
-                      </label>
-                      <input
-                        type="date"
-                        disabled={assignForm.isPermanent}
-                        required={!assignForm.isPermanent}
-                        value={assignForm.expiryDate}
-                        onChange={(e) => setAssignForm({ ...assignForm, expiryDate: e.target.value })}
-                        className="cms-input"
-                        style={{ opacity: assignForm.isPermanent ? 0.5 : 1 }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="cms-field">
-                  <label className="cms-label">
-                    <Info size={13} className="text-slate-600" />
-                    <span>Operational Justification / Reason for Access</span>
-                    <span className="required-star">*</span>
-                  </label>
-                  <textarea
-                    rows={2}
-                    required
-                    value={assignForm.reason}
-                    onChange={(e) => setAssignForm({ ...assignForm, reason: e.target.value })}
-                    placeholder="e.g. Authorized to oversee weekend river cleanup drives and manage volunteer circulars."
-                    className="cms-textarea"
-                  />
-                </div>
-              </div>
-
-              <div className="rbac-modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setShowAssignModal(false)}
-                  className="ref-btn-refresh"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="ref-btn-enroll"
-                >
-                  <Save size={14} />
-                  <span>{submitting ? 'Assigning...' : 'Assign Access'}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          MODAL: View User Details & Permissions Matrix
-          ========================================================================= */}
-      {viewingUser && (
-        <div className="rbac-modal-backdrop" onClick={() => setViewingUser(null)}>
-          <div className="rbac-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="rbac-modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Crown size={20} />
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
-                    {viewingUser.name}
-                  </h3>
-                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: '#64748b' }}>
-                    Member ID: {viewingUser.memberId || 'GNPP-2026'} | {viewingUser.email}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setViewingUser(null)}
-                className="ref-alert-dismiss"
-              >
-                &times;
-              </button>
-            </div>
-
-            <div className="rbac-modal-body">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Assigned Role</span>
-                  <div style={{ marginTop: '0.25rem' }}>
-                    <span className={`ref-tier-badge ${getRoleBadgeClass(viewingUser.role)}`}>
-                      {viewingUser.role}
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Account Status</span>
-                  <div style={{ marginTop: '0.25rem' }}>
-                    <span className={`ref-status-badge ${viewingUser.accountStatus === 'Active' ? 'active' : 'suspended'}`}>
-                      <span className="ref-status-dot-inner"></span>
-                      <span>{viewingUser.accountStatus || 'Active'}</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Granted By</span>
-                  <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', fontWeight: 600, color: '#1e293b' }}>
-                    {viewingUser.assignedBy?.name || 'Dr. K. V. Subba Rao'} ({viewingUser.assignedBy?.role || 'Admin'})
-                  </p>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Access Expiry</span>
-                  <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', fontWeight: 600, color: viewingUser.accessExpiryDate ? '#b45309' : '#047857' }}>
-                    {viewingUser.accessExpiryDate ? new Date(viewingUser.accessExpiryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Permanent (No Expiry)'}
-                  </p>
-                </div>
-
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Access Justification</span>
-                  <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#334155', lineHeight: 1.45 }}>
-                    "{viewingUser.accessReason || 'Standard administrative operational access'}"
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <h4 style={{ margin: '0 0 0.55rem', fontSize: '0.88rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                  <Key size={14} className="text-emerald-600" />
-                  <span>Module Permissions Audit ({viewingUser.permissions?.length || 0} of {MODULE_PERMISSIONS.length} active)</span>
-                </h4>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.45rem' }}>
-                  {MODULE_PERMISSIONS.map((perm) => {
-                    const hasPerm = viewingUser.permissions?.includes(perm.id);
-                    return (
-                      <div
-                        key={perm.id}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.45rem',
-                          padding: '0.45rem 0.65rem',
-                          borderRadius: '6px',
-                          border: '1px solid',
-                          borderColor: hasPerm ? '#bbf7d0' : '#f1f5f9',
-                          backgroundColor: hasPerm ? '#f0fdf4' : '#fafafa',
-                          color: hasPerm ? '#065f46' : '#94a3b8',
-                          fontSize: '0.75rem',
-                          fontWeight: hasPerm ? 600 : 400,
-                        }}
-                      >
-                        {hasPerm ? <CheckCircle2 size={13} className="text-emerald-600 flex-shrink-0" /> : <X size={13} className="text-slate-300 flex-shrink-0" />}
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{perm.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className="rbac-modal-footer">
-              {(isSuperAdmin || (isAdmin && viewingUser.role !== ROLES.SUPER_ADMIN)) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setViewingUser(null);
-                    handleOpenAssignModal(viewingUser);
-                  }}
-                  className="ref-btn-enroll"
-                >
-                  <Edit2 size={14} />
-                  <span>Edit Access</span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setViewingUser(null)}
-                className="ref-btn-refresh"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =========================================================================
-          CONFIRMATION MODAL: Revoke Access Safety Check
-          ========================================================================= */}
-      {confirmRevokeModal.open && (
-        <div className="rbac-confirm-backdrop" onClick={() => setConfirmRevokeModal({ open: false, user: null })}>
-          <div className="rbac-confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <div className="rbac-modal-header" style={{ backgroundColor: '#fef2f2', borderBottom: '1px solid #fee2e2' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <AlertTriangle size={20} />
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#991b1b' }}>
-                    Confirm Access Revocation
-                  </h3>
-                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.74rem', color: '#b91c1c' }}>
-                    Irreversible administrative governance action
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setConfirmRevokeModal({ open: false, user: null })}
-                className="ref-alert-dismiss"
-              >
-                &times;
-              </button>
-            </div>
-
-            <div style={{ padding: '1.25rem 1.5rem' }}>
-              <p style={{ margin: 0, fontSize: '0.86rem', color: '#1e293b', lineHeight: 1.5 }}>
-                Are you sure you want to permanently revoke administrative permissions for:
-              </p>
-              <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '8px', border: '1px solid #e2e8f0', margin: '0.75rem 0' }}>
-                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>{confirmRevokeModal.user?.name}</p>
-                <p style={{ margin: '0.15rem 0 0', fontSize: '0.76rem', color: '#64748b' }}>
-                  {confirmRevokeModal.user?.email} | Current Role: <strong>{confirmRevokeModal.user?.role}</strong>
-                </p>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
-                This user's administrative privileges will be terminated immediately. Their account role will be downgraded to <strong>General Volunteer</strong> and marked Inactive.
-              </p>
-            </div>
-
-            <div className="rbac-modal-footer">
-              <button
-                type="button"
-                onClick={() => setConfirmRevokeModal({ open: false, user: null })}
-                className="ref-btn-refresh"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmRevoke}
-                style={{
-                  height: '34px',
-                  padding: '0 1rem',
-                  borderRadius: '6px',
-                  backgroundColor: '#dc2626',
-                  color: '#ffffff',
-                  border: 'none',
-                  fontWeight: 600,
-                  fontSize: '0.8rem',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  cursor: 'pointer',
-                }}
-              >
-                <Trash2 size={14} />
-                <span>Yes, Revoke Access</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

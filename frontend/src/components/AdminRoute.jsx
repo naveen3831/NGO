@@ -1,12 +1,26 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AccountSuspendedScreen from './AccountSuspendedScreen';
 
 const AdminRoute = ({ children }) => {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, isSuspended, suspendedReason, logout, loading } = useAuth();
+  const navigate = useNavigate();
 
   if (loading) {
     return <div className="route-loading">Verifying administrative access...</div>;
+  }
+
+  if (user && isSuspended) {
+    return (
+      <AccountSuspendedScreen
+        reason={suspendedReason}
+        onLogout={() => {
+          logout();
+          navigate('/login', { replace: true });
+        }}
+      />
+    );
   }
 
   if (!user || !isAdmin) {

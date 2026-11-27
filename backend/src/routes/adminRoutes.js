@@ -34,6 +34,10 @@ import {
 import {
   sendNotification,
   getAllNotifications,
+  streamAdminNotifications,
+  getAdminInboxNotifications,
+  markAdminNotificationRead,
+  markAllAdminNotificationsRead,
 } from '../controllers/notificationController.js';
 import {
   getAuditLogs,
@@ -50,6 +54,7 @@ import {
   updateWebsiteContent,
 } from '../controllers/websiteController.js';
 import { updateAdminSettings } from '../controllers/authController.js';
+import { uploadImage } from '../controllers/uploadController.js';
 import {
   getAllContactMessages,
   updateContactMessageStatus,
@@ -67,9 +72,10 @@ const router = express.Router();
 // Enforce Admin protection on all routes in this file
 router.use(protect, requireAdmin);
 
-// Dashboard Metrics & Settings
+// Dashboard Metrics, Uploads & Settings
 router.get('/stats', getAdminStats);
 router.patch('/settings', updateAdminSettings);
+router.post('/upload', uploadImage);
 
 // Website CMS Management (stored in database)
 router.route('/website').get(getWebsiteContent).patch(updateWebsiteContent);
@@ -104,6 +110,10 @@ router.route('/announcements').get(getAllAnnouncements).post(createAnnouncement)
 router.route('/announcements/:id').patch(updateAnnouncement).put(updateAnnouncement).delete(deleteAnnouncement);
 
 // Notifications
+router.get('/notifications/stream', streamAdminNotifications);
+router.get('/notifications/admin-inbox', getAdminInboxNotifications);
+router.patch('/notifications/read-all', markAllAdminNotificationsRead);
+router.patch('/notifications/:id/read', markAdminNotificationRead);
 router.route('/notifications').get(getAllNotifications).post(sendNotification);
 
 // Live Audit Logs (Real-time admin actions)

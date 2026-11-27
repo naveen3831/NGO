@@ -3,6 +3,10 @@ import GalleryItem from '../models/GalleryItem.js';
 import Donation from '../models/Donation.js';
 import NewsletterSubscriber from '../models/NewsletterSubscriber.js';
 import Announcement from '../models/Announcement.js';
+import {
+  uploadImageToCloudinary,
+  deleteImageFromCloudinary,
+} from '../utils/cloudinaryService.js';
 
 // @desc    Submit contact message from public Contact Us form
 // @route   POST /api/v1/public/contact
@@ -102,10 +106,16 @@ export const createGalleryItem = async (req, res, next) => {
       return res.status(400).json({ message: 'Photo title and image are required' });
     }
 
+    const uploaded = await uploadImageToCloudinary(imageUrl, { folder: 'gallery' });
+    if (!uploaded.url) {
+      return res.status(400).json({ message: 'Failed to store photo in Cloudinary' });
+    }
+
     const item = await GalleryItem.create({
       title: title.trim(),
       category: category || 'River Cleaning',
-      imageUrl,
+      imageUrl: uploaded.url,
+      cloudinaryPublicId: uploaded.publicId || '',
       location: location ? location.trim() : 'Godavari Riverfront, Rajahmundry',
       dateLabel: dateLabel || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       caption: caption ? caption.trim() : '',
@@ -127,6 +137,7 @@ export const deleteGalleryItem = async (req, res, next) => {
     if (!deleted) {
       return res.status(404).json({ message: 'Gallery photo not found' });
     }
+    await deleteImageFromCloudinary(deleted.cloudinaryPublicId || deleted.imageUrl);
     res.json({ message: 'Gallery photo deleted' });
   } catch (error) {
     next(error);

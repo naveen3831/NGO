@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../services/api';
 import { recordAdminAction } from '../../services/auditService';
+import { uploadImageToCloud } from '../../utils/imageUtils';
 import {
   Megaphone,
   Plus,
@@ -58,22 +59,25 @@ const AdminAnnouncements = () => {
     imageUrl: '',
   });
 
-  const handleImageFileChange = (e, isEdit = false) => {
+  const handleImageFileChange = async (e, isEdit = false) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setFeedback({ type: 'error', text: 'Please select an image smaller than 5 MB.' });
-      return;
-    }
-    const reader = new FileReader();
-    reader.onloadend = () => {
+    setFeedback({ type: '', text: '' });
+    try {
+      const uploaded = await uploadImageToCloud(file, 'announcements', '/admin/upload');
       if (isEdit) {
-        setEditFormData((prev) => ({ ...prev, imageUrl: reader.result }));
+        setEditFormData((prev) => ({ ...prev, imageUrl: uploaded.url }));
       } else {
-        setFormData((prev) => ({ ...prev, imageUrl: reader.result }));
+        setFormData((prev) => ({ ...prev, imageUrl: uploaded.url }));
       }
-    };
-    reader.readAsDataURL(file);
+      setFeedback({ type: 'success', text: 'Announcement image uploaded to Cloudinary.' });
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        text: err.response?.data?.message || err.message || 'Failed to upload image to Cloudinary.',
+      });
+    }
   };
 
   const fetchAnnouncements = async () => {

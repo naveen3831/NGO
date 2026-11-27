@@ -16,6 +16,10 @@ const galleryItemSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please provide an image URL or upload'],
     },
+    cloudinaryPublicId: {
+      type: String,
+      default: '',
+    },
     location: {
       type: String,
       trim: true,

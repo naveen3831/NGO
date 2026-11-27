@@ -29,8 +29,11 @@ import {
   Compass,
   Bell,
   ArrowRight,
+  CreditCard,
 } from 'lucide-react';
 import Logo from './Logo';
+import UserAvatar from './UserAvatar';
+import { hasCustomPortrait } from './OfficialIdCard';
 
 const Navbar = () => {
   const { user, isAdmin, isMember, logout } = useAuth();
@@ -174,8 +177,25 @@ const Navbar = () => {
         <div className="eco-header-actions">
           {user && isAdmin ? (
             <div className="eco-user-actions">
-              <Link to="/admin" className="btn-eco-join-pill" title="Go to Admin Dashboard">
-                <Shield size={14} />
+              <Link to="/admin" className="btn-eco-join-pill" title="Go to Admin Dashboard" style={{ gap: '0.45rem' }}>
+                {hasCustomPortrait(user?.avatar) ? (
+                  <UserAvatar
+                    src={user.avatar}
+                    name={user.name}
+                    fallback="A"
+                    style={{
+                      width: '22px',
+                      height: '22px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.2)',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      border: '1px solid rgba(255,255,255,0.6)',
+                    }}
+                  />
+                ) : (
+                  <Shield size={14} />
+                )}
                 <span>Admin Dashboard</span>
               </Link>
               <button
@@ -201,6 +221,7 @@ const Navbar = () => {
                 style={{
                   width: '40px',
                   height: '40px',
+                  padding: 0,
                   borderRadius: '50%',
                   backgroundColor: '#006B3C',
                   color: '#ffffff',
@@ -209,22 +230,56 @@ const Navbar = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
+                  overflow: 'hidden',
                   boxShadow: '0 2px 8px rgba(0, 107, 60, 0.25)',
                 }}
               >
-                <User size={19} />
+                <UserAvatar
+                  src={user?.avatar}
+                  name={user?.name}
+                  fallback="M"
+                  fallbackContent={<User size={19} />}
+                  style={{ width: '100%', height: '100%', fontSize: '0.88rem', fontWeight: 700 }}
+                />
               </button>
 
               <div
                 className={`eco-nav-dropdown-menu ${activeDropdown === '__profile__' ? 'visible' : ''}`}
-                style={{ left: 'auto', right: 0, minWidth: '220px' }}
+                style={{ left: 'auto', right: 0, minWidth: '235px' }}
               >
-                <div style={{ padding: '0.6rem 0.9rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.25rem' }}>
-                  <div style={{ fontWeight: 700, color: '#064e3b', fontSize: '0.9rem' }}>
-                    {user?.name || 'Member'}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    {user?.memberId || 'Volunteer Member'}
+                <div
+                  style={{
+                    padding: '0.65rem 0.9rem',
+                    borderBottom: '1px solid #f1f5f9',
+                    marginBottom: '0.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.65rem',
+                  }}
+                >
+                  <UserAvatar
+                    src={user?.avatar}
+                    name={user?.name}
+                    fallback="M"
+                    style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      background: '#064e3b',
+                      color: '#ffffff',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      border: '1.5px solid #a7f3d0',
+                    }}
+                  />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, color: '#064e3b', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {user?.name || 'Member'}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                      {user?.memberId || 'Volunteer Member'}
+                    </div>
                   </div>
                 </div>
 
@@ -235,6 +290,15 @@ const Navbar = () => {
                 >
                   <span className="eco-drop-icon-wrap"><User size={13} /></span>
                   <span className="eco-drop-item-text">My Profile</span>
+                </Link>
+
+                <Link
+                  to="/member/card"
+                  className="eco-dropdown-item"
+                  onClick={() => setActiveDropdown(null)}
+                >
+                  <span className="eco-drop-icon-wrap"><CreditCard size={13} /></span>
+                  <span className="eco-drop-item-text">Digital ID Card</span>
                 </Link>
 
                 <Link
@@ -292,7 +356,7 @@ const Navbar = () => {
               <Link to="/login" className="btn-eco-login-outline">
                 <span>Login</span>
               </Link>
-              <Link to="/register" className="btn-eco-join-pill">
+              <Link to="/register/member" className="btn-eco-join-pill">
                 <span>Join Us</span>
                 <ArrowRight size={14} />
               </Link>

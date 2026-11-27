@@ -129,7 +129,7 @@ const Gallery = () => {
     },
   ];
 
-  const galleryItems = [...remoteItems, ...defaultItems];
+  const galleryItems = remoteItems.length > 0 ? remoteItems : defaultItems;
   const categories = ['All', 'River Cleaning', 'Plantation', 'Awareness', 'Events'];
 
   const filtered =

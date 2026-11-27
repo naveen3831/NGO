@@ -1,149 +1,213 @@
-import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Droplet, ShieldCheck, QrCode, Download, Printer, ArrowLeft } from 'lucide-react';
+import API from '../../services/api';
+import OfficialIdCard, {
+  DEFAULT_ORG_NAME,
+  downloadOfficialIdCard,
+  hasCustomPortrait,
+} from '../../components/OfficialIdCard';
+import { compressPortraitImage } from '../../utils/imageUtils';
+import {
+  CreditCard,
+  ShieldCheck,
+  Download,
+  Printer,
+  Eye,
+  Camera,
+} from 'lucide-react';
 
 const MemberCard = () => {
-  const { user, membership } = useAuth();
-  const navigate = useNavigate();
-  const cardRef = useRef();
+  const { user, membership, refreshProfile, updateAvatar } = useAuth();
+  const [branding, setBranding] = useState({
+    orgName: DEFAULT_ORG_NAME,
+    logoUrl: '',
+  });
+  const [downloading, setDownloading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoFeedback, setPhotoFeedback] = useState({ type: '', message: '' });
 
-  const handlePrint = () => {
-    window.print();
+  useEffect(() => {
+    refreshProfile?.();
+
+    const loadBranding = () => {
+      API.get('/public/content')
+        .then((res) => {
+          if (res.data) {
+            setBranding({
+              orgName: res.data.orgName?.trim() || DEFAULT_ORG_NAME,
+              logoUrl: res.data.logoUrl?.trim() || '',
+            });
+          }
+        })
+        .catch(() => {});
+    };
+
+    loadBranding();
+    window.addEventListener('ngo-logo-updated', loadBranding);
+    return () => window.removeEventListener('ngo-logo-updated', loadBranding);
+  }, []);
+
+  const isVolunteer = user?.role?.toLowerCase() === 'volunteer';
+  const roleLabel = isVolunteer ? 'Volunteer' : 'Member';
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      await downloadOfficialIdCard({ user, membership, branding });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setUploadingPhoto(true);
+    setPhotoFeedback({ type: '', message: '' });
+    try {
+      const compressed = await compressPortraitImage(file);
+      await updateAvatar(compressed);
+      setPhotoFeedback({
+        type: 'success',
+        message: 'Profile photo updated on your Digital ID Card.',
+      });
+    } catch (err) {
+      setPhotoFeedback({
+        type: 'error',
+        message: err.response?.data?.message || err.message || 'Could not update photo.',
+      });
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   return (
-    <div className="member-screen member-card-screen">
-      <div style={{ marginBottom: '1rem' }}>
-        <button
-          type="button"
-          onClick={() => navigate('/member/profile')}
+    <div className="ref-members-page">
+      {/* Page Header */}
+      <div className="ref-header-section">
+        <div className="ref-header-left">
+          <div className="ref-header-icon-box">
+            <CreditCard size={24} className="text-emerald-700" />
+          </div>
+          <div>
+            <h1 className="ref-page-title">Digital {roleLabel} ID Card</h1>
+            <p className="ref-page-subtitle">
+              Official identification pass authorized by {branding.orgName}.
+            </p>
+          </div>
+        </div>
+        <div className="ref-header-actions">
+          <label
+            className="ref-btn-refresh"
+            style={{ cursor: uploadingPhoto ? 'wait' : 'pointer' }}
+          >
+            <Camera size={15} />
+            <span>
+              {uploadingPhoto
+                ? 'Updating Photo…'
+                : hasCustomPortrait(user?.avatar)
+                ? 'Change Photo'
+                : 'Add Photo'}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              disabled={uploadingPhoto}
+              onChange={handlePhotoUpload}
+              style={{ display: 'none' }}
+            />
+          </label>
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="ref-btn-enroll"
+            style={{ cursor: 'pointer' }}
+          >
+            <Download size={15} />
+            <span>{downloading ? 'Preparing…' : 'Download ID Card'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="ref-btn-refresh"
+            style={{ cursor: 'pointer' }}
+          >
+            <Printer size={15} />
+            <span>Print</span>
+          </button>
+        </div>
+      </div>
+
+      {photoFeedback.message && (
+        <div
+          className={`ref-alert-banner ${photoFeedback.type === 'error' ? 'ref-alert-error' : ''}`}
+          style={{ marginBottom: '1rem' }}
+        >
+          <div className="ref-alert-left">
+            <span>{photoFeedback.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPhotoFeedback({ type: '', message: '' })}
+            className="ref-alert-dismiss"
+          >
+            Dismiss &times;
+          </button>
+        </div>
+      )}
+
+      {/* Card Preview Container */}
+      <div
+        style={{
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        }}
+      >
+        <div
           style={{
-            display: 'inline-flex',
+            display: 'flex',
             alignItems: 'center',
-            gap: '0.45rem',
-            background: '#ffffff',
-            color: '#006B3C',
-            border: '1px solid #bbf7d0',
-            borderRadius: '9999px',
-            padding: '0.45rem 1.05rem',
-            fontSize: '0.86rem',
-            fontWeight: 650,
-            cursor: 'pointer',
-            boxShadow: '0 2px 6px rgba(0, 107, 60, 0.06)',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+            marginBottom: '1.35rem',
           }}
         >
-          <ArrowLeft size={15} />
-          <span>Back</span>
-        </button>
-      </div>
-      <div className="screen-header text-center">
-        <h2>Digital Membership Identity Card</h2>
-        <p className="text-muted text-sm">
-          Official member identification card authorized by Godhavari Nadhi Paryavarana Parishubratha.
-        </p>
-      </div>
-
-      {/* The Physical Card Replica */}
-      <div className="membership-id-card-frame" ref={cardRef}>
-        {/* Card Header */}
-        <div className="card-top-strip">
-          <div className="card-logo-group">
-            <Droplet size={22} className="card-water-icon" />
-            <div>
-              <h3>Godhavari Nadhi</h3>
-              <p>Paryavarana Parishubratha</p>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <ShieldCheck size={20} className="text-emerald-700" />
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>
+              Official {roleLabel} Identification Card
+            </h3>
           </div>
-          <div className="card-reg-number">
-            <span>REGD. NGO • AP</span>
-          </div>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              background: '#f8fafc',
+              color: '#475569',
+              border: '1px solid #cbd5e1',
+              borderRadius: '9999px',
+              padding: '0.28rem 0.75rem',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+            }}
+          >
+            <Eye size={12} /> Read-Only Pass
+          </span>
         </div>
 
-        {/* Card Center Body */}
-        <div className="card-inner-body">
-          <div className="card-photo-box">
-            <img
-              src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}
-              alt={user?.name || 'Member'}
-              className="card-photo"
-            />
-            <div className="verified-seal">
-              <ShieldCheck size={14} /> VERIFIED
-            </div>
-          </div>
-
-          <div className="card-details-grid">
-            <div className="card-field full-width">
-              <span className="field-label">FULL NAME</span>
-              <span className="field-value font-bold">{user?.name}</span>
-            </div>
-
-            <div className="card-field">
-              <span className="field-label">MEMBER ID</span>
-              <span className="field-value font-mono font-bold text-primary">
-                {user?.memberId || 'GNPP-2026-1002'}
-              </span>
-            </div>
-
-            <div className="card-field">
-              <span className="field-label">MEMBERSHIP CATEGORY</span>
-              <span className="field-value font-semibold">
-                {membership?.membershipType || 'Life Member'}
-              </span>
-            </div>
-
-            <div className="card-field">
-              <span className="field-label">DESIGNATION</span>
-              <span className="field-value">{user?.designation || 'Volunteer Member'}</span>
-            </div>
-
-            <div className="card-field">
-              <span className="field-label">BLOOD GROUP</span>
-              <span className="field-value font-bold text-danger">
-                {user?.bloodGroup || 'B+'}
-              </span>
-            </div>
-
-            <div className="card-field">
-              <span className="field-label">VALIDITY</span>
-              <span className="field-value">
-                {membership?.validTo
-                  ? new Date(membership.validTo).getFullYear()
-                  : '2027'} (ACTIVE)
-              </span>
-            </div>
-
-            <div className="card-field">
-              <span className="field-label">HEADQUARTERS</span>
-              <span className="field-value">Rajahmundry, AP</span>
-            </div>
-          </div>
+        <div className="official-id-card-print-area">
+          <OfficialIdCard user={user} membership={membership} branding={branding} />
         </div>
-
-        {/* Card Footer Bar */}
-        <div className="card-bottom-bar">
-          <div className="qr-box">
-            <QrCode size={40} className="qr-code-icon" />
-          </div>
-          <div className="card-auth-signatures">
-            <div className="sig-block">
-              <span className="sig-line">Dr. K.V. Subba Rao</span>
-              <span className="sig-title">President & Chief Coordinator</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="card-actions-wrapper">
-        <button onClick={handlePrint} className="btn btn-primary btn-block">
-          <Printer size={16} /> Print / Save ID Card
-        </button>
       </div>
     </div>
   );
 };
 
 export default MemberCard;
-

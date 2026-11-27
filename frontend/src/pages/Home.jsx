@@ -136,7 +136,7 @@ const Home = () => {
                   <Link to="/announcements" className="btn-hero-join-mission">
                     <span>Announcements</span>
                   </Link>
-                  <Link to="/register" className="btn-hero-join-ngo">
+                  <Link to="/register/member" className="btn-hero-join-ngo">
                     <span>Join in NGO</span>
                     <ArrowRight size={14} className="btn-hero-arrow" />
                   </Link>
@@ -473,43 +473,44 @@ const Home = () => {
         </section>
       )}
 
-      {/* 6. CALL TO ACTION BANNER (CONSISTENT WITH OTHER PLATFORM PAGES) */}
+      {/* 6. CALL TO ACTION BANNER (LIGHT THEME) */}
       <section style={{
-        background: 'var(--footer-secondary, #006B3C)',
-        color: 'var(--footer-heading, #FFFFFF)',
+        background: 'linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%)',
+        color: '#064e3b',
         padding: '4.5rem 1.5rem',
         textAlign: 'center',
         marginTop: '2rem',
-        borderBottom: '1px solid var(--footer-border, #38845C)'
+        borderTop: '1px solid #d1fae5',
+        borderBottom: '1px solid #bbf7d0'
       }}>
         <div style={{ maxWidth: '780px', margin: '0 auto' }}>
           <span style={{
             display: 'inline-block',
-            background: 'rgba(255, 255, 255, 0.15)',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
+            background: '#ffffff',
+            border: '1px solid #bbf7d0',
             padding: '4px 14px',
             borderRadius: '999px',
             fontSize: '0.78rem',
             fontWeight: 700,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            color: '#86efac',
+            color: '#006B3C',
             marginBottom: '1rem'
           }}>
             JOIN THE CONSERVATION MOVEMENT
           </span>
 
-          <h2 style={{ fontSize: 'clamp(1.85rem, 3.2vw, 2.5rem)', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.25 }}>
+          <h2 style={{ fontSize: 'clamp(1.85rem, 3.2vw, 2.5rem)', fontWeight: 800, color: '#064e3b', margin: '0 0 1rem', lineHeight: 1.25 }}>
             Be Part of the Solution for River Godavari
           </h2>
 
-          <p style={{ fontSize: '1.02rem', color: '#ecfdf5', lineHeight: 1.7, margin: '0 0 2rem', opacity: 0.95 }}>
+          <p style={{ fontSize: '1.02rem', color: '#334155', lineHeight: 1.7, margin: '0 0 2rem' }}>
             Whether dedicating two hours on a weekend morning or spreading eco-awareness in your community, every action counts.
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <Link
-              to="/register"
+              to="/register/volunteer"
               style={{
                 background: '#008C4A',
                 color: '#ffffff',
@@ -521,7 +522,7 @@ const Home = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                boxShadow: '0 4px 12px rgba(0, 107, 60, 0.18)'
               }}
             >
               <span>Register Free as Volunteer</span>
@@ -530,9 +531,9 @@ const Home = () => {
             <Link
               to="/contact"
               style={{
-                background: 'transparent',
-                color: '#ffffff',
-                border: '1px solid rgba(255, 255, 255, 0.35)',
+                background: '#ffffff',
+                color: '#064e3b',
+                border: '1.5px solid #86efac',
                 padding: '0.85rem 1.75rem',
                 borderRadius: '10px',
                 fontWeight: 600,

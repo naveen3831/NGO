@@ -13,15 +13,24 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor to handle session expiration cleanly
+// Response interceptor to handle session expiration and suspension cleanly
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // If unauthorized and token was present, clear storage
-      if (localStorage.getItem('token')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userInfo');
+    if (error.response) {
+      if (error.response.status === 401) {
+        // If unauthorized and token was present, clear storage
+        if (localStorage.getItem('token')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userInfo');
+        }
+      } else if (
+        error.response.status === 403 &&
+        (error.response.data?.code === 'ACCOUNT_SUSPENDED' || error.response.data?.suspended)
+      ) {
+        window.dispatchEvent(
+          new CustomEvent('ngo:account-suspended', { detail: error.response.data })
+        );
       }
     }
     return Promise.reject(error);

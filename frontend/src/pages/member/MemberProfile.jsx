@@ -1,509 +1,308 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import API from '../../services/api';
+import UserAvatar from '../../components/UserAvatar';
+import { hasCustomPortrait } from '../../components/OfficialIdCard';
+import { compressPortraitImage } from '../../utils/imageUtils';
 import {
   User,
   Phone,
   Mail,
   MapPin,
   Heart,
-  Key,
   CreditCard,
-  Edit3,
-  CheckCircle2,
   ShieldCheck,
-  Bell,
-  Settings,
-  HelpCircle,
-  LogOut,
-  ChevronRight,
+  Briefcase,
+  Calendar,
+  Eye,
+  Camera,
+  Trash2,
 } from 'lucide-react';
 
 const MemberProfile = () => {
-  const { user, membership, refreshProfile, logout } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [editing, setEditing] = useState(false);
-  const [name, setName] = useState(user?.name || '');
-  const [phone, setPhone] = useState(user?.phone || '');
-  const [bloodGroup, setBloodGroup] = useState(user?.bloodGroup || 'B+');
-  const [city, setCity] = useState(user?.address?.city || 'Rajahmundry');
-  const [feedback, setFeedback] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMsg, setPasswordMsg] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [requestingVolunteer, setRequestingVolunteer] = useState(false);
-  const [activeSection, setActiveSection] = useState(location.hash === '#password' ? 'settings' : null);
+  const { user, membership, updateAvatar } = useAuth();
+  const [photoStatus, setPhotoStatus] = useState({ type: '', message: '' });
+  const [savingPhoto, setSavingPhoto] = useState(false);
 
-  useEffect(() => {
-    if (location.hash === '#password') {
-      setActiveSection('settings');
-    }
-  }, [location.hash]);
+  const isVolunteer = user?.role?.toLowerCase() === 'volunteer';
+  const roleLabel = isVolunteer ? 'Volunteer' : 'Member';
 
-  const handleRequestVolunteer = async () => {
-    setRequestingVolunteer(true);
-    setFeedback('');
+  const handlePhotoSelect = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setSavingPhoto(true);
+    setPhotoStatus({ type: '', message: '' });
     try {
-      const res = await API.post('/member/membership/request-tier', {
-        requestedTier: 'Volunteer Member',
+      const compressed = await compressPortraitImage(file);
+      await updateAvatar(compressed);
+      setPhotoStatus({
+        type: 'success',
+        message: 'Profile image updated! It now appears on your profile, navigation bar, and Digital ID Card.',
       });
-      await refreshProfile();
-      setFeedback(res.data?.message || 'Volunteer membership request sent to Admin for approval!');
     } catch (err) {
-      setFeedback(err.response?.data?.message || 'Unable to submit volunteer request.');
+      setPhotoStatus({
+        type: 'error',
+        message: err.response?.data?.message || err.message || 'Failed to update profile image.',
+      });
     } finally {
-      setRequestingVolunteer(false);
+      setSavingPhoto(false);
     }
   };
 
-  useEffect(() => {
-    if (location.hash === '#password') {
-      const el = document.getElementById('password');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [location]);
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setFeedback('');
+  const handleRemovePhoto = async () => {
+    setSavingPhoto(true);
+    setPhotoStatus({ type: '', message: '' });
     try {
-      await API.patch('/member/profile', {
-        name,
-        phone,
-        bloodGroup,
-        address: { city },
+      await updateAvatar('');
+      setPhotoStatus({ type: 'success', message: 'Profile image removed.' });
+    } catch (err) {
+      setPhotoStatus({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to remove profile image.',
       });
-      await refreshProfile();
-      setFeedback('Profile details successfully updated!');
-      setEditing(false);
-    } catch (err) {
-      alert('Failed to update profile');
     } finally {
-      setSaving(false);
-    }
-  };
-
-  const handlePasswordUpdate = async (e) => {
-    e.preventDefault();
-    setPasswordMsg('');
-    setPasswordError('');
-    if (newPassword.length < 6) {
-      setPasswordError('Password must be at least 6 characters.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match.');
-      return;
-    }
-    try {
-      await API.patch('/member/profile', { password: newPassword });
-      setPasswordMsg('Password updated successfully!');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err) {
-      setPasswordError(err.response?.data?.message || 'Unable to update password.');
+      setSavingPhoto(false);
     }
   };
 
   const infoTiles = [
-    { icon: ShieldCheck, label: 'Membership ID', value: user?.memberId || '—' },
-    { icon: CreditCard, label: 'Membership Status', value: membership?.status || 'Pending' },
+    { icon: ShieldCheck, label: `${roleLabel} ID`, value: user?.memberId || '—' },
+    { icon: CreditCard, label: 'Account Status', value: membership?.status || 'Active' },
+    { icon: User, label: 'Category', value: membership?.membershipType || roleLabel },
     { icon: Mail, label: 'Email Address', value: user?.email || '—' },
     { icon: Phone, label: 'Phone Number', value: user?.phone || '—' },
-    { icon: Heart, label: 'Blood Group', value: user?.bloodGroup || 'B+' },
+    { icon: Heart, label: 'Blood Group', value: user?.bloodGroup || '—' },
+    { icon: Briefcase, label: 'Occupation / Wing', value: user?.occupation || '—' },
     {
       icon: MapPin,
-      label: 'Location',
-      value: `${user?.address?.city || 'Rajahmundry'}, Andhra Pradesh`,
+      label: 'Address',
+      value: user?.address?.street
+        ? `${user.address.street}, ${user.address.city || 'Rajahmundry'}`
+        : user?.address?.city || 'Rajahmundry',
+    },
+    {
+      icon: Calendar,
+      label: 'Valid Until',
+      value: membership?.validTo
+        ? new Date(membership.validTo).toLocaleDateString('en-IN')
+        : 'Active',
     },
   ];
 
   return (
-    <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '0.5rem 0 2.5rem' }}>
-      {feedback && (
+    <div className="ref-members-page">
+      <div className="ref-header-section">
+        <div className="ref-header-left">
+          <div className="ref-header-icon-box">
+            <User size={24} className="text-emerald-700" />
+          </div>
+          <div>
+            <h1 className="ref-page-title">My {roleLabel} Profile</h1>
+            <p className="ref-page-subtitle">
+              Read-only overview of your registered identity, contact, and membership details.
+            </p>
+          </div>
+        </div>
+
+        <Link to="/member/card" className="ref-btn-enroll" style={{ textDecoration: 'none' }}>
+          <CreditCard size={15} />
+          <span>View Digital ID Card</span>
+        </Link>
+      </div>
+
+      {photoStatus.message && (
         <div
-          style={{
-            background: '#E8F5E9',
-            color: '#064e3b',
-            border: '1px solid #86efac',
-            borderRadius: '12px',
-            padding: '0.85rem 1.15rem',
-            marginBottom: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontWeight: 600,
-          }}
+          className={`ref-alert-banner ${photoStatus.type === 'error' ? 'ref-alert-error' : ''}`}
+          style={{ marginBottom: '1rem' }}
         >
-          <CheckCircle2 size={18} />
-          <span>{feedback}</span>
+          <div className="ref-alert-left">
+            <span>{photoStatus.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPhotoStatus({ type: '', message: '' })}
+            className="ref-alert-dismiss"
+          >
+            Dismiss &times;
+          </button>
         </div>
       )}
 
-      {/* QUICK ACCOUNT OPTIONS MENU */}
       <div
         style={{
           background: '#ffffff',
-          borderRadius: '18px',
           border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)',
-          overflow: 'hidden',
-          marginBottom: '1.5rem',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         }}
       >
-        {[
-          {
-            label: 'My Account',
-            desc: `ID: ${user?.memberId || 'GNPP'} • Status: ${membership?.status || 'Pending'}`,
-            icon: User,
-            iconBg: '#e8f5e9',
-            iconColor: '#006B3C',
-            onClick: () => setActiveSection((prev) => (prev === 'account' ? null : 'account')),
-          },
-          {
-            label: 'My Activities & Events',
-            desc: 'Enrolled drives, activities & meetings',
-            icon: CreditCard,
-            iconBg: '#ecfdf5',
-            iconColor: '#047857',
-            onClick: () => navigate('/member/drives'),
-          },
-          {
-            label: 'Notifications',
-            desc: 'Announcements, circulars & river alerts',
-            icon: Bell,
-            iconBg: '#eff6ff',
-            iconColor: '#1d4ed8',
-            onClick: () => navigate('/member/announcements'),
-          },
-          {
-            label: 'Settings',
-            desc: 'Password & account security',
-            icon: Settings,
-            iconBg: '#f1f5f9',
-            iconColor: '#334155',
-            onClick: () => setActiveSection((prev) => (prev === 'settings' ? null : 'settings')),
-          },
-          {
-            label: 'Help & Support',
-            desc: 'Contact NGO secretariat & help desk',
-            icon: HelpCircle,
-            iconBg: '#fef3c7',
-            iconColor: '#b45309',
-            onClick: () => navigate('/contact'),
-          },
-          {
-            label: 'Log Out',
-            desc: 'Sign out of your member session',
-            icon: LogOut,
-            iconBg: '#fee2e2',
-            iconColor: '#dc2626',
-            isDanger: true,
-            onClick: () => {
-              logout();
-              navigate('/');
-            },
-          },
-        ].map((item, idx, arr) => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.label}
-              type="button"
-              onClick={item.onClick}
-              style={{
-                width: '100%',
-                background: '#ffffff',
-                border: 'none',
-                borderBottom: idx < arr.length - 1 ? '1px solid #f1f5f9' : 'none',
-                padding: '0.9rem 1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '0.9rem',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
-                <div
-                  style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '10px',
-                    background: item.iconBg,
-                    color: item.iconColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <Icon size={18} />
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontSize: '0.94rem',
-                      fontWeight: 700,
-                      color: item.isDanger ? '#dc2626' : '#0f172a',
-                      lineHeight: 1.3,
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '1px' }}>
-                    {item.desc}
-                  </div>
-                </div>
-              </div>
-              <ChevronRight size={17} color={item.isDanger ? '#dc2626' : '#94a3b8'} style={{ flexShrink: 0 }} />
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 2. EXPANDABLE ACCOUNT / SETTINGS SECTION */}
-      {activeSection && (
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-            gap: '1.5rem',
-            alignItems: 'start',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            paddingBottom: '1.25rem',
+            borderBottom: '1px solid #f1f5f9',
+            marginBottom: '1.25rem',
           }}
         >
-          {/* Left Card: Personal Details */}
-          {activeSection === 'account' && (
-            <div
-              id="personal-details"
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <UserAvatar
+              src={user?.avatar}
+              name={user?.name}
+              fallback={roleLabel}
               style={{
-            background: '#ffffff',
-            borderRadius: '18px',
-            border: '1px solid #e2e8f0',
-            padding: '1.5rem',
-            boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '0.75rem',
-              marginBottom: '1.25rem',
-              paddingBottom: '0.85rem',
-              borderBottom: '1px solid #f1f5f9',
-            }}
-          >
-            <h3 style={{ margin: 0, color: '#064e3b', fontSize: 'clamp(1rem, 3.8vw, 1.15rem)', display: 'flex', alignItems: 'center', gap: '0.45rem', whiteSpace: 'nowrap' }}>
-              <User size={18} color="#006B3C" style={{ flexShrink: 0 }} />
-              <span>Personal Details</span>
-            </h3>
-            <button
-              type="button"
-              onClick={() => setEditing(!editing)}
+                width: '74px',
+                height: '74px',
+                borderRadius: '18px',
+                background: '#064e3b',
+                color: '#ffffff',
+                fontSize: '1.65rem',
+                fontWeight: 800,
+                flexShrink: 0,
+                border: '2px solid #a7f3d0',
+                boxShadow: '0 6px 16px rgba(6, 78, 59, 0.16)',
+              }}
+            />
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
+                {user?.name || roleLabel}
+              </h2>
+              <p style={{ margin: '0.2rem 0 0', fontSize: '0.88rem', color: '#059669', fontWeight: 600 }}>
+                {user?.designation || roleLabel} • Godhavari Nadhi Paryavarana Parishubratha
+              </p>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.55rem', flexWrap: 'wrap' }}>
+                <label
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    background: '#ecfdf5',
+                    color: '#065f46',
+                    border: '1px solid #a7f3d0',
+                    borderRadius: '8px',
+                    padding: '0.32rem 0.72rem',
+                    fontSize: '0.76rem',
+                    fontWeight: 700,
+                    cursor: savingPhoto ? 'wait' : 'pointer',
+                  }}
+                >
+                  <Camera size={13} />
+                  <span>
+                    {savingPhoto
+                      ? 'Uploading…'
+                      : hasCustomPortrait(user?.avatar)
+                      ? 'Change Profile Photo'
+                      : 'Upload Profile Photo'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={savingPhoto}
+                    onChange={handlePhotoSelect}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+
+                {hasCustomPortrait(user?.avatar) && (
+                  <button
+                    type="button"
+                    disabled={savingPhoto}
+                    onClick={handleRemovePhoto}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      background: '#fee2e2',
+                      color: '#991b1b',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.32rem 0.65rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Trash2 size={12} />
+                    <span>Remove</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.35rem',
-                background: editing ? '#fee2e2' : '#E8F5E9',
-                color: editing ? '#dc2626' : '#006B3C',
-                border: '1px solid ' + (editing ? '#fecaca' : '#bbf7d0'),
+                background: '#f8fafc',
+                color: '#475569',
+                border: '1px solid #cbd5e1',
                 borderRadius: '9999px',
-                padding: '0.4rem 0.85rem',
-                fontSize: '0.8rem',
-                fontWeight: 650,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
+                padding: '0.35rem 0.85rem',
+                fontSize: '0.78rem',
+                fontWeight: 700,
               }}
             >
-              <Edit3 size={13} style={{ flexShrink: 0 }} />
-              <span>{editing ? 'Cancel' : 'Edit Info'}</span>
-            </button>
-          </div>
-
-          {editing ? (
-            <form onSubmit={handleUpdate} className="auth-form-body">
-              <div className="form-group">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>Phone Number</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </div>
-              <div className="form-row">
-                <div className="form-group flex-1">
-                  <label>Blood Group</label>
-                  <select
-                    value={bloodGroup}
-                    onChange={(e) => setBloodGroup(e.target.value)}
-                  >
-                    <option value="A+">A+</option>
-                    <option value="B+">B+</option>
-                    <option value="O+">O+</option>
-                    <option value="AB+">AB+</option>
-                    <option value="A-">A-</option>
-                    <option value="B-">B-</option>
-                    <option value="O-">O-</option>
-                  </select>
-                </div>
-                <div className="form-group flex-1">
-                  <label>City</label>
-                  <input
-                    type="text"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={saving}
-                className="btn-hero-join-mission"
-                style={{ width: '100%', justifyContent: 'center', border: 'none', cursor: 'pointer', marginTop: '0.5rem' }}
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </form>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.85rem' }}>
-              {infoTiles.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div
-                    key={item.label}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.9rem',
-                      padding: '0.85rem 1rem',
-                      background: '#F7FBF7',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: '38px',
-                        height: '38px',
-                        borderRadius: '50%',
-                        background: '#E8F5E9',
-                        color: '#006B3C',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Icon size={17} />
-                    </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                        {item.label}
-                      </div>
-                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#173D2B', wordBreak: 'break-word' }}>
-                        {item.value}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-            </div>
-          )}
-
-          {/* Right Card: Reset / Forgot Password */}
-          {activeSection === 'settings' && (
-            <div
-              id="password"
+              <Eye size={13} />
+              <span>Read-Only Profile</span>
+            </span>
+            <Link
+              to="/member/card"
               style={{
-            background: '#ffffff',
-            borderRadius: '18px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                background: '#008C4A',
+                color: '#ffffff',
+                borderRadius: '10px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              <CreditCard size={14} />
+              <span>View Digital ID Card</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="ref-details-grid" style={{ marginBottom: '1rem' }}>
+          {infoTiles.map((tile) => {
+            const Icon = tile.icon;
+            return (
+              <div key={tile.label} className="ref-detail-item">
+                <span className="ref-detail-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Icon size={12} />
+                  {tile.label}
+                </span>
+                <span className="ref-detail-value">{tile.value}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div
+          style={{
+            background: '#f8fafc',
             border: '1px solid #e2e8f0',
-            padding: '1.5rem',
-            boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)',
-            scrollMarginTop: '90px',
+            borderRadius: '10px',
+            padding: '0.75rem 1rem',
+            fontSize: '0.82rem',
+            color: '#475569',
           }}
         >
-          <div
-            style={{
-              marginBottom: '1.25rem',
-              paddingBottom: '0.85rem',
-              borderBottom: '1px solid #f1f5f9',
-            }}
-          >
-            <h3 style={{ margin: '0 0 0.25rem', color: '#064e3b', fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Key size={18} color="#006B3C" />
-              <span>Reset / Forgot Password</span>
-            </h3>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#64748b' }}>
-              Update your account password securely at any time.
-            </p>
-          </div>
-
-          {passwordMsg && (
-            <div className="alert-banner alert-success mb-3" style={{ fontSize: '0.86rem' }}>
-              {passwordMsg}
-            </div>
-          )}
-          {passwordError && (
-            <div className="alert-banner alert-danger mb-3" style={{ fontSize: '0.86rem' }}>
-              {passwordError}
-            </div>
-          )}
-
-          <form onSubmit={handlePasswordUpdate} className="auth-form-body">
-            <div className="form-group">
-              <label>New Password</label>
-              <input
-                type="password"
-                required
-                placeholder="Minimum 6 characters"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label>Confirm New Password</label>
-              <input
-                type="password"
-                required
-                placeholder="Re-enter new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-            <button
-              type="submit"
-              className="btn-hero-join-mission"
-              style={{ width: '100%', justifyContent: 'center', border: 'none', cursor: 'pointer', marginTop: '0.5rem' }}
-            >
-              Update Password
-            </button>
-          </form>
-            </div>
-          )}
+          This portal is in <strong>read-only mode</strong>. Only your portrait photo for your ID card and navbar badge can be updated directly; to request changes to your membership details, please contact the NGO secretariat.
         </div>
-      )}
+      </div>
     </div>
   );
 };

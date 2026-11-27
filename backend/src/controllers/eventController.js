@@ -1,4 +1,5 @@
 import Event from '../models/Event.js';
+import { resolveCloudinaryImage } from '../utils/cloudinaryService.js';
 
 // @desc    Get all public events & cleanliness drives
 // @route   GET /api/v1/public/events
@@ -87,6 +88,10 @@ export const createEvent = async (req, res, next) => {
       targetVolunteers,
     } = req.body;
 
+    const resolvedBanner = bannerImage
+      ? await resolveCloudinaryImage(bannerImage, 'events')
+      : '';
+
     const event = await Event.create({
       title,
       description,
@@ -96,7 +101,7 @@ export const createEvent = async (req, res, next) => {
       location: location || { venue: 'Kotilingala Ghat, Rajahmundry' },
       isPublic,
       isMemberOnly,
-      bannerImage: bannerImage || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800',
+      bannerImage: resolvedBanner,
       targetVolunteers: targetVolunteers || 50,
       createdBy: req.user._id,
     });
@@ -117,7 +122,14 @@ export const updateEvent = async (req, res, next) => {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    Object.assign(event, req.body);
+    const nextPayload = { ...req.body };
+    if (nextPayload.bannerImage !== undefined) {
+      nextPayload.bannerImage = nextPayload.bannerImage
+        ? await resolveCloudinaryImage(nextPayload.bannerImage, 'events')
+        : '';
+    }
+
+    Object.assign(event, nextPayload);
     const updatedEvent = await event.save();
 
     res.json(updatedEvent);

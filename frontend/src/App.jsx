@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Components
@@ -9,6 +9,7 @@ import ContactToggleWidget from './components/ContactToggleWidget';
 import MobileBottomNav from './components/MobileBottomNav';
 import AdminRoute from './components/AdminRoute';
 import MemberRoute from './components/MemberRoute';
+import AccountSuspendedScreen from './components/AccountSuspendedScreen';
 
 // Public Pages
 import Home from './pages/Home';
@@ -51,8 +52,6 @@ import AdminMeetings from './pages/admin/AdminMeetings';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminWebsite from './pages/admin/AdminWebsite';
-import AdminReports from './pages/admin/AdminReports';
-import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminGallery from './pages/admin/AdminGallery';
@@ -71,7 +70,8 @@ import './App.css';
 
 // Public layout wrapper with Navbar & Footer
 const PublicLayout = () => {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isSuspended, suspendedReason, logout, loading } = useAuth();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -81,6 +81,17 @@ const PublicLayout = () => {
     );
   }
 
+  if (user && isSuspended) {
+    return (
+      <AccountSuspendedScreen
+        reason={suspendedReason}
+        onLogout={() => {
+          logout();
+          navigate('/login', { replace: true });
+        }}
+      />
+    );
+  }
 
   return (
     <div className="site-wrapper">
@@ -142,7 +153,9 @@ function App() {
             <Route path="/gallery" element={<Initiatives initialTab="gallery" />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/more" element={<More />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Register defaultType="member" />} />
+            <Route path="/register/member" element={<Register defaultType="member" />} />
+            <Route path="/register/volunteer" element={<Register defaultType="volunteer" />} />
           </Route>
 
           {/* Standalone Authentication - Split Screen Design matching User Requirement */}
@@ -169,8 +182,6 @@ function App() {
             <Route path="contacts" element={<AdminContacts />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="website" element={<AdminWebsite />} />
-            <Route path="reports" element={<AdminReports />} />
-            <Route path="users" element={<AdminUsers />} />
             <Route path="profile" element={<AdminProfile />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>

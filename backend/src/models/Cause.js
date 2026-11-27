@@ -27,7 +27,7 @@ const causeSchema = new mongoose.Schema(
     },
     imageUrl: {
       type: String,
-      default: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600',
+      default: '',
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

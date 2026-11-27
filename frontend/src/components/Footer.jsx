@@ -76,7 +76,7 @@ const Footer = () => {
           <div className="footer-nav-col">
             <h4 className="footer-col-heading">Get Involved</h4>
             <ul className="footer-link-list">
-              <li><Link to="/register">Volunteer Registration</Link></li>
+              <li><Link to="/register/volunteer">Volunteer Registration</Link></li>
               <li><Link to="/login">Member Portal Login</Link></li>
               <li><Link to="/initiatives?tab=events">Upcoming Cleanups &amp; Drives</Link></li>
               <li><Link to="/announcements">News & Updates</Link></li>

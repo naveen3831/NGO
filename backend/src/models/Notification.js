@@ -13,12 +13,19 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['Alert', 'Event Reminder', 'Meeting Notice', 'General Announcement', 'Membership Update'],
+      enum: [
+        'Alert',
+        'Event Reminder',
+        'Meeting Notice',
+        'General Announcement',
+        'Membership Update',
+        'New Registration',
+      ],
       default: 'General Announcement',
     },
     targetAudience: {
       type: String,
-      enum: ['All Members', 'Active Volunteers', 'Specific Member'],
+      enum: ['All Members', 'Active Volunteers', 'Specific Member', 'Admins'],
       default: 'All Members',
     },
     recipient: {

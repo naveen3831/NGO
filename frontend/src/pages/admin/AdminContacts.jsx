@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../services/api';
-import { Mail, Trash2, CheckCircle } from 'lucide-react';
+import { Mail, Trash2, CheckCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
 
 const AdminContacts = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState({ type: '', text: '' });
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadMessages = async () => {
     try {
@@ -22,26 +25,78 @@ const AdminContacts = () => {
   }, []);
 
   const markResolved = async (id) => {
+    setFeedback({ type: '', text: '' });
     try {
       const res = await API.patch(`/admin/contacts/${id}`, { status: 'Resolved' });
       setMessages((prev) => prev.map((m) => (m._id === id ? res.data : m)));
-    } catch (err) {
-      alert('Failed to update status');
+      setFeedback({ type: 'success', text: 'Inquiry marked as resolved.' });
+    } catch {
+      setFeedback({ type: 'error', text: 'Failed to update inquiry status.' });
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this contact inquiry?')) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setFeedback({ type: '', text: '' });
     try {
-      await API.delete(`/admin/contacts/${id}`);
-      setMessages((prev) => prev.filter((m) => m._id !== id));
-    } catch (err) {
-      alert('Failed to delete message');
+      await API.delete(`/admin/contacts/${deleteTarget._id}`);
+      setMessages((prev) => prev.filter((m) => m._id !== deleteTarget._id));
+      setFeedback({ type: 'success', text: 'Contact inquiry deleted.' });
+      setDeleteTarget(null);
+    } catch {
+      setFeedback({ type: 'error', text: 'Failed to delete message.' });
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
     }
   };
+
+  if (deleteTarget) {
+    return (
+      <div className="ref-members-page">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget(null)}
+            className="ref-btn-enroll"
+            style={{ backgroundColor: '#ffffff', color: '#334155', border: '1px solid #cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
+          >
+            <ArrowLeft size={16} />
+            <span>Back to Contact Inquiries</span>
+          </button>
+          <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>Contact Messages &bull; Confirm Delete</span>
+        </div>
+
+        <div className="clean-content-box" style={{ border: '1px solid #fecaca' }}>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dc2626', marginTop: 0 }}>
+            <AlertTriangle size={20} /> Delete Contact Inquiry
+          </h3>
+          <p style={{ color: '#334155', fontSize: '0.92rem', margin: '0.75rem 0 1.25rem' }}>
+            Are you sure you want to delete the inquiry <strong>{deleteTarget.subject}</strong> from <strong>{deleteTarget.name}</strong>?
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <button type="button" onClick={() => setDeleteTarget(null)} className="ref-modal-btn-cancel" disabled={deleting}>
+              Cancel
+            </button>
+            <button type="button" onClick={confirmDelete} className="ref-btn-delete-confirm" disabled={deleting}>
+              {deleting ? 'Deleting...' : 'Delete Inquiry'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '1.5rem' }}>
+      {feedback.text && (
+        <div className={`ref-alert-banner ${feedback.type === 'error' ? 'ref-alert-error' : ''}`} style={{ marginBottom: '1rem' }}>
+          <div className="ref-alert-left"><span>{feedback.text}</span></div>
+          <button type="button" onClick={() => setFeedback({ type: '', text: '' })} className="ref-alert-dismiss">Dismiss &times;</button>
+        </div>
+      )}
+
       <div className="clean-content-box">
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#064e3b', marginBottom: '1rem' }}>
           <Mail size={20} /> Contact Inquiries ({messages.length})
@@ -87,7 +142,7 @@ const AdminContacts = () => {
                   )}
                   <button
                     type="button"
-                    onClick={() => handleDelete(msg._id)}
+                    onClick={() => setDeleteTarget(msg)}
                     style={{ background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', padding: '0.35rem 0.75rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem' }}
                   >
                     <Trash2 size={13} /> Delete
@@ -103,4 +158,3 @@ const AdminContacts = () => {
 };
 
 export default AdminContacts;
-

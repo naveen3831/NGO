@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Membership from '../models/Membership.js';
 import AuditLog from '../models/AuditLog.js';
 
 // Standard 4 Roles
@@ -335,14 +336,26 @@ export const updateUserStatus = async (req, res, next) => {
     targetUser.accountStatus = status;
     targetUser.isActive = status === 'Active';
 
-    // If revoking, also empty permissions or demote to General Volunteer
-    if (status === 'Inactive' || status === 'Revoked') {
+    // If revoking or suspending, deactivate account & suspend linked membership
+    if (status === 'Inactive' || status === 'Revoked' || status === 'Suspended') {
       targetUser.accountStatus = 'Inactive';
       targetUser.isActive = false;
-      targetUser.accessReason = reason || 'Access privileges revoked by administrator';
+      targetUser.accessReason = reason || 'Account suspended by administrator';
     }
 
     await targetUser.save();
+
+    if (targetUser.accountStatus === 'Inactive') {
+      await Membership.findOneAndUpdate(
+        { user: targetUser._id },
+        { status: 'Suspended', ...(reason ? { remarks: reason } : {}) }
+      );
+    } else if (targetUser.accountStatus === 'Active') {
+      await Membership.findOneAndUpdate(
+        { user: targetUser._id, status: 'Suspended' },
+        { status: 'Active' }
+      );
+    }
 
     // Security Audit Log
     try {

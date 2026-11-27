@@ -17,12 +17,14 @@ import {
   Users,
   ShieldCheck,
   ExternalLink,
+  ArrowLeft,
 } from 'lucide-react';
 
 const AdminMeetings = () => {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', text: '' });
   const [search, setSearch] = useState('');
@@ -85,14 +87,19 @@ const AdminMeetings = () => {
     }
   };
 
-  const handleDelete = async (id, title) => {
-    if (!window.confirm(`Are you sure you want to delete meeting "${title}"?`)) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setSubmitting(true);
     try {
-      await API.delete(`/admin/meetings/${id}`);
-      setFeedback({ type: 'success', text: `Meeting "${title}" removed successfully.` });
+      await API.delete(`/admin/meetings/${deleteTarget.id}`);
+      setFeedback({ type: 'success', text: `Meeting "${deleteTarget.title}" removed successfully.` });
+      setDeleteTarget(null);
       fetchMeetings();
     } catch (err) {
       setFeedback({ type: 'error', text: 'Failed to remove meeting from database.' });
+      setDeleteTarget(null);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -122,6 +129,252 @@ const AdminMeetings = () => {
     (m) => m.meetingType === 'General Body' || m.meetingType === 'Annual General Meeting'
   ).length;
   const virtualCount = meetings.filter((m) => m.isVirtual).length;
+
+  if (deleteTarget) {
+    return (
+      <div className="ref-members-page">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <button
+            type="button"
+            onClick={() => setDeleteTarget(null)}
+            className="ref-btn-enroll"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              backgroundColor: '#ffffff',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              padding: '0.55rem 1.15rem',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+            }}
+          >
+            <ArrowLeft size={16} />
+            <span>Return to Meetings</span>
+          </button>
+          <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
+            Meetings &bull; Confirm Removal
+          </span>
+        </div>
+
+        <div style={{ background: '#ffffff', border: '1px solid #fecaca', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '1.4rem 1.75rem', borderBottom: '1px solid #fee2e2', background: '#fef2f2', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <AlertTriangle size={22} className="text-red-600" />
+            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#991b1b' }}>
+              Remove Scheduled Meeting
+            </h3>
+          </div>
+          <div style={{ padding: '1.75rem' }}>
+            <p style={{ margin: '0 0 1.25rem', fontSize: '0.95rem', color: '#334155', lineHeight: 1.6 }}>
+              Are you sure you want to permanently remove the meeting <strong className="text-slate-900">{deleteTarget.title}</strong>?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="ref-modal-btn-cancel"
+                disabled={submitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="ref-btn-delete-confirm"
+                disabled={submitting}
+              >
+                {submitting ? 'Removing...' : 'Delete Meeting'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showAddModal) {
+    return (
+      <div className="ref-members-page">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <button
+            type="button"
+            onClick={() => setShowAddModal(false)}
+            className="ref-btn-enroll"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              backgroundColor: '#ffffff',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              padding: '0.55rem 1.15rem',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+            }}
+          >
+            <ArrowLeft size={16} />
+            <span>Return to Meetings</span>
+          </button>
+          <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
+            Meetings &bull; Schedule New Session
+          </span>
+        </div>
+
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ padding: '1.5rem 1.75rem', borderBottom: '1px solid #f1f5f9' }}>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+              Schedule New Meeting
+            </h3>
+            <p style={{ margin: '0.2rem 0 0', fontSize: '0.84rem', color: '#64748b' }}>
+              Plan executive discussions, volunteer briefings, and general body sessions.
+            </p>
+          </div>
+
+          <form onSubmit={handleCreateMeeting}>
+            <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+              <div className="eco-form-field">
+                <label className="eco-field-label">Meeting Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Monthly Executive Committee Meeting"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="eco-field-input"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="eco-form-field">
+                  <label className="eco-field-label">Meeting Category</label>
+                  <select
+                    value={formData.meetingType}
+                    onChange={(e) => setFormData({ ...formData, meetingType: e.target.value })}
+                    className="eco-field-select"
+                  >
+                    <option value="Executive Committee">Executive Committee</option>
+                    <option value="General Body">General Body</option>
+                    <option value="Volunteer Briefing">Volunteer Briefing</option>
+                    <option value="Annual General Meeting">Annual General Meeting</option>
+                  </select>
+                </div>
+
+                <div className="eco-form-field">
+                  <label className="eco-field-label">Target Audience</label>
+                  <select
+                    value={formData.targetAudience}
+                    onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
+                    className="eco-field-select"
+                  >
+                    <option value="All Members">All Members</option>
+                    <option value="Executive Committee Only">Executive Committee Only</option>
+                    <option value="Volunteers Only">Volunteers Only</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="eco-form-field">
+                  <label className="eco-field-label">Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    className="eco-field-input"
+                  />
+                </div>
+
+                <div className="eco-form-field">
+                  <label className="eco-field-label">Timing *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="05:30 PM - 07:00 PM"
+                    value={formData.time}
+                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                    className="eco-field-input"
+                  />
+                </div>
+              </div>
+
+              <div className="eco-form-field">
+                <label className="eco-field-label">Venue / Physical Location *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="NGO Central Secretariat, Bund Road, Rajahmundry"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="eco-field-input"
+                />
+              </div>
+
+              <div className="eco-modal-card-box">
+                <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700 mb-2">
+                  <input
+                    type="checkbox"
+                    checked={formData.isVirtual}
+                    onChange={(e) => setFormData({ ...formData, isVirtual: e.target.checked })}
+                    className="accent-[#063b2c] w-4 h-4 rounded"
+                  />
+                  <span>Online / Virtual Video Conference Session</span>
+                </label>
+
+                {formData.isVirtual && (
+                  <div className="mt-2">
+                    <label className="eco-field-label">Virtual Meeting Link</label>
+                    <input
+                      type="url"
+                      placeholder="https://meet.google.com/xyz or Zoom link"
+                      value={formData.meetingLink}
+                      onChange={(e) => setFormData({ ...formData, meetingLink: e.target.value })}
+                      className="eco-field-input"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="eco-form-field">
+                <label className="eco-field-label">Key Agenda Points *</label>
+                <textarea
+                  rows="3"
+                  required
+                  placeholder="1. Action item review  2. Waste management budget  3. Upcoming river cleaning drive..."
+                  value={formData.agenda}
+                  onChange={(e) => setFormData({ ...formData, agenda: e.target.value })}
+                  className="eco-field-textarea"
+                ></textarea>
+              </div>
+            </div>
+
+            <div style={{ padding: '1.15rem 1.75rem', borderTop: '1px solid #f1f5f9', background: '#f8fafc', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="eco-cms-btn-secondary"
+                disabled={submitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="eco-cms-btn-primary"
+              >
+                {submitting ? 'Scheduling...' : 'Save & Schedule'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="eco-cms-page">
@@ -404,7 +657,8 @@ const AdminMeetings = () => {
                   </span>
 
                   <button
-                    onClick={() => handleDelete(m._id, m.title)}
+                    type="button"
+                    onClick={() => setDeleteTarget({ id: m._id, title: m.title })}
                     className="eco-btn-delete-card"
                     title="Delete this meeting"
                   >
@@ -418,167 +672,6 @@ const AdminMeetings = () => {
         </div>
       )}
 
-      {/* 7. Schedule New Meeting Modal */}
-      {showAddModal && (
-        <div className="modal-backdrop">
-          <div className="modal-dialog">
-            <div className="modal-header">
-              <div>
-                <h3 className="modal-title font-bold text-slate-900 text-lg">
-                  Schedule New Meeting
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Plan executive discussions, volunteer briefings, and general body sessions.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="btn-close"
-                title="Close modal"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateMeeting}>
-              <div className="modal-body">
-                <div className="eco-form-field">
-                  <label className="eco-field-label">Meeting Title *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Monthly Executive Committee Meeting"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="eco-field-input"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="eco-form-field">
-                    <label className="eco-field-label">Meeting Category</label>
-                    <select
-                      value={formData.meetingType}
-                      onChange={(e) => setFormData({ ...formData, meetingType: e.target.value })}
-                      className="eco-field-select"
-                    >
-                      <option value="Executive Committee">Executive Committee</option>
-                      <option value="General Body">General Body</option>
-                      <option value="Volunteer Briefing">Volunteer Briefing</option>
-                      <option value="Annual General Meeting">Annual General Meeting</option>
-                    </select>
-                  </div>
-
-                  <div className="eco-form-field">
-                    <label className="eco-field-label">Target Audience</label>
-                    <select
-                      value={formData.targetAudience}
-                      onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
-                      className="eco-field-select"
-                    >
-                      <option value="All Members">All Members</option>
-                      <option value="Executive Committee Only">Executive Committee Only</option>
-                      <option value="Volunteers Only">Volunteers Only</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="eco-form-field">
-                    <label className="eco-field-label">Date *</label>
-                    <input
-                      type="date"
-                      required
-                      value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      className="eco-field-input"
-                    />
-                  </div>
-
-                  <div className="eco-form-field">
-                    <label className="eco-field-label">Timing *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="05:30 PM - 07:00 PM"
-                      value={formData.time}
-                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                      className="eco-field-input"
-                    />
-                  </div>
-                </div>
-
-                <div className="eco-form-field">
-                  <label className="eco-field-label">Venue / Physical Location *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="NGO Central Secretariat, Bund Road, Rajahmundry"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="eco-field-input"
-                  />
-                </div>
-
-                <div className="eco-modal-card-box">
-                  <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700 mb-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.isVirtual}
-                      onChange={(e) => setFormData({ ...formData, isVirtual: e.target.checked })}
-                      className="accent-[#063b2c] w-4 h-4 rounded"
-                    />
-                    <span>Online / Virtual Video Conference Session</span>
-                  </label>
-
-                  {formData.isVirtual && (
-                    <div className="mt-2">
-                      <label className="eco-field-label">Virtual Meeting Link</label>
-                      <input
-                        type="url"
-                        placeholder="https://meet.google.com/xyz or Zoom link"
-                        value={formData.meetingLink}
-                        onChange={(e) => setFormData({ ...formData, meetingLink: e.target.value })}
-                        className="eco-field-input"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="eco-form-field">
-                  <label className="eco-field-label">Key Agenda Points *</label>
-                  <textarea
-                    rows="3"
-                    required
-                    placeholder="1. Action item review  2. Waste management budget  3. Upcoming river cleaning drive..."
-                    value={formData.agenda}
-                    onChange={(e) => setFormData({ ...formData, agenda: e.target.value })}
-                    className="eco-field-textarea"
-                  ></textarea>
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="eco-cms-btn-secondary"
-                  disabled={submitting}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="eco-cms-btn-primary"
-                >
-                  {submitting ? 'Scheduling...' : 'Save & Schedule'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

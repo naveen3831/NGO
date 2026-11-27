@@ -1,4 +1,5 @@
 import Announcement from '../models/Announcement.js';
+import { resolveCloudinaryImage } from '../utils/cloudinaryService.js';
 
 // @desc    Get public announcements
 // @route   GET /api/v1/public/announcements
@@ -77,7 +78,15 @@ export const getAllAnnouncements = async (req, res, next) => {
 // @access  Private (Admin)
 export const createAnnouncement = async (req, res, next) => {
   try {
-    const { title, content, category, priority, visibility, expiresAt, imageUrl } = req.body;
+    const { title, content, category, priority, visibility, expiresAt, imageUrl, attachmentUrl } = req.body;
+
+    const resolvedImageUrl = imageUrl
+      ? await resolveCloudinaryImage(imageUrl, 'announcements')
+      : '';
+    const resolvedAttachmentUrl =
+      attachmentUrl && typeof attachmentUrl === 'string' && attachmentUrl.startsWith('data:image/')
+        ? await resolveCloudinaryImage(attachmentUrl, 'announcements')
+        : attachmentUrl;
 
     const announcement = await Announcement.create({
       title,
@@ -86,7 +95,8 @@ export const createAnnouncement = async (req, res, next) => {
       priority: priority || 'Normal',
       visibility: visibility || 'All',
       expiresAt: expiresAt ? new Date(expiresAt) : null,
-      imageUrl: imageUrl || '',
+      imageUrl: resolvedImageUrl,
+      ...(resolvedAttachmentUrl !== undefined ? { attachmentUrl: resolvedAttachmentUrl } : {}),
       createdBy: req.user._id,
     });
 
@@ -106,7 +116,23 @@ export const updateAnnouncement = async (req, res, next) => {
       return res.status(404).json({ message: 'Announcement not found' });
     }
 
-    Object.assign(announcement, req.body);
+    const nextPayload = { ...req.body };
+    if (nextPayload.imageUrl !== undefined) {
+      nextPayload.imageUrl = nextPayload.imageUrl
+        ? await resolveCloudinaryImage(nextPayload.imageUrl, 'announcements')
+        : '';
+    }
+    if (
+      typeof nextPayload.attachmentUrl === 'string' &&
+      nextPayload.attachmentUrl.startsWith('data:image/')
+    ) {
+      nextPayload.attachmentUrl = await resolveCloudinaryImage(
+        nextPayload.attachmentUrl,
+        'announcements'
+      );
+    }
+
+    Object.assign(announcement, nextPayload);
     const updatedAnnouncement = await announcement.save();
 
     res.json(updatedAnnouncement);
