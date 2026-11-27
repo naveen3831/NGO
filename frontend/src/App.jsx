@@ -37,6 +37,7 @@ import AnnouncementsNews from './pages/announcements/AnnouncementsNews';
 import AnnouncementsPress from './pages/announcements/AnnouncementsPress';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
+import More from './pages/More';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -56,7 +57,6 @@ import AdminProfile from './pages/admin/AdminProfile';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminGallery from './pages/admin/AdminGallery';
 import AdminContacts from './pages/admin/AdminContacts';
-import AdminDonations from './pages/admin/AdminDonations';
 
 // Member Pages
 import MemberLayout from './pages/member/MemberLayout';
@@ -141,6 +141,7 @@ function App() {
             <Route path="/announcements/:id" element={<AnnouncementDetails />} />
             <Route path="/gallery" element={<Initiatives initialTab="gallery" />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/more" element={<More />} />
             <Route path="/register" element={<Register />} />
           </Route>
 
@@ -165,7 +166,6 @@ function App() {
             <Route path="meetings" element={<AdminMeetings />} />
             <Route path="announcements" element={<AdminAnnouncements />} />
             <Route path="gallery" element={<AdminGallery />} />
-            <Route path="donations" element={<AdminDonations />} />
             <Route path="contacts" element={<AdminContacts />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="website" element={<AdminWebsite />} />

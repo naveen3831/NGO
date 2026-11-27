@@ -68,21 +68,18 @@ const Navbar = () => {
     {
       label: 'Home',
       path: '/',
-      icon: Home,
-    },
-    {
-      label: 'About Us',
-      path: '/about',
-    },
-    {
-      label: 'Initiatives',
-      path: '/initiatives',
-      icon: Compass,
     },
     {
       label: 'Announcements',
       path: '/announcements',
-      icon: Megaphone,
+    },
+    {
+      label: 'Initiatives',
+      path: '/initiatives',
+    },
+    {
+      label: 'About Us',
+      path: '/about',
     },
     {
       label: 'Contact Us',

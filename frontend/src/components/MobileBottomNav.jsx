@@ -6,7 +6,7 @@ import {
   Sprout,
   Calendar,
   Bell,
-  User,
+  MoreHorizontal,
   X,
   Compass,
   BookOpen,
@@ -40,10 +40,10 @@ const getMobileNavSections = (isMember, isAdmin) => [
     hasSubmenu: false,
   },
   {
-    id: 'profile',
-    label: 'Profile',
-    path: isAdmin ? '/admin' : isMember ? '/member/profile' : '/login',
-    icon: User,
+    id: 'more',
+    label: 'More',
+    path: '/more',
+    icon: MoreHorizontal,
     hasSubmenu: false,
   },
 ];
@@ -82,12 +82,8 @@ const MobileBottomNav = () => {
     if (section.id === 'updates') {
       return location.pathname.startsWith('/announcements');
     }
-    if (section.id === 'profile') {
-      return (
-        location.pathname.startsWith('/member') ||
-        location.pathname.startsWith('/admin') ||
-        location.pathname === '/login'
-      );
+    if (section.id === 'more') {
+      return location.pathname === '/more';
     }
     return location.pathname.startsWith(section.path);
   };

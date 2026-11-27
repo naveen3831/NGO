@@ -4847,7 +4847,7 @@ body::-webkit-scrollbar {
   box-sizing: border-box;
   border-radius: 9999px;
   text-decoration: none;
-  border: 1.5px solid #ffffff;
+  border: 2px solid #006B3C;
   box-shadow: 0 6px 18px rgba(6, 78, 59, 0.25);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
@@ -9357,6 +9357,8 @@ body::-webkit-scrollbar {
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  flex: 1 1 320px;
+  min-width: 0;
 }
 
 .ref-header-icon-box {
@@ -9388,6 +9390,8 @@ body::-webkit-scrollbar {
 .ref-header-actions {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
   gap: 0.65rem;
   flex-wrap: wrap;
 }
@@ -13929,5 +13933,71 @@ body::-webkit-scrollbar {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .eco-nav-container {
+    padding: 0 0.65rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .eco-brand-wrap {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .ngo-logo-lockup {
+    gap: 0.4rem !important;
+  }
+
+  .ngo-logo-svg {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0;
+  }
+
+  .ngo-logo-title-main {
+    font-size: 0.78rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .ngo-logo-title-sub {
+    font-size: 0.58rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .eco-guest-actions {
+    gap: 0.35rem !important;
+    flex-shrink: 0;
+  }
+
+  .btn-eco-login-outline,
+  .btn-eco-join-pill {
+    padding: 0.36rem 0.7rem !important;
+    font-size: 0.74rem !important;
+    gap: 0.25rem !important;
+    white-space: nowrap;
+  }
+}
+
+.eco-mobile-login-back {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .eco-mobile-login-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f0fdf4;
+    color: #006B3C;
+    border: 1px solid #bbf7d0;
+    border-radius: 9999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 0.75rem;
   }
 }

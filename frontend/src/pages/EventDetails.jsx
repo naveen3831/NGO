@@ -247,7 +247,7 @@ const EventDetails = () => {
             }}
           >
             <ArrowLeft size={16} />
-            <span>Back to All Drives &amp; Events</span>
+            <span>Back</span>
           </Link>
 
           <div

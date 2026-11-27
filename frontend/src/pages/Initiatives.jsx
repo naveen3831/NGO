@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import HeroBanner from '../components/HeroBanner';
 
@@ -29,6 +29,7 @@ import {
   MapPin,
   Calendar,
   ArrowRight,
+  ArrowLeft,
   X,
   ChevronLeft,
   ChevronRight,
@@ -216,6 +217,7 @@ const defaultGalleryItems = [
 ];
 
 const Initiatives = ({ initialTab = 'all' }) => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryTab = searchParams.get('tab');
   const [activeSection, setActiveSection] = useState(queryTab || initialTab);
@@ -330,8 +332,31 @@ const Initiatives = ({ initialTab = 'all' }) => {
       {/* 1. UNIFIED INITIATIVES HERO BANNER */}
       <HeroBanner
         title="Our Initiatives"
-        subtitle="Field Activities, Drives & Events, and Our Conservation Gallery"
+        subtitle="Activities, Events & Conservation Gallery"
       />
+
+      <div className="container" style={{ maxWidth: '1200px', padding: '1rem 1.5rem 0' }}>
+        <button
+          type="button"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            background: '#f0fdf4',
+            color: '#006B3C',
+            border: '1px solid #bbf7d0',
+            borderRadius: '9999px',
+            padding: '0.4rem 0.95rem',
+            fontSize: '0.84rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          <ArrowLeft size={15} />
+          <span>Back</span>
+        </button>
+      </div>
 
       {/* 2. ACTIVITIES SECTION */}
       {showActivities && (
