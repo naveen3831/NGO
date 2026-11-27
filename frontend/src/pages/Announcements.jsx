@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import HeroBanner from '../components/HeroBanner';
 import announceStreamNewsImg from '../assets/announce-stream-news.jpg';
 import eventsScheduleCleanImg from '../assets/events-schedule-clean.jpg';
 import heroPlantImg from '../assets/hero-plant.jpg';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 const curatedAnnouncements = [
   {
@@ -35,6 +35,7 @@ const curatedAnnouncements = [
 ];
 
 const Announcements = () => {
+  const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState(curatedAnnouncements);
 
   useEffect(() => {
@@ -77,6 +78,28 @@ const Announcements = () => {
       {/* 2. HORIZONTAL ANNOUNCEMENT ROWS */}
       <section className="eco-ref-announcements-section">
         <div className="container" style={{ maxWidth: '1080px' }}>
+          <button
+            type="button"
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: '#f0fdf4',
+              color: '#006B3C',
+              border: '1px solid #bbf7d0',
+              borderRadius: '9999px',
+              padding: '0.4rem 0.95rem',
+              fontSize: '0.84rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              marginBottom: '1rem',
+            }}
+          >
+            <ArrowLeft size={15} />
+            <span>Back</span>
+          </button>
+
           <div className="eco-ref-announcements-list">
             {announcements.map((item) => {
               const dateText =

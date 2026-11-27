@@ -13,7 +13,8 @@ import {
   X,
   TreePine,
   Droplets,
-  Users2
+  Users2,
+  ArrowLeft,
 } from 'lucide-react';
 import Logo from '../components/Logo';
 
@@ -200,6 +201,15 @@ const Login = () => {
       {/* RIGHT SIDE: Centered Clean Professional Card */}
       <div className="eco-login-form-panel">
         <div className="eco-login-card">
+          <button
+            type="button"
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+            className="eco-mobile-login-back"
+          >
+            <ArrowLeft size={15} />
+            <span>Back</span>
+          </button>
+
           {/* Card Organization Brand Lockup */}
           <div className="eco-card-logo-center">
             <Link to="/" title="Return to Home">

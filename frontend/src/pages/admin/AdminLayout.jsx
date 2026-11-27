@@ -47,7 +47,7 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login?role=admin');
+    navigate('/');
   };
 
   // Sidebar navigation structure exactly matching the reference design
@@ -57,7 +57,6 @@ const AdminLayout = () => {
     { label: 'Drives & Events', path: '/admin/events', icon: Calendar },
     { label: 'Gallery', path: '/admin/gallery', icon: ImageIcon },
     { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
-    { label: 'Donations', path: '/admin/donations', icon: HeartHandshake },
     { label: 'Contact Messages', path: '/admin/contacts', icon: Mail },
     { label: 'Notifications', path: '/admin/notifications', icon: Bell },
     { label: 'Reports', path: '/admin/reports', icon: BarChart2 },

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import HeroBanner from '../components/HeroBanner';
 import heroPlantImg from '../assets/hero-plant.jpg';
-import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -166,10 +166,32 @@ const Register = () => {
 
       <section className="section-padding" style={{ paddingTop: '1.5rem' }}>
         <div className="container" style={{ maxWidth: '1120px' }}>
+          <button
+            type="button"
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: '#f0fdf4',
+              color: '#006B3C',
+              border: '1px solid #bbf7d0',
+              borderRadius: '9999px',
+              padding: '0.4rem 0.95rem',
+              fontSize: '0.84rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              marginBottom: '1rem',
+            }}
+          >
+            <ArrowLeft size={15} />
+            <span>Back</span>
+          </button>
+
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
               gap: '2.5rem',
               alignItems: 'center',
             }}
